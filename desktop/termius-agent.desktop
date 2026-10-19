@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Termius Agent
+Comment=Terminal & SSH Suite with integrated AI Agent history
+Exec=/home/nader/bin/termius-agent
+Icon=/home/nader/.local/share/icons/hicolor/512x512/apps/termius-agent.png
+Terminal=false
+Type=Application
+Categories=Development;System;TerminalEmulator;
+StartupNotify=true

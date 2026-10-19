@@ -1,0 +1,96 @@
+{
+  "hosts": [
+    {
+      "id": "local-main",
+      "label": "Localhost (Ubuntu)",
+      "type": "local",
+      "address": "127.0.0.1",
+      "port": 22,
+      "user": "nader",
+      "group": "Local",
+      "color": "#3fb950",
+      "defaultCwd": "/home/nader",
+      "icon": "terminal"
+    },
+    {
+      "id": "proj-wacrm",
+      "label": "WaCRM Local",
+      "type": "local",
+      "address": "127.0.0.1",
+      "port": 22,
+      "user": "nader",
+      "group": "Projetos",
+      "color": "#58a6ff",
+      "defaultCwd": "/home/nader/wacrm-local",
+      "icon": "folder"
+    },
+    {
+      "id": "proj-investx",
+      "label": "Invest-X Project",
+      "type": "local",
+      "address": "127.0.0.1",
+      "port": 22,
+      "user": "nader",
+      "group": "Projetos",
+      "color": "#d29922",
+      "defaultCwd": "/home/nader/invest-x",
+      "icon": "trending-up"
+    },
+    {
+      "id": "proj-mercado",
+      "label": "Mercado App (PDV)",
+      "type": "local",
+      "address": "127.0.0.1",
+      "port": 22,
+      "user": "nader",
+      "group": "Projetos",
+      "color": "#bc8cff",
+      "defaultCwd": "/home/nader/Applications/mercado-app",
+      "icon": "shopping-cart"
+    },
+    {
+      "id": "vps-admx",
+      "label": "VPS ADMX Tech (SSH)",
+      "type": "ssh",
+      "address": "vps.admx.tech",
+      "port": 22,
+      "user": "root",
+      "group": "Produção",
+      "color": "#f85149",
+      "defaultCwd": "/root",
+      "icon": "server"
+    }
+  ],
+  "snippets": [
+    {
+      "id": "snip-git-status",
+      "title": "Git Status Completo",
+      "command": "git status -sb",
+      "category": "Git"
+    },
+    {
+      "id": "snip-docker-ps",
+      "title": "Containers Docker Ativos",
+      "command": "docker ps --format 'table {{.Names}}\\t{{.Status}}\\t{{.Ports}}'",
+      "category": "Docker"
+    },
+    {
+      "id": "snip-ports",
+      "title": "Portas Abertas e Serviços",
+      "command": "ss -tulpn | grep LISTEN",
+      "category": "Rede"
+    },
+    {
+      "id": "snip-mem",
+      "title": "Uso de Memória e Swap",
+      "command": "free -h",
+      "category": "Sistema"
+    },
+    {
+      "id": "snip-term-proj",
+      "title": "Reabrir 10 Projetos no Screen",
+      "command": "projetos-terminal.sh screen",
+      "category": "Projetos"
+    }
+  ]
+}

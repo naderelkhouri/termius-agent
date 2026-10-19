@@ -1,0 +1,49 @@
+@import '@xterm/xterm/css/xterm.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mobile Typography & Ergonomics Contract */
+html, body {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  text-rendering: optimizeLegibility;
+}
+
+/* Safe Area Paddings for Modern Phones */
+.safe-area-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
+}
+
+.safe-area-top {
+  padding-top: max(env(safe-area-inset-top), 16px);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #58a6ff;
+}
+
+/* Xterm container styling */
+.xterm {
+  padding: 8px 12px;
+  height: 100%;
+}
+
+.xterm-viewport {
+  background-color: transparent !important;
+}

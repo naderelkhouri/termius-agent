@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Termius Agent Launcher
+
+APP_DIR="/home/nader/Applications/termius-agent"
+PORT=3001
+
+# Check if backend server is already running on port 3001
+if ! ss -tulpn 2>/dev/null | grep -q ":$PORT "; then
+  echo "==> Iniciando backend do Termius Agent na porta $PORT..."
+  cd "$APP_DIR" && nohup node server/index.js > /tmp/termius-agent.log 2>&1 &
+  sleep 1.2
+fi
+
+echo "==> Abrindo Termius Agent em http://localhost:$PORT..."
+
+# Open in browser or web app window
+if command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "http://localhost:$PORT" >/dev/null 2>&1 &
+fi
+
+echo "✔ Termius Agent ativo em http://localhost:$PORT"

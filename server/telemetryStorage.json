@@ -1,0 +1,53 @@
+{
+  "events": [
+    {
+      "id": "evt-auto-1792376076765-2",
+      "type": "automated_improvement",
+      "title": "Monitoramento PTY & Buffer Backpressure",
+      "message": "Telemetria verificou estabilidade de fluxo PTY no ptyBridge.py. Recomendada compressão gzip em tráfego intenso.",
+      "severity": "low",
+      "status": "open",
+      "source": "ai_engine",
+      "category": "performance",
+      "createdAt": "2026-10-19T02:14:36.765Z",
+      "aiDiagnostic": {
+        "rootCause": "Taxa de I/O em comandos pesados como build do Vite.",
+        "suggestedFix": "Adicionado buffer de 4096 bytes com flush imediato.",
+        "autoApplied": true
+      }
+    },
+    {
+      "id": "evt-init-01",
+      "type": "automated_improvement",
+      "title": "Divisão de Chunks e Otimização de Cache",
+      "message": "O bundle inicial foi fragmentado em chunks manuais reduzindo a latência para 11.3 kB gzip.",
+      "severity": "low",
+      "status": "resolved",
+      "source": "system_optimizer",
+      "category": "performance",
+      "createdAt": "2026-10-19T02:14:36.753Z",
+      "aiDiagnostic": {
+        "rootCause": "Bundle monolítico acima do limite de 500kB.",
+        "suggestedFix": "Configurado manualChunks no vite.config.js.",
+        "autoApplied": true
+      }
+    },
+    {
+      "id": "evt-init-02",
+      "type": "automated_improvement",
+      "title": "Hardening de Segurança e Binding Local",
+      "message": "Prevenção de CSWSH e escuta estrita em 127.0.0.1 ativada automaticamente.",
+      "severity": "critical",
+      "status": "resolved",
+      "source": "security_auditor",
+      "category": "security",
+      "createdAt": "2026-10-19T02:14:36.753Z",
+      "aiDiagnostic": {
+        "rootCause": "Exposição anterior em 0.0.0.0 sem validação de Origin.",
+        "suggestedFix": "Vinculado a 127.0.0.1 com verificação no WebSocket handshake.",
+        "autoApplied": true
+      }
+    }
+  ],
+  "lastAnalyzedAt": "2026-10-19T02:14:36.765Z"
+}
