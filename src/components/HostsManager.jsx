@@ -54,6 +54,15 @@ export default function HostsManager({ onConnectHost }) {
     }
   };
 
+  const handleQuickAddPreset = async (preset) => {
+    try {
+      await createHost(preset);
+      loadHosts();
+    } catch (e) {
+      alert('Erro ao adicionar preset: ' + e.message);
+    }
+  };
+
   // Group hosts
   const groups = hosts.reduce((acc, h) => {
     const grp = h.group || 'Geral';
@@ -97,6 +106,80 @@ export default function HostsManager({ onConnectHost }) {
         {loading ? (
           <div className="text-center py-16 text-slate-400 text-xs font-medium">
             Carregando conexões...
+          </div>
+        ) : Object.keys(groups).length === 0 ? (
+          <div className="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 sm:p-8 text-center max-w-2xl mx-auto my-6 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center mx-auto mb-4 text-blue-400">
+              <Server className="w-6 h-6" />
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-white mb-2">Nenhuma Conexão Cadastrada</h3>
+            <p className="text-xs text-slate-300 mb-6 max-w-md mx-auto leading-relaxed">
+              Crie atalhos para os seus ambientes locais, servidores SSH ou instâncias em nuvem. Clique em um dos modelos rápidos abaixo para começar em 1 clique:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+              <button
+                type="button"
+                onClick={() => handleQuickAddPreset({
+                  label: 'Localhost (~)',
+                  address: '127.0.0.1',
+                  user: 'nader',
+                  port: 22,
+                  type: 'local',
+                  group: 'Ambiente Local',
+                  color: '#3fb950',
+                  defaultCwd: '/home/nader'
+                })}
+                className="p-3.5 rounded-xl bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-blue-500/40 text-left transition-all active:scale-95 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-emerald-400">
+                  <Laptop className="w-4 h-4" />
+                  <span>Terminal Local</span>
+                </div>
+                <div className="text-xs text-slate-400 font-medium">Diretório home padrão (~/)</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickAddPreset({
+                  label: 'Servidor VPS Nuvem',
+                  address: '192.168.1.100',
+                  user: 'root',
+                  port: 22,
+                  type: 'ssh',
+                  group: 'Nuvem & VPS',
+                  color: '#58a6ff',
+                  defaultCwd: '/root'
+                })}
+                className="p-3.5 rounded-xl bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-blue-500/40 text-left transition-all active:scale-95 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-blue-400">
+                  <Globe className="w-4 h-4" />
+                  <span>Servidor SSH</span>
+                </div>
+                <div className="text-xs text-slate-400 font-medium">root@192.168.1.100:22</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickAddPreset({
+                  label: 'Termius Agent Suite',
+                  address: '127.0.0.1',
+                  user: 'nader',
+                  port: 22,
+                  type: 'local',
+                  group: 'Projetos',
+                  color: '#bc8cff',
+                  defaultCwd: '/home/nader/Applications/termius-agent'
+                })}
+                className="p-3.5 rounded-xl bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-blue-500/40 text-left transition-all active:scale-95 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-purple-400">
+                  <Folder className="w-4 h-4" />
+                  <span>Projeto Atual</span>
+                </div>
+                <div className="text-xs text-slate-400 font-medium">~/Applications/termius-agent</div>
+              </button>
+            </div>
           </div>
         ) : (
           Object.entries(groups).map(([groupName, groupHosts]) => (

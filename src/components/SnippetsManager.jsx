@@ -40,6 +40,15 @@ export default function SnippetsManager({ onExecuteSnippet }) {
     }
   };
 
+  const handleQuickAddPreset = async (preset) => {
+    try {
+      await createSnippet(preset);
+      loadSnippets();
+    } catch (e) {
+      alert('Erro ao adicionar preset: ' + e.message);
+    }
+  };
+
   const handleDelete = async (id, e) => {
     e.stopPropagation();
     if (!confirm('Deseja excluir este snippet?')) return;
@@ -92,6 +101,65 @@ export default function SnippetsManager({ onExecuteSnippet }) {
         {loading ? (
           <div className="text-center py-16 text-slate-400 text-xs font-medium">
             Carregando snippets...
+          </div>
+        ) : snippets.length === 0 ? (
+          <div className="bg-[#161b22] border border-[#30363d] rounded-2xl p-6 sm:p-8 text-center max-w-2xl mx-auto my-6 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4 text-emerald-400">
+              <Code2 className="w-6 h-6" />
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-white mb-2">Sua Biblioteca de Snippets está Vazia</h3>
+            <p className="text-xs text-slate-300 mb-6 max-w-md mx-auto leading-relaxed">
+              Salve comandos frequentes do shell para disparar nos seus terminais com 1 clique. Adicione um modelo pré-configurado abaixo:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+              <button
+                type="button"
+                onClick={() => handleQuickAddPreset({
+                  title: 'Git Status & Recentes',
+                  command: 'git status -sb && git log -n 3 --oneline',
+                  category: 'Git'
+                })}
+                className="p-3.5 rounded-xl bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-emerald-500/40 text-left transition-all active:scale-95 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-emerald-400">
+                  <Play className="w-4 h-4" />
+                  <span>Git Status</span>
+                </div>
+                <div className="text-xs text-slate-400 font-mono truncate">git status -sb...</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickAddPreset({
+                  title: 'Portas & Conexões Ativas',
+                  command: 'ss -tulpn | head -n 20',
+                  category: 'Rede'
+                })}
+                className="p-3.5 rounded-xl bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-blue-500/40 text-left transition-all active:scale-95 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-blue-400">
+                  <Play className="w-4 h-4" />
+                  <span>Portas Ativas</span>
+                </div>
+                <div className="text-xs text-slate-400 font-mono truncate">ss -tulpn | head...</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickAddPreset({
+                  title: 'Top Processos por CPU',
+                  command: 'top -b -n 1 | head -n 15',
+                  category: 'Sistema'
+                })}
+                className="p-3.5 rounded-xl bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-purple-500/40 text-left transition-all active:scale-95 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-purple-400">
+                  <Play className="w-4 h-4" />
+                  <span>Top CPU</span>
+                </div>
+                <div className="text-xs text-slate-400 font-mono truncate">top -b -n 1 | head...</div>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

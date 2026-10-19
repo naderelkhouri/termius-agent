@@ -15,7 +15,8 @@ import {
   Rows2,
   Square,
   Pencil,
-  RotateCcw
+  RotateCcw,
+  ChevronDown
 } from 'lucide-react';
 
 export default function App() {
@@ -24,6 +25,8 @@ export default function App() {
   const [splitMode, setSplitMode] = useState('single'); // 'single' | 'vertical' | 'horizontal'
   const [secondaryTabId, setSecondaryTabId] = useState(null);
   const [copilotOpen, setCopilotOpen] = useState(false);
+  const [tabMenuOpen, setTabMenuOpen] = useState(false);
+  const tabMenuRef = useRef(null);
 
   const [openTabs, setOpenTabs] = useState([
     {
@@ -38,6 +41,19 @@ export default function App() {
   const [editingTabId, setEditingTabId] = useState(null);
   const [editingTitle, setEditingTitle] = useState('');
   const commandersRef = useRef({});
+
+  // Close tab quick menu on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (tabMenuRef.current && !tabMenuRef.current.contains(e.target)) {
+        setTabMenuOpen(false);
+      }
+    };
+    if (tabMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [tabMenuOpen]);
 
   // Keyboard Shortcuts Listener
   useEffect(() => {
@@ -281,9 +297,9 @@ export default function App() {
       {/* Main Workspace */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#0d1117] relative">
         {/* Top Terminal Tabs Bar */}
-        <div className="h-12 bg-[#161b22] border-b border-[#30363d] flex items-center px-3 select-none justify-between overflow-x-auto shrink-0 gap-2">
-          {/* Tabs list */}
-          <div className="flex items-center gap-2 overflow-x-auto py-1">
+        <div className="h-12 bg-[#161b22] border-b border-[#30363d] flex items-center px-3 select-none justify-between shrink-0 gap-2 relative">
+          {/* Tabs list with overflow mask */}
+          <div className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto py-1 scrollbar-none [mask-image:linear-gradient(to_right,white_calc(100%-16px),transparent)]">
             {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -311,9 +327,9 @@ export default function App() {
                   title={tab.autoTitle ? `Título: ${tab.title} (${tab.autoTitle})\nDuplo clique para renomear` : `${tab.title}\nDuplo clique para renomear`}
                   className={`group min-h-[34px] flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs cursor-pointer transition-all border shrink-0 ${
                     isActive
-                      ? 'bg-[#0d1117] text-white border-[#30363d] shadow-xs font-bold'
+                      ? 'bg-[#0d1117] text-white border-blue-500/40 shadow-xs font-bold ring-1 ring-blue-500/30'
                       : isSecondary
-                      ? 'bg-[#1c2128] text-cyan-300 border-cyan-500/30 font-medium'
+                      ? 'bg-[#1c2128] text-blue-300 border-blue-500/30 font-medium'
                       : 'bg-transparent text-slate-300 hover:text-white border-transparent hover:bg-[#21262d] font-medium'
                   }`}
                 >
@@ -337,7 +353,7 @@ export default function App() {
                       }}
                       onBlur={() => handleSaveEditTab(tab.id)}
                       onClick={(e) => e.stopPropagation()}
-                      className="bg-[#161b22] text-white border border-cyan-500 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none w-28 sm:w-36"
+                      className="bg-[#161b22] text-white border border-blue-500 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none w-28 sm:w-36"
                     />
                   ) : (
                     <div className="flex items-center gap-1.5 max-w-[150px] min-w-0">
@@ -347,7 +363,7 @@ export default function App() {
                           type="button"
                           onClick={(e) => handleResetAutoTab(tab.id, e)}
                           title="Nome manual fixado. Clique para restaurar automático."
-                          className="opacity-0 group-hover:opacity-80 hover:!opacity-100 p-0.5 hover:bg-[#30363d] rounded text-cyan-400 cursor-pointer"
+                          className="opacity-0 group-hover:opacity-80 hover:!opacity-100 p-0.5 hover:bg-[#30363d] rounded text-blue-400 cursor-pointer"
                         >
                           <RotateCcw className="w-3 h-3" />
                         </button>
@@ -356,7 +372,7 @@ export default function App() {
                         type="button"
                         onClick={(e) => handleStartEditTab(tab.id, tab.title, e)}
                         title="Renomear aba (ou dê duplo clique)"
-                        className="opacity-0 group-hover:opacity-70 hover:!opacity-100 p-0.5 hover:bg-[#30363d] rounded text-slate-400 hover:text-cyan-300 transition-opacity"
+                        className="opacity-0 group-hover:opacity-70 hover:!opacity-100 p-0.5 hover:bg-[#30363d] rounded text-slate-400 hover:text-blue-300 transition-opacity"
                       >
                         <Pencil className="w-3 h-3" />
                       </button>
@@ -384,15 +400,87 @@ export default function App() {
             </button>
           </div>
 
+          {/* Quick Tab Selector Dropdown */}
+          <div className="relative shrink-0" ref={tabMenuRef}>
+            <button
+              onClick={() => setTabMenuOpen((prev) => !prev)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white text-xs font-semibold transition-all border border-[#30363d] active:scale-95"
+              title="Lista rápida de abas abertas"
+            >
+              <span>{openTabs.length}</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${tabMenuOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {tabMenuOpen && (
+              <div className="absolute right-0 top-11 w-64 bg-[#161b22] border border-[#30363d] rounded-2xl shadow-2xl z-50 py-2 divide-y divide-[#30363d]/60">
+                <div className="px-3.5 py-2 flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  <span>Abas Abertas ({openTabs.length})</span>
+                  <button
+                    onClick={() => {
+                      handleNewTab();
+                      setTabMenuOpen(false);
+                    }}
+                    className="text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1 lowercase"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>nova</span>
+                  </button>
+                </div>
+                <div className="max-h-60 overflow-y-auto py-1">
+                  {openTabs.map((t) => {
+                    const isTabActive = t.id === activeTabId;
+                    return (
+                      <div
+                        key={t.id}
+                        onClick={() => {
+                          setActiveTabId(t.id);
+                          setCurrentView('terminals');
+                          setTabMenuOpen(false);
+                        }}
+                        className={`w-full px-3.5 py-2 flex items-center justify-between text-xs hover:bg-[#21262d] cursor-pointer transition-colors ${
+                          isTabActive ? 'bg-blue-600/10 text-white font-bold' : 'text-slate-300 font-medium'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 truncate pr-2 min-w-0">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full shrink-0"
+                            style={{ backgroundColor: t.color || '#3fb950' }}
+                          />
+                          <span className="truncate">{t.title}</span>
+                          {isTabActive && (
+                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
+                              Foco
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCloseTab(t.id, e);
+                          }}
+                          className="w-5 h-5 flex items-center justify-center rounded hover:bg-[#30363d] text-slate-400 hover:text-rose-400 shrink-0"
+                          title="Fechar aba"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Top Actions: AI Copilot & Split Screen Controls */}
           <div className="flex items-center gap-2 pr-1 shrink-0">
             {/* AI Copilot Button */}
             <button
               onClick={() => setCopilotOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-xs active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-bold transition-all shadow-xs active:scale-95"
               title="AI Copilot (Ctrl + K)"
             >
-              <Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
+              <Sparkles className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
               <span className="hidden sm:inline">AI Copilot</span>
               <span className="text-xs font-mono opacity-75 hidden md:inline">Ctrl+K</span>
             </button>
@@ -404,7 +492,7 @@ export default function App() {
                   onClick={() => setSplitMode('single')}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 ${
                     splitMode === 'single'
-                      ? 'bg-[#21262d] text-cyan-400 shadow-xs'
+                      ? 'bg-[#21262d] text-blue-400 shadow-xs'
                       : 'text-slate-400 hover:text-white'
                   }`}
                   title="Tela Cheia (1 Terminal)"
@@ -418,7 +506,7 @@ export default function App() {
                   }}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 ${
                     splitMode === 'vertical'
-                      ? 'bg-[#21262d] text-cyan-400 shadow-xs'
+                      ? 'bg-[#21262d] text-blue-400 shadow-xs'
                       : 'text-slate-400 hover:text-white'
                   }`}
                   title="Dividir Verticalmente (Ctrl + Alt + V)"
@@ -432,7 +520,7 @@ export default function App() {
                   }}
                   className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 ${
                     splitMode === 'horizontal'
-                      ? 'bg-[#21262d] text-cyan-400 shadow-xs'
+                      ? 'bg-[#21262d] text-blue-400 shadow-xs'
                       : 'text-slate-400 hover:text-white'
                   }`}
                   title="Dividir Horizontalmente (Ctrl + Alt + H)"
@@ -459,6 +547,7 @@ export default function App() {
                 const isPrimary = tab.id === activeTabId;
                 const isSecondary = splitMode !== 'single' && tab.id === effectiveSecondaryTabId;
                 const isVisible = (isPrimary || isSecondary) && currentView === 'terminals';
+                const isSplit = splitMode !== 'single';
 
                 return (
                   <div
@@ -466,31 +555,43 @@ export default function App() {
                     onClick={() => {
                       if (activeTabId !== tab.id) setActiveTabId(tab.id);
                     }}
-                    className={`h-full w-full relative flex flex-col ${isVisible ? 'flex' : 'hidden'}`}
+                    className={`h-full w-full relative flex flex-col transition-all duration-150 ${
+                      isVisible ? 'flex' : 'hidden'
+                    } ${
+                      isSplit && isPrimary 
+                        ? 'ring-1 ring-blue-500/80 shadow-[0_0_16px_rgba(56,139,253,0.18)] z-10' 
+                        : isSplit 
+                        ? 'opacity-85 hover:opacity-100' 
+                        : ''
+                    }`}
                   >
                     {/* Header bar inside split pane */}
-                    {splitMode !== 'single' && isVisible && (
-                      <div className="h-8 px-3 bg-[#161b22] border-b border-[#30363d] flex items-center justify-between text-xs shrink-0 select-none">
+                    {isSplit && isVisible && (
+                      <div className={`h-8 px-3 flex items-center justify-between text-xs shrink-0 select-none transition-colors ${
+                        isPrimary
+                          ? 'bg-[#1c2128] border-b border-blue-500/40 text-blue-300'
+                          : 'bg-[#161b22] border-b border-[#30363d] text-slate-400'
+                      }`}>
                         <div className="flex items-center gap-2 min-w-0">
                           <span 
                             className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                              isPrimary ? 'bg-cyan-400 ring-2 ring-cyan-400/30' : 'bg-slate-500'
+                              isPrimary ? 'bg-blue-500 ring-2 ring-blue-400/40' : 'bg-slate-500'
                             }`} 
                           />
                           <span 
                             onDoubleClick={(e) => handleStartEditTab(tab.id, tab.title, e)}
-                            className={`font-semibold truncate max-w-[150px] cursor-pointer hover:text-cyan-300 transition-colors ${isPrimary ? 'text-cyan-300 font-bold' : 'text-slate-400'}`}
+                            className={`font-semibold truncate max-w-[150px] cursor-pointer hover:text-blue-300 transition-colors ${isPrimary ? 'text-blue-200 font-bold' : 'text-slate-400'}`}
                             title="Duplo clique para renomear"
                           >
                             {tab.title}
                           </span>
                           {tab.isCustomTitle && (
-                            <span className="text-[10px] text-cyan-400/80 font-mono px-1 rounded bg-cyan-500/10 border border-cyan-500/20">
+                            <span className="text-[10px] text-blue-300/80 font-mono px-1 rounded bg-blue-500/10 border border-blue-500/20">
                               editado
                             </span>
                           )}
                           {isPrimary && (
-                            <span className="text-xs bg-cyan-500/20 text-cyan-300 font-bold px-2 py-0.5 rounded border border-cyan-500/30 shrink-0">
+                            <span className="text-[10px] bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded border border-blue-500/30 shrink-0">
                               Foco
                             </span>
                           )}

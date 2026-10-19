@@ -141,7 +141,7 @@ export default function TelemetryManager() {
         );
       case 'automated_improvement':
         return (
-          <span className="flex items-center gap-1 text-xs font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-md border border-purple-500/20 whitespace-nowrap">
+          <span className="flex items-center gap-1 text-xs font-bold text-blue-300 bg-blue-500/10 px-2 py-0.5 rounded-md border border-blue-500/20 whitespace-nowrap">
             <Cpu className="w-3.5 h-3.5" />
             IA Automatizada
           </span>
@@ -161,8 +161,8 @@ export default function TelemetryManager() {
       {/* Top Header */}
       <div className="h-16 px-4 sm:px-6 border-b border-[#30363d] flex items-center justify-between shrink-0 bg-[#161b22]/80 gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center shrink-0 shadow-sm">
-            <Activity className="w-5 h-5 text-cyan-400" />
+          <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center shrink-0 shadow-xs">
+            <Activity className="w-5 h-5 text-blue-400" />
           </div>
           <div className="min-w-0">
             <h1 
@@ -181,7 +181,7 @@ export default function TelemetryManager() {
           <button
             onClick={handleRunAiAnalysis}
             disabled={analyzing}
-            className="min-h-[38px] flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
+            className="min-h-[38px] flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50"
             title="Solicitar à IA varredura de melhorias"
           >
             <Sparkles className={`w-4 h-4 ${analyzing ? 'animate-spin' : ''}`} />
@@ -206,7 +206,7 @@ export default function TelemetryManager() {
             <div className="bg-[#161b22] border border-[#30363d] rounded-2xl p-4 shadow-xs">
               <div className="flex items-center justify-between text-slate-400 mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider">Total de Eventos</span>
-                <Activity className="w-4 h-4 text-cyan-400" />
+                <Activity className="w-4 h-4 text-blue-400" />
               </div>
               <div className="text-xl sm:text-2xl font-bold text-white font-mono">
                 {metrics.totalEvents}
@@ -243,9 +243,9 @@ export default function TelemetryManager() {
             <div className="bg-[#161b22] border border-[#30363d] rounded-2xl p-4 shadow-xs">
               <div className="flex items-center justify-between text-slate-400 mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider">IA Auto-Melhorias</span>
-                <Cpu className="w-4 h-4 text-purple-400" />
+                <Cpu className="w-4 h-4 text-blue-400" />
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-purple-400 font-mono">
+              <div className="text-xl sm:text-2xl font-bold text-blue-300 font-mono">
                 {metrics.improvements?.automated || 0}
               </div>
               <div className="text-xs text-slate-400 mt-1">
@@ -356,10 +356,10 @@ export default function TelemetryManager() {
 
                   {/* AI Diagnostic Box */}
                   {item.aiDiagnostic && (
-                    <div className="mt-3 p-3.5 rounded-xl bg-[#0d1117] border border-purple-500/30 space-y-2">
-                      <div className="flex items-center justify-between text-xs font-bold text-purple-300">
+                    <div className="mt-3 p-3.5 rounded-xl bg-[#0d1117] border border-blue-500/30 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-blue-300">
                         <span className="flex items-center gap-1.5">
-                          <Sparkles className="w-4 h-4 text-purple-400" />
+                          <Sparkles className="w-4 h-4 text-blue-400" />
                           Diagnóstico & Sugestão por IA
                         </span>
                         {item.aiDiagnostic.autoApplied && (

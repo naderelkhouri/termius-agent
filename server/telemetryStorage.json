@@ -1,27 +1,20 @@
 {
   "events": [
     {
-      "id": "evt-1792414481856-933r",
-      "type": "bug",
-      "title": "Erro de Script: Uncaught ReferenceError: i is not defined",
-      "message": "http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:103433",
-      "stack": "ReferenceError: i is not defined\n    at Oa.requestMode (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:103433)\n    at Array.<anonymous> (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:77657)\n    at La.parse (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:67831)\n    at Oa.parse (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:83138)\n    at Ha._action (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:121509)\n    at Ha._innerWrite (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:116855)\n    at http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:116611",
-      "severity": "high",
-      "status": "resolved",
-      "source": "browser_window",
-      "category": "frontend_runtime",
-      "metadata": {
-        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
-        "url": "http://127.0.0.1:3001/"
-      },
-      "createdAt": "2026-10-19T12:54:41.856Z",
+      "id": "evt-auto-1792420676637-2",
+      "type": "automated_improvement",
+      "title": "Monitoramento PTY & Buffer Backpressure",
+      "message": "Telemetria verificou estabilidade de fluxo PTY no ptyBridge.py. Recomendada compressão gzip em tráfego intenso.",
+      "severity": "low",
+      "status": "open",
+      "source": "ai_engine",
+      "category": "performance",
+      "createdAt": "2026-10-19T14:37:56.637Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
-      },
-      "resolutionNote": "Resolvido: corrigido erro de transpilação do enum DECRQM no @xterm/xterm definindo target esnext no vite.config.js e implementado canal de controle dedicado fd 3 no ptyBridge.py.",
-      "updatedAt": "2026-10-19T13:17:44.171Z"
+        "rootCause": "Taxa de I/O em comandos pesados como build do Vite.",
+        "suggestedFix": "Adicionado buffer de 4096 bytes com flush imediato.",
+        "autoApplied": true
+      }
     },
     {
       "id": "evt-auto-1792376076765-2",
@@ -36,22 +29,6 @@
       "aiDiagnostic": {
         "rootCause": "Taxa de I/O em comandos pesados como build do Vite.",
         "suggestedFix": "Adicionado buffer de 4096 bytes com flush imediato.",
-        "autoApplied": true
-      }
-    },
-    {
-      "id": "evt-init-01",
-      "type": "automated_improvement",
-      "title": "Divisão de Chunks e Otimização de Cache",
-      "message": "O bundle inicial foi fragmentado em chunks manuais reduzindo a latência para 11.3 kB gzip.",
-      "severity": "low",
-      "status": "resolved",
-      "source": "system_optimizer",
-      "category": "performance",
-      "createdAt": "2026-10-19T02:14:36.753Z",
-      "aiDiagnostic": {
-        "rootCause": "Bundle monolítico acima do limite de 500kB.",
-        "suggestedFix": "Configurado manualChunks no vite.config.js.",
         "autoApplied": true
       }
     },
@@ -72,5 +49,5 @@
       }
     }
   ],
-  "lastAnalyzedAt": "2026-10-19T02:14:36.765Z"
+  "lastAnalyzedAt": "2026-10-19T14:37:56.637Z"
 }
