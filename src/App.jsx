@@ -13,7 +13,9 @@ import {
   Sparkles,
   Columns2,
   Rows2,
-  Square
+  Square,
+  Pencil,
+  RotateCcw
 } from 'lucide-react';
 
 export default function App() {
@@ -33,6 +35,8 @@ export default function App() {
     }
   ]);
   const [activeTabId, setActiveTabId] = useState('tab-default');
+  const [editingTabId, setEditingTabId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState('');
   const commandersRef = useRef({});
 
   // Keyboard Shortcuts Listener
@@ -102,6 +106,106 @@ export default function App() {
     }
   };
 
+  const handleTitleChange = (tabId, rawTitle) => {
+    if (!rawTitle) return;
+    setOpenTabs((prev) =>
+      prev.map((tab) => {
+        if (tab.id !== tabId) return tab;
+        // Se o usuário fixou um nome manual, mantém o título customizado
+        if (tab.isCustomTitle) {
+          return { ...tab, autoTitle: rawTitle };
+        }
+
+        let formatted = rawTitle.trim();
+        if (formatted.includes(':')) {
+          const parts = formatted.split(':');
+          const pathOrCmd = parts.slice(1).join(':').trim();
+          if (pathOrCmd) {
+            const clean = pathOrCmd.replace(/\/$/, '');
+            const base = clean.split('/').pop() || clean;
+            formatted = base.length > 20 ? `${base.slice(0, 18)}...` : base;
+          }
+        } else if (formatted.length > 22) {
+          formatted = `${formatted.slice(0, 20)}...`;
+        }
+
+        return {
+          ...tab,
+          title: formatted,
+          autoTitle: rawTitle
+        };
+      })
+    );
+  };
+
+  const handleStartEditTab = (tabId, currentTitle, e) => {
+    if (e) e.stopPropagation();
+    setEditingTabId(tabId);
+    setEditingTitle(currentTitle);
+  };
+
+  const handleSaveEditTab = (tabId) => {
+    if (editingTabId !== tabId) return;
+    const clean = editingTitle.trim();
+    setOpenTabs((prev) =>
+      prev.map((tab) => {
+        if (tab.id !== tabId) return tab;
+        if (clean === '') {
+          // Restaurar nome automático
+          let restored = 'Terminal';
+          if (tab.autoTitle) {
+            const trimmed = tab.autoTitle.trim();
+            if (trimmed.includes(':')) {
+              const base = trimmed.split(':').slice(1).join(':').trim().replace(/\/$/, '').split('/').pop();
+              restored = base || 'Terminal';
+            } else {
+              restored = trimmed;
+            }
+          } else if (tab.host) {
+            restored = tab.host.label;
+          }
+          return {
+            ...tab,
+            title: restored,
+            isCustomTitle: false
+          };
+        }
+        return {
+          ...tab,
+          title: clean,
+          isCustomTitle: true
+        };
+      })
+    );
+    setEditingTabId(null);
+  };
+
+  const handleResetAutoTab = (tabId, e) => {
+    if (e) e.stopPropagation();
+    setOpenTabs((prev) =>
+      prev.map((tab) => {
+        if (tab.id !== tabId) return tab;
+        let restored = 'Terminal';
+        if (tab.autoTitle) {
+          const trimmed = tab.autoTitle.trim();
+          if (trimmed.includes(':')) {
+            const base = trimmed.split(':').slice(1).join(':').trim().replace(/\/$/, '').split('/').pop();
+            restored = base || 'Terminal';
+          } else {
+            restored = trimmed;
+          }
+        } else if (tab.host) {
+          restored = tab.host.label;
+        }
+        return {
+          ...tab,
+          title: restored,
+          isCustomTitle: false
+        };
+      })
+    );
+  };
+
   const handleExecuteCommandInActiveTerminal = (cmd) => {
     if (!cmd) return;
     setCurrentView('terminals');
@@ -160,13 +264,19 @@ export default function App() {
             {openTabs.map((tab) => {
               const isActive = tab.id === activeTabId && currentView === 'terminals';
               const isSecondary = splitMode !== 'single' && tab.id === effectiveSecondaryTabId;
+              const isEditing = editingTabId === tab.id;
+
               return (
                 <div
                   key={tab.id}
                   onClick={() => {
-                    setActiveTabId(tab.id);
-                    setCurrentView('terminals');
+                    if (!isEditing) {
+                      setActiveTabId(tab.id);
+                      setCurrentView('terminals');
+                    }
                   }}
+                  onDoubleClick={(e) => handleStartEditTab(tab.id, tab.title, e)}
+                  title={tab.autoTitle ? `Título: ${tab.title} (${tab.autoTitle})\nDuplo clique para renomear` : `${tab.title}\nDuplo clique para renomear`}
                   className={`group min-h-[34px] flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs cursor-pointer transition-all border shrink-0 ${
                     isActive
                       ? 'bg-[#0d1117] text-white border-[#30363d] shadow-xs font-bold'
@@ -179,10 +289,53 @@ export default function App() {
                     className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
                     style={{ backgroundColor: tab.color || '#3fb950' }}
                   />
-                  <span className="truncate max-w-[140px] whitespace-nowrap">{tab.title}</span>
+
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      autoFocus
+                      value={editingTitle}
+                      onChange={(e) => setEditingTitle(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSaveEditTab(tab.id);
+                        } else if (e.key === 'Escape') {
+                          setEditingTabId(null);
+                        }
+                      }}
+                      onBlur={() => handleSaveEditTab(tab.id)}
+                      onClick={(e) => e.stopPropagation()}
+                      className="bg-[#161b22] text-white border border-cyan-500 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none w-28 sm:w-36"
+                    />
+                  ) : (
+                    <div className="flex items-center gap-1.5 max-w-[150px] min-w-0">
+                      <span className="truncate whitespace-nowrap">{tab.title}</span>
+                      {tab.isCustomTitle && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleResetAutoTab(tab.id, e)}
+                          title="Nome manual fixado. Clique para restaurar automático."
+                          className="opacity-0 group-hover:opacity-80 hover:!opacity-100 p-0.5 hover:bg-[#30363d] rounded text-cyan-400 cursor-pointer"
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => handleStartEditTab(tab.id, tab.title, e)}
+                        title="Renomear aba (ou dê duplo clique)"
+                        className="opacity-0 group-hover:opacity-70 hover:!opacity-100 p-0.5 hover:bg-[#30363d] rounded text-slate-400 hover:text-cyan-300 transition-opacity"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+
                   <button
+                    type="button"
                     onClick={(e) => handleCloseTab(tab.id, e)}
                     className="opacity-70 group-hover:opacity-100 p-1 hover:bg-[#30363d] rounded-md text-slate-400 hover:text-white transition-opacity"
+                    title="Fechar aba"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -292,9 +445,18 @@ export default function App() {
                               isPrimary ? 'bg-cyan-400 ring-2 ring-cyan-400/30' : 'bg-slate-500'
                             }`} 
                           />
-                          <span className={`font-semibold truncate max-w-[150px] ${isPrimary ? 'text-cyan-300 font-bold' : 'text-slate-400'}`}>
+                          <span 
+                            onDoubleClick={(e) => handleStartEditTab(tab.id, tab.title, e)}
+                            className={`font-semibold truncate max-w-[150px] cursor-pointer hover:text-cyan-300 transition-colors ${isPrimary ? 'text-cyan-300 font-bold' : 'text-slate-400'}`}
+                            title="Duplo clique para renomear"
+                          >
                             {tab.title}
                           </span>
+                          {tab.isCustomTitle && (
+                            <span className="text-[10px] text-cyan-400/80 font-mono px-1 rounded bg-cyan-500/10 border border-cyan-500/20">
+                              editado
+                            </span>
+                          )}
                           {isPrimary && (
                             <span className="text-xs bg-cyan-500/20 text-cyan-300 font-bold px-2 py-0.5 rounded border border-cyan-500/30 shrink-0">
                               Foco
@@ -324,6 +486,7 @@ export default function App() {
                       <TerminalView
                         tab={tab}
                         isActive={isVisible}
+                        onTitleChange={handleTitleChange}
                         onRegisterCommander={handleRegisterCommander}
                       />
                     </div>

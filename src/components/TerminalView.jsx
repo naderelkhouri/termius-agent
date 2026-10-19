@@ -56,6 +56,13 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
     termRef.current = term;
     fitAddonRef.current = fitAddon;
 
+    // Listen to terminal title changes (OSC 0 / OSC 2 from shell or running processes)
+    term.onTitleChange((newTitle) => {
+      if (onTitleChange && typeof onTitleChange === 'function' && newTitle) {
+        onTitleChange(tab.id, newTitle.trim());
+      }
+    });
+
     // Establish WebSocket Connection
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/ws`;
