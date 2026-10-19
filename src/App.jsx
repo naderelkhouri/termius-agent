@@ -71,19 +71,42 @@ export default function App() {
     commandersRef.current[tabId] = commanderFn;
   };
 
-  const handleNewTab = (cwd = '/home/nader', title = 'Novo Terminal', host = null, color = '#58a6ff') => {
+  const handleNewTab = (cwd = '/home/nader', title = 'Novo Terminal', host = null, color = '#58a6ff', initialCommand = null) => {
     const newId = `tab-${Date.now()}`;
     const newTab = {
       id: newId,
       title: title || (host ? host.label : 'Terminal Local'),
       cwd: cwd || (host ? host.defaultCwd : '/home/nader'),
       color: color || (host ? host.color : '#58a6ff'),
-      host
+      host,
+      isCustomTitle: Boolean(title && title !== 'Novo Terminal')
     };
     setOpenTabs((prev) => [...prev, newTab]);
     setActiveTabId(newId);
     setCurrentView('terminals');
     setMobileMenuOpen(false);
+
+    if (initialCommand) {
+      const checkAndRun = (attempts = 15) => {
+        const commander = commandersRef.current[newId];
+        if (commander) {
+          commander(initialCommand);
+        } else if (attempts > 0) {
+          setTimeout(() => checkAndRun(attempts - 1), 60);
+        }
+      };
+      setTimeout(() => checkAndRun(), 80);
+    }
+  };
+
+  const handleResumeConversation = (conversationId, title = 'Conversa Antigravity', cwd = '/home/nader') => {
+    if (!conversationId) return;
+    const cleanTitle = title.length > 22 ? `${title.slice(0, 20)}...` : title;
+    handleNewTab(cwd, `IA: ${cleanTitle}`, null, '#bc8cff', `agy --conversation ${conversationId}`);
+  };
+
+  const handleResumeLastConversation = () => {
+    handleNewTab('/home/nader', 'IA: Antigravity', null, '#bc8cff', 'agy --continue');
   };
 
   const handleCloseTab = (tabId, e) => {
@@ -250,6 +273,7 @@ export default function App() {
         activeTabId={activeTabId}
         onSelectTab={setActiveTabId}
         onNewTab={() => handleNewTab()}
+        onResumeLastSession={handleResumeLastConversation}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
@@ -519,6 +543,7 @@ export default function App() {
             <ConversationHistoryModal
               onExecuteCommand={handleExecuteCommandInActiveTerminal}
               onOpenProjectTerminal={(path, name) => handleNewTab(path, name)}
+              onResumeConversation={handleResumeConversation}
             />
           )}
 

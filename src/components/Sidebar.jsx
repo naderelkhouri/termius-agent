@@ -8,7 +8,8 @@ import {
   Layers,
   Sparkles,
   X,
-  Activity
+  Activity,
+  Zap
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -18,6 +19,7 @@ export default function Sidebar({
   activeTabId, 
   onSelectTab, 
   onNewTab,
+  onResumeLastSession,
   mobileOpen,
   onCloseMobile
 }) {
@@ -159,6 +161,26 @@ export default function Sidebar({
               </div>
             </div>
           )}
+        </div>
+
+        {/* Quick Resume Antigravity Banner */}
+        <div className="p-3 border-t border-[#30363d]/60">
+          <button
+            onClick={() => {
+              if (onResumeLastSession) onResumeLastSession();
+              if (onCloseMobile) onCloseMobile();
+            }}
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group"
+            title="Retomar a conversa mais recente do Antigravity CLI com 1 clique (agy --continue)"
+          >
+            <div className="flex items-center gap-2">
+              <Zap className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 group-hover:scale-110 transition-transform" />
+              <span>Retomar Última IA</span>
+            </div>
+            <span className="text-[10px] bg-purple-500/30 text-purple-300 font-mono px-1.5 py-0.5 rounded">
+              agy -c
+            </span>
+          </button>
         </div>
 
         {/* Footer / Agent Status */}

@@ -11,7 +11,9 @@ import {
   Copy, 
   Check, 
   ArrowLeft, 
-  Play
+  Play,
+  Zap,
+  Folder
 } from 'lucide-react';
 
 function extractCommandLine(tc) {
@@ -43,7 +45,11 @@ function extractCommandLine(tc) {
   return String(raw);
 }
 
-export default function ConversationHistoryModal({ onExecuteCommand, onOpenProjectTerminal }) {
+export default function ConversationHistoryModal({ 
+  onExecuteCommand, 
+  onOpenProjectTerminal, 
+  onResumeConversation 
+}) {
   const [conversations, setConversations] = useState([]);
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
@@ -162,15 +168,33 @@ export default function ConversationHistoryModal({ onExecuteCommand, onOpenProje
         </div>
 
         {selectedConversation ? (
-          <button
-            onClick={() => onOpenProjectTerminal && onOpenProjectTerminal(detectedCwd, selectedConversation.title || 'Projeto IA')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all shadow-xs active:scale-95 shrink-0"
-            title={`Abrir terminal nesta pasta (${detectedCwd})`}
-          >
-            <Terminal className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Abrir Terminal na Pasta</span>
-            <span className="sm:hidden">Terminal</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => {
+                if (onResumeConversation) {
+                  onResumeConversation(
+                    selectedConversation.conversation_id,
+                    selectedConversation.title || 'Conversa IA',
+                    detectedCwd || selectedConversation.workspace || '/home/nader'
+                  );
+                }
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md active:scale-95 whitespace-nowrap"
+              title="Continuar esta conversa interativamente no terminal (agy --conversation)"
+            >
+              <Zap className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300 animate-pulse" />
+              <span>Continuar Sessão no Terminal</span>
+            </button>
+
+            <button
+              onClick={() => onOpenProjectTerminal && onOpenProjectTerminal(detectedCwd, selectedConversation.title || 'Projeto IA')}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all shadow-xs active:scale-95 shrink-0"
+              title={`Abrir terminal limpo nesta pasta (${detectedCwd})`}
+            >
+              <Terminal className="w-3.5 h-3.5" />
+              <span>Terminal na Pasta</span>
+            </button>
+          </div>
         ) : (
           <div className="relative w-48 sm:w-80 shrink-0">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -202,7 +226,7 @@ export default function ConversationHistoryModal({ onExecuteCommand, onOpenProje
                   className="group bg-[#161b22] hover:bg-[#1c2128] border border-[#30363d] hover:border-purple-500/40 rounded-2xl p-4 cursor-pointer transition-all shadow-xs flex flex-col justify-between"
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-2.5 mb-2.5">
+                    <div className="flex items-start justify-between gap-2.5 mb-2">
                       <h2 
                         className="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-purple-300 transition-colors line-clamp-1"
                         style={{ textWrap: 'balance' }}
@@ -214,19 +238,40 @@ export default function ConversationHistoryModal({ onExecuteCommand, onOpenProje
                       </span>
                     </div>
 
+                    {c.workspace && (
+                      <div className="flex items-center gap-1.5 text-slate-400 text-xs mb-2.5 truncate font-mono">
+                        <Folder className="w-3.5 h-3.5 text-purple-400/80 shrink-0" />
+                        <span className="truncate">{c.workspace.replace('/home/nader', '~')}</span>
+                      </div>
+                    )}
+
                     <p className="text-xs text-slate-300 line-clamp-2 leading-relaxed mb-3 font-normal">
                       {c.preview || 'Sem preview disponível.'}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-[#30363d]/60 flex items-center justify-between text-xs text-slate-400">
+                  <div className="pt-3 border-t border-[#30363d]/60 flex items-center justify-between text-xs text-slate-400 gap-2">
                     <div className="flex items-center gap-1.5 whitespace-nowrap">
                       <Calendar className="w-3.5 h-3.5 text-slate-400" />
                       <span className="font-medium">{formatDate(c.last_modified_time)}</span>
                     </div>
-                    <span className="text-purple-400 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-1 whitespace-nowrap">
-                      Ver timeline &rarr;
-                    </span>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (onResumeConversation) {
+                            onResumeConversation(c.conversation_id, c.title || 'Conversa IA', c.workspace || '/home/nader');
+                          }
+                        }}
+                        className="min-h-[28px] flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white border border-purple-500/40 text-xs font-bold transition-all active:scale-95 shadow-xs"
+                        title="Continuar esta conversa com 1 clique (agy --conversation)"
+                      >
+                        <Zap className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                        <span>Continuar</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

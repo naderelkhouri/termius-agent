@@ -48,6 +48,23 @@ export function listConversations({ search = '', limit = 50, offset = 0 } = {}) 
   const stmt = db.prepare(query);
   const rows = stmt.all(...params);
 
+  const formattedRows = rows.map((r) => {
+    let workspace = '/home/nader';
+    if (r.workspace_uris) {
+      try {
+        const uris = JSON.parse(r.workspace_uris);
+        if (Array.isArray(uris) && uris[0]) {
+          const clean = uris[0].replace(/^file:\/\//, '');
+          if (clean.startsWith('/')) workspace = clean;
+        }
+      } catch {}
+    }
+    return {
+      ...r,
+      workspace
+    };
+  });
+
   // Total count
   let countQuery = `SELECT count(*) as total FROM conversation_summaries WHERE (nesting_depth = 0 OR nesting_depth IS NULL)`;
   const countParams = [];
@@ -58,7 +75,7 @@ export function listConversations({ search = '', limit = 50, offset = 0 } = {}) 
   const countStmt = db.prepare(countQuery);
   const total = countStmt.get(...countParams).total;
 
-  return { conversations: rows, total };
+  return { conversations: formattedRows, total };
 }
 
 export function getConversationTranscript(conversationId) {
