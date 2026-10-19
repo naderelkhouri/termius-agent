@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
+import { StringDecoder } from 'node:string_decoder';
 import { fileURLToPath } from 'node:url';
 import { listConversations, getConversationTranscript, getRecentHistoryPrompts } from './db.js';
 import { generateCopilotCommand } from './copilot.js';
@@ -272,6 +273,7 @@ wss.on('connection', (ws) => {
         }
 
         ptyProc = spawn('python3', pythonArgs, {
+          stdio: ['pipe', 'pipe', 'pipe', 'pipe'],
           env: {
             ...process.env,
             TERM: 'xterm-256color',
@@ -279,15 +281,23 @@ wss.on('connection', (ws) => {
           }
         });
 
-        ptyProc.stdout.on('data', (data) => {
+        const stdoutDecoder = new StringDecoder('utf-8');
+        ptyProc.stdout.on('data', (chunk) => {
           if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'output', data: data.toString('utf-8') }));
+            const data = stdoutDecoder.write(chunk);
+            if (data) {
+              ws.send(JSON.stringify({ type: 'output', data }));
+            }
           }
         });
 
-        ptyProc.stderr.on('data', (data) => {
+        const stderrDecoder = new StringDecoder('utf-8');
+        ptyProc.stderr.on('data', (chunk) => {
           if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'output', data: data.toString('utf-8') }));
+            const data = stderrDecoder.write(chunk);
+            if (data) {
+              ws.send(JSON.stringify({ type: 'output', data }));
+            }
           }
         });
 
@@ -299,9 +309,15 @@ wss.on('connection', (ws) => {
         });
 
       } else if (msg.type === 'input' && ptyProc) {
-        ptyProc.stdin.write(msg.data);
+        if (ptyProc.stdin && !ptyProc.stdin.destroyed) {
+          ptyProc.stdin.write(msg.data);
+        }
       } else if (msg.type === 'resize' && ptyProc) {
-        ptyProc.stdin.write(`__RESIZE__ ${msg.cols} ${msg.rows}\n`);
+        if (ptyProc.stdio[3] && !ptyProc.stdio[3].destroyed) {
+          ptyProc.stdio[3].write(`${msg.cols} ${msg.rows}\n`);
+        } else if (ptyProc.stdin && !ptyProc.stdin.destroyed) {
+          ptyProc.stdin.write(`__RESIZE__ ${msg.cols} ${msg.rows}\n`);
+        }
       }
     } catch (e) {
       console.error('WS Message error:', e);

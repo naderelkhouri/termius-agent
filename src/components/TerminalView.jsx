@@ -42,7 +42,8 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
         brightWhite: '#f0f6fc',
       },
       allowTransparency: true,
-      convertEol: true
+      allowProposedApi: true,
+      convertEol: false
     });
 
     const fitAddon = new FitAddon();

@@ -1,6 +1,29 @@
 {
   "events": [
     {
+      "id": "evt-1792414481856-933r",
+      "type": "bug",
+      "title": "Erro de Script: Uncaught ReferenceError: i is not defined",
+      "message": "http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:103433",
+      "stack": "ReferenceError: i is not defined\n    at Oa.requestMode (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:103433)\n    at Array.<anonymous> (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:77657)\n    at La.parse (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:67831)\n    at Oa.parse (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:83138)\n    at Ha._action (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:121509)\n    at Ha._innerWrite (http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:116855)\n    at http://127.0.0.1:3001/assets/xterm-DL3g9heD.js:24:116611",
+      "severity": "high",
+      "status": "resolved",
+      "source": "browser_window",
+      "category": "frontend_runtime",
+      "metadata": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36",
+        "url": "http://127.0.0.1:3001/"
+      },
+      "createdAt": "2026-10-19T12:54:41.856Z",
+      "aiDiagnostic": {
+        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
+        "autoFixable": false
+      },
+      "resolutionNote": "Resolvido: corrigido erro de transpilação do enum DECRQM no @xterm/xterm definindo target esnext no vite.config.js e implementado canal de controle dedicado fd 3 no ptyBridge.py.",
+      "updatedAt": "2026-10-19T13:17:44.171Z"
+    },
+    {
       "id": "evt-auto-1792376076765-2",
       "type": "automated_improvement",
       "title": "Monitoramento PTY & Buffer Backpressure",

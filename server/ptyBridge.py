@@ -48,12 +48,25 @@ def main():
         set_winsize(master_fd, args.rows, args.cols)
         stdin_fd = sys.stdin.fileno()
 
+        # Check for optional dedicated control fd (fd 3) passed from Node.js
+        control_fd = 3
+        has_control_fd = False
+        try:
+            os.fstat(control_fd)
+            has_control_fd = True
+        except OSError:
+            has_control_fd = False
+
         buffer = b""
+        ctrl_buffer = b""
         running = True
 
         while running:
             try:
-                rlist, _, _ = select.select([master_fd, stdin_fd], [], [], 0.05)
+                watch_fds = [master_fd, stdin_fd]
+                if has_control_fd:
+                    watch_fds.append(control_fd)
+                rlist, _, _ = select.select(watch_fds, [], [], 0.05)
             except (KeyboardInterrupt, select.error):
                 break
 
@@ -79,27 +92,48 @@ def main():
                             running = False
                             break
 
-                        # Check for resize protocol marker: __RESIZE__ cols rows\n
-                        buffer += data
-                        while b"\n" in buffer:
-                            line, buffer = buffer.split(b"\n", 1)
-                            if line.startswith(b"__RESIZE__ "):
-                                parts = line.decode("utf-8", errors="ignore").split()
-                                if len(parts) >= 3:
-                                    cols, rows = int(parts[1]), int(parts[2])
-                                    set_winsize(master_fd, rows, cols)
-                            else:
-                                # Normal input ending in newline
-                                os.write(master_fd, line + b"\n")
+                        if has_control_fd:
+                            # Dedicated control fd is active; stdin is pure raw input stream
+                            os.write(master_fd, data)
+                        else:
+                            # Fallback check for resize marker: __RESIZE__ cols rows\n
+                            buffer += data
+                            while b"\n" in buffer:
+                                line, buffer = buffer.split(b"\n", 1)
+                                if line.startswith(b"__RESIZE__ "):
+                                    parts = line.decode("utf-8", errors="ignore").split()
+                                    if len(parts) >= 3:
+                                        cols, rows = int(parts[1]), int(parts[2])
+                                        set_winsize(master_fd, rows, cols)
+                                else:
+                                    os.write(master_fd, line + b"\n")
 
-                        # If there's partial data not ending with newline, check if it's the start of resize
-                        if buffer and not buffer.startswith(b"__RESIZE__"):
-                            os.write(master_fd, buffer)
-                            buffer = b""
-
+                            if buffer and not buffer.startswith(b"__RESIZE__"):
+                                os.write(master_fd, buffer)
+                                buffer = b""
                     except OSError:
                         running = False
                         break
+
+                elif fd == control_fd:
+                    # Out-of-band resize signals
+                    try:
+                        cdata = os.read(control_fd, 1024)
+                        if not cdata:
+                            has_control_fd = False
+                        else:
+                            ctrl_buffer += cdata
+                            while b"\n" in ctrl_buffer:
+                                cline, ctrl_buffer = ctrl_buffer.split(b"\n", 1)
+                                parts = cline.decode("utf-8", errors="ignore").replace("__RESIZE__", "").split()
+                                if len(parts) >= 2:
+                                    try:
+                                        c_cols, c_rows = int(parts[0]), int(parts[1])
+                                        set_winsize(master_fd, c_rows, c_cols)
+                                    except ValueError:
+                                        pass
+                    except OSError:
+                        has_control_fd = False
 
         try:
             os.close(master_fd)
