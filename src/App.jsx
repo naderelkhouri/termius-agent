@@ -210,14 +210,22 @@ export default function App() {
     if (!cmd) return;
     setCurrentView('terminals');
     setMobileMenuOpen(false);
-    setTimeout(() => {
-      const commander = commandersRef.current[activeTabId];
+
+    if (openTabs.length === 0) {
+      handleNewTab();
+    }
+
+    const tryExecute = (attemptsLeft = 12) => {
+      const targetId = activeTabId || openTabs[0]?.id;
+      const commander = commandersRef.current[targetId];
       if (commander) {
         commander(cmd);
-      } else {
-        alert('Nenhum terminal ativo para executar o comando.');
+      } else if (attemptsLeft > 0) {
+        setTimeout(() => tryExecute(attemptsLeft - 1), 60);
       }
-    }, 100);
+    };
+
+    setTimeout(() => tryExecute(), 50);
   };
 
   const handleConnectHost = (host) => {

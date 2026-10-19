@@ -14,6 +14,35 @@ import {
   Play
 } from 'lucide-react';
 
+function extractCommandLine(tc) {
+  if (!tc) return '';
+  const args = tc.args || tc.arguments || {};
+  let raw = args.CommandLine || args.command || args.cmd || tc.CommandLine || tc.command || '';
+  if (!raw && typeof args === 'string') {
+    raw = args;
+  }
+  if (!raw && tc.argumentsJson) {
+    try {
+      const parsed = JSON.parse(tc.argumentsJson);
+      raw = parsed.CommandLine || parsed.command || parsed.cmd || '';
+    } catch {}
+  }
+  if (!raw) return '';
+
+  if (typeof raw === 'string') {
+    raw = raw.trim();
+    if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
+      try {
+        const unquoted = JSON.parse(raw);
+        if (typeof unquoted === 'string') return unquoted;
+      } catch {
+        return raw.slice(1, -1);
+      }
+    }
+  }
+  return String(raw);
+}
+
 export default function ConversationHistoryModal({ onExecuteCommand, onOpenProjectTerminal }) {
   const [conversations, setConversations] = useState([]);
   const [total, setTotal] = useState(0);
@@ -23,6 +52,23 @@ export default function ConversationHistoryModal({ onExecuteCommand, onOpenProje
   const [transcript, setTranscript] = useState(null);
   const [transcriptLoading, setTranscriptLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
+
+  const detectedCwd = React.useMemo(() => {
+    if (!transcript) return '/home/nader';
+    for (const step of transcript) {
+      if (step.toolCalls) {
+        for (const tc of step.toolCalls) {
+          const args = tc.args || tc.arguments || {};
+          let rawCwd = args.Cwd || args.cwd;
+          if (rawCwd && typeof rawCwd === 'string') {
+            const clean = rawCwd.replace(/^["']|["']$/g, '').trim();
+            if (clean.startsWith('/')) return clean;
+          }
+        }
+      }
+    }
+    return '/home/nader';
+  }, [transcript]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -115,7 +161,17 @@ export default function ConversationHistoryModal({ onExecuteCommand, onOpenProje
           </div>
         </div>
 
-        {!selectedConversation && (
+        {selectedConversation ? (
+          <button
+            onClick={() => onOpenProjectTerminal && onOpenProjectTerminal(detectedCwd, selectedConversation.title || 'Projeto IA')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all shadow-xs active:scale-95 shrink-0"
+            title={`Abrir terminal nesta pasta (${detectedCwd})`}
+          >
+            <Terminal className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Abrir Terminal na Pasta</span>
+            <span className="sm:hidden">Terminal</span>
+          </button>
+        ) : (
           <div className="relative w-48 sm:w-80 shrink-0">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
@@ -226,8 +282,11 @@ export default function ConversationHistoryModal({ onExecuteCommand, onOpenProje
 
                       {/* Tool Calls & Commands */}
                       {step.toolCalls && step.toolCalls.map((tc, tcIdx) => {
-                        const isCmd = tc.name === 'run_command';
-                        const cmdLine = tc.arguments?.CommandLine || tc.argumentsJson;
+                        const cmdLine = extractCommandLine(tc);
+                        const isCmd = Boolean(cmdLine) || tc.name === 'run_command' || tc.name === 'bash';
+                        const copyKey = `${idx}-${tcIdx}`;
+                        const isCopied = copiedIndex === copyKey;
+
                         return (
                           <div 
                             key={tcIdx}
@@ -238,19 +297,37 @@ export default function ConversationHistoryModal({ onExecuteCommand, onOpenProje
                                 <Terminal className="w-4 h-4" />
                                 Ferramenta: {tc.name}
                               </span>
-                              {isCmd && (
-                                <button
-                                  onClick={() => onExecuteCommand && onExecuteCommand(tc.arguments?.CommandLine)}
-                                  className="min-h-[32px] flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/20 px-3 py-1 rounded-lg transition-colors whitespace-nowrap active:scale-95"
-                                  title="Rodar no terminal ativo"
-                                >
-                                  <Play className="w-3.5 h-3.5" />
-                                  Executar no Terminal
-                                </button>
-                              )}
+
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {cmdLine && (
+                                  <button
+                                    onClick={() => handleCopy(cmdLine, copyKey)}
+                                    className="min-h-[30px] flex items-center gap-1 text-xs font-medium text-slate-300 hover:text-white bg-[#21262d] hover:bg-[#30363d] px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap active:scale-95"
+                                    title="Copiar comando"
+                                  >
+                                    {isCopied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                    <span>{isCopied ? 'Copiado!' : 'Copiar'}</span>
+                                  </button>
+                                )}
+
+                                {cmdLine && (
+                                  <button
+                                    onClick={() => {
+                                      if (onExecuteCommand) {
+                                        onExecuteCommand(cmdLine);
+                                      }
+                                    }}
+                                    className="min-h-[30px] flex items-center gap-1.5 text-xs font-bold text-cyan-300 hover:text-white bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500/40 px-3 py-1 rounded-lg transition-all whitespace-nowrap active:scale-95 shadow-xs"
+                                    title="Mudar para o terminal e executar o comando imediatamente"
+                                  >
+                                    <Play className="w-3.5 h-3.5 fill-current" />
+                                    Executar no Terminal
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                            <pre className="text-slate-200 overflow-x-auto select-text leading-relaxed">
-                              {cmdLine ? (typeof cmdLine === 'string' ? cmdLine : JSON.stringify(cmdLine, null, 2)) : JSON.stringify(tc, null, 2)}
+                            <pre className="text-slate-200 overflow-x-auto select-text leading-relaxed whitespace-pre-wrap">
+                              {cmdLine || JSON.stringify(tc.args || tc.arguments || tc, null, 2)}
                             </pre>
                           </div>
                         );
