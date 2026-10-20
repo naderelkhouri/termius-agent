@@ -5,6 +5,7 @@ import HostsManager from './components/HostsManager';
 import SnippetsManager from './components/SnippetsManager';
 import ConversationHistoryModal from './components/ConversationHistoryModal';
 import AICopilotModal from './components/AICopilotModal';
+import AISidecar from './components/AISidecar';
 import TelemetryManager from './components/TelemetryManager';
 import ErrorBoundary from './components/ErrorBoundary';
 import { 
@@ -18,7 +19,8 @@ import {
   Pencil,
   RotateCcw,
   ChevronDown,
-  Zap
+  Zap,
+  PanelRight
 } from 'lucide-react';
 
 export default function App() {
@@ -27,6 +29,7 @@ export default function App() {
   const [splitMode, setSplitMode] = useState('single'); // 'single' | 'vertical' | 'horizontal'
   const [secondaryTabId, setSecondaryTabId] = useState(null);
   const [copilotOpen, setCopilotOpen] = useState(false);
+  const [sidecarOpen, setSidecarOpen] = useState(false);
   const [tabMenuOpen, setTabMenuOpen] = useState(false);
   const tabMenuRef = useRef(null);
 
@@ -80,6 +83,11 @@ export default function App() {
         e.preventDefault();
         handleNewTab();
       }
+      // Ctrl+Alt+A -> Toggle AI Sidecar
+      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        setSidecarOpen(prev => !prev);
+      }
     };
     window.addEventListener('keydown', handleGlobalKeys);
     return () => window.removeEventListener('keydown', handleGlobalKeys);
@@ -89,7 +97,7 @@ export default function App() {
     commandersRef.current[tabId] = commanderFn;
   };
 
-  const handleNewTab = (cwd = '/home/nader', title = 'Novo Terminal', host = null, color = '#58a6ff', initialCommand = null, isFluid = false) => {
+  const handleNewTab = (cwd = '/home/nader', title = 'Novo Terminal', host = null, color = '#58a6ff', initialCommand = null, isFluid = false, conversationId = null) => {
     const newId = `tab-${Date.now()}`;
     const newTab = {
       id: newId,
@@ -98,7 +106,8 @@ export default function App() {
       color: color || (host ? host.color : '#58a6ff'),
       host,
       isCustomTitle: Boolean(title && title !== 'Novo Terminal'),
-      isFluid: Boolean(isFluid)
+      isFluid: Boolean(isFluid),
+      conversationId: conversationId || null
     };
     setOpenTabs((prev) => [...prev, newTab]);
     setActiveTabId(newId);
@@ -134,7 +143,7 @@ export default function App() {
     const cleanTitle = title.length > 22 ? `${title.slice(0, 20)}...` : title;
     const flag = isFluid ? ' --dangerously-skip-permissions' : '';
     const color = isFluid ? '#f59e0b' : '#bc8cff';
-    handleNewTab(cwd, `IA: ${cleanTitle}`, null, color, `agy --conversation ${conversationId}${flag}`, isFluid);
+    handleNewTab(cwd, `IA: ${cleanTitle}`, null, color, `agy --conversation ${conversationId}${flag}`, isFluid, conversationId);
   };
 
   const handleResumeLastConversation = (isFluid = false) => {
@@ -530,6 +539,28 @@ export default function App() {
               <span className="text-xs font-mono opacity-75 hidden md:inline">Ctrl+K</span>
             </button>
 
+            {/* AI Sidecar Toggle */}
+            {currentView === 'terminals' && (
+              <button
+                type="button"
+                onClick={() => setSidecarOpen((prev) => !prev)}
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 ${
+                  sidecarOpen
+                    ? 'bg-purple-600/25 text-purple-200 border-purple-500/50 shadow-purple-500/10'
+                    : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
+                }`}
+                title="AI Sidecar: Acompanhe passos, raciocínio, comandos e diffs ao vivo (Ctrl + Alt + A)"
+              >
+                <PanelRight className={`w-3.5 h-3.5 ${sidecarOpen ? 'text-purple-400' : 'text-slate-400'}`} />
+                <span className="hidden sm:inline">AI Sidecar</span>
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full border ${
+                  sidecarOpen ? 'bg-purple-500/30 text-purple-300 border-purple-500/50 font-bold' : 'bg-[#161b22] text-slate-500 border-[#30363d]'
+                }`}>
+                  {sidecarOpen ? 'ON' : 'OFF'}
+                </span>
+              </button>
+            )}
+
             {/* Split Screen Mode Buttons */}
             {currentView === 'terminals' && (
               <div className="flex items-center bg-[#0d1117] p-1 rounded-xl border border-[#30363d] gap-1">
@@ -579,101 +610,118 @@ export default function App() {
 
         {/* Dynamic View Area */}
         <div className="flex-1 relative overflow-hidden">
-          {/* Terminals (Multiplexed with Split Panes or Single View) */}
-          <div className={`h-full w-full ${currentView === 'terminals' ? 'block' : 'hidden'}`}>
-            <div className={`h-full w-full ${
-              splitMode === 'vertical' && effectiveSecondaryTabId
-                ? 'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
-                : splitMode === 'horizontal' && effectiveSecondaryTabId
-                ? 'grid grid-rows-2 divide-y divide-[#30363d]'
-                : 'relative'
-            }`}>
-              {openTabs.map((tab) => {
-                const isPrimary = tab.id === activeTabId;
-                const isSecondary = splitMode !== 'single' && tab.id === effectiveSecondaryTabId;
-                const isVisible = (isPrimary || isSecondary) && currentView === 'terminals';
-                const isSplit = splitMode !== 'single';
+          {/* Terminals (Multiplexed with Split Panes or Single View + Docked AI Sidecar) */}
+          <div className={`h-full w-full ${currentView === 'terminals' ? 'flex overflow-hidden' : 'hidden'}`}>
+            {/* Terminal Main Grid/Pane */}
+            <div className="flex-1 h-full min-w-0 relative">
+              <div className={`h-full w-full ${
+                splitMode === 'vertical' && effectiveSecondaryTabId
+                  ? 'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
+                  : splitMode === 'horizontal' && effectiveSecondaryTabId
+                  ? 'grid grid-rows-2 divide-y divide-[#30363d]'
+                  : 'relative'
+              }`}>
+                {openTabs.map((tab) => {
+                  const isPrimary = tab.id === activeTabId;
+                  const isSecondary = splitMode !== 'single' && tab.id === effectiveSecondaryTabId;
+                  const isVisible = (isPrimary || isSecondary) && currentView === 'terminals';
+                  const isSplit = splitMode !== 'single';
 
-                return (
-                  <div
-                    key={tab.id}
-                    onClick={() => {
-                      if (activeTabId !== tab.id) setActiveTabId(tab.id);
-                    }}
-                    className={`h-full w-full relative flex flex-col transition-all duration-150 ${
-                      isVisible ? 'flex' : 'hidden'
-                    } ${
-                      isSplit && isPrimary 
-                        ? 'ring-1 ring-blue-500/80 shadow-[0_0_16px_rgba(56,139,253,0.18)] z-10' 
-                        : isSplit 
-                        ? 'opacity-85 hover:opacity-100' 
-                        : ''
-                    }`}
-                  >
-                    {/* Header bar inside split pane */}
-                    {isSplit && isVisible && (
-                      <div className={`h-8 px-3 flex items-center justify-between text-xs shrink-0 select-none transition-colors ${
-                        isPrimary
-                          ? 'bg-[#1c2128] border-b border-blue-500/40 text-blue-300'
-                          : 'bg-[#161b22] border-b border-[#30363d] text-slate-400'
-                      }`}>
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span 
-                            className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                              isPrimary ? 'bg-blue-500 ring-2 ring-blue-400/40' : 'bg-slate-500'
-                            }`} 
-                          />
-                          <span 
-                            onDoubleClick={(e) => handleStartEditTab(tab.id, tab.title, e)}
-                            className={`font-semibold truncate max-w-[150px] cursor-pointer hover:text-blue-300 transition-colors ${isPrimary ? 'text-blue-200 font-bold' : 'text-slate-400'}`}
-                            title="Duplo clique para renomear"
-                          >
-                            {tab.title}
-                          </span>
-                          {tab.isCustomTitle && (
-                            <span className="text-[10px] text-blue-300/80 font-mono px-1 rounded bg-blue-500/10 border border-blue-500/20">
-                              editado
+                  return (
+                    <div
+                      key={tab.id}
+                      onClick={() => {
+                        if (activeTabId !== tab.id) setActiveTabId(tab.id);
+                      }}
+                      className={`h-full w-full relative flex flex-col transition-all duration-150 ${
+                        isVisible ? 'flex' : 'hidden'
+                      } ${
+                        isSplit && isPrimary 
+                          ? 'ring-1 ring-blue-500/80 shadow-[0_0_16px_rgba(56,139,253,0.18)] z-10' 
+                          : isSplit 
+                          ? 'opacity-85 hover:opacity-100' 
+                          : ''
+                      }`}
+                    >
+                      {/* Header bar inside split pane */}
+                      {isSplit && isVisible && (
+                        <div className={`h-8 px-3 flex items-center justify-between text-xs shrink-0 select-none transition-colors ${
+                          isPrimary
+                            ? 'bg-[#1c2128] border-b border-blue-500/40 text-blue-300'
+                            : 'bg-[#161b22] border-b border-[#30363d] text-slate-400'
+                        }`}>
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span 
+                              className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                                isPrimary ? 'bg-blue-500 ring-2 ring-blue-400/40' : 'bg-slate-500'
+                              }`} 
+                            />
+                            <span 
+                              onDoubleClick={(e) => handleStartEditTab(tab.id, tab.title, e)}
+                              className={`font-semibold truncate max-w-[150px] cursor-pointer hover:text-blue-300 transition-colors ${isPrimary ? 'text-blue-200 font-bold' : 'text-slate-400'}`}
+                              title="Duplo clique para renomear"
+                            >
+                              {tab.title}
                             </span>
-                          )}
-                          {isPrimary && (
-                            <span className="text-[10px] bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded border border-blue-500/30 shrink-0">
-                              Foco
-                            </span>
+                            {tab.isCustomTitle && (
+                              <span className="text-[10px] text-blue-300/80 font-mono px-1 rounded bg-blue-500/10 border border-blue-500/20">
+                                editado
+                              </span>
+                            )}
+                            {isPrimary && (
+                              <span className="text-[10px] bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded border border-blue-500/30 shrink-0">
+                                Foco
+                              </span>
+                            )}
+                          </div>
+
+                          {isSecondary && (
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span className="text-slate-400 text-xs font-medium">Aba:</span>
+                              <select
+                                value={effectiveSecondaryTabId}
+                                onChange={(e) => setSecondaryTabId(e.target.value)}
+                                className="bg-[#0d1117] text-slate-300 border border-[#30363d] rounded-lg px-2 py-0.5 text-xs focus:outline-none"
+                              >
+                                {openTabs.filter(t => t.id !== activeTabId).map(t => (
+                                  <option key={t.id} value={t.id}>{t.title}</option>
+                                ))}
+                              </select>
+                            </div>
                           )}
                         </div>
+                      )}
 
-                        {isSecondary && (
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-slate-400 text-xs font-medium">Aba:</span>
-                            <select
-                              value={effectiveSecondaryTabId}
-                              onChange={(e) => setSecondaryTabId(e.target.value)}
-                              className="bg-[#0d1117] text-slate-300 border border-[#30363d] rounded-lg px-2 py-0.5 text-xs focus:outline-none"
-                            >
-                              {openTabs.filter(t => t.id !== activeTabId).map(t => (
-                                <option key={t.id} value={t.id}>{t.title}</option>
-                              ))}
-                            </select>
-                          </div>
-                        )}
+                      {/* Terminal View Container */}
+                      <div className="flex-1 min-h-0 relative">
+                        <ErrorBoundary>
+                          <TerminalView
+                            tab={tab}
+                            isActive={isVisible}
+                            onTitleChange={handleTitleChange}
+                            onRegisterCommander={handleRegisterCommander}
+                          />
+                        </ErrorBoundary>
                       </div>
-                    )}
-
-                    {/* Terminal View Container */}
-                    <div className="flex-1 min-h-0 relative">
-                      <ErrorBoundary>
-                        <TerminalView
-                          tab={tab}
-                          isActive={isVisible}
-                          onTitleChange={handleTitleChange}
-                          onRegisterCommander={handleRegisterCommander}
-                        />
-                      </ErrorBoundary>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
+
+            {/* Live Docked AI Sidecar Panel */}
+            {sidecarOpen && (
+              <div className="w-[380px] lg:w-[440px] xl:w-[480px] h-full shrink-0 z-20 flex flex-col">
+                <ErrorBoundary>
+                  <AISidecar
+                    activeTab={activeTab}
+                    onClose={() => setSidecarOpen(false)}
+                    onExecuteCommand={handleExecuteCommandInActiveTerminal}
+                    onResumeConversation={handleResumeConversation}
+                  />
+                </ErrorBoundary>
+              </div>
+            )}
           </div>
 
           {/* Hosts View */}
