@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const STORAGE_PATH = path.join(__dirname, 'telemetryStorage.json');
+const STORAGE_BACKUP_PATH = path.join(__dirname, 'telemetryStorage.json.bak');
 
 function loadTelemetry() {
   try {
@@ -12,7 +13,14 @@ function loadTelemetry() {
       return JSON.parse(fs.readFileSync(STORAGE_PATH, 'utf-8'));
     }
   } catch (e) {
-    console.error('[Telemetry] Erro ao ler storage:', e);
+    console.error('[Telemetry] Erro ao ler storage, tentando backup...', e);
+    try {
+      if (fs.existsSync(STORAGE_BACKUP_PATH)) {
+        return JSON.parse(fs.readFileSync(STORAGE_BACKUP_PATH, 'utf-8'));
+      }
+    } catch (bakErr) {
+      console.error('[Telemetry] Erro ao ler backup de telemetria:', bakErr);
+    }
   }
   return {
     events: [
@@ -54,12 +62,21 @@ function loadTelemetry() {
 }
 
 function saveTelemetry(data) {
+  if (!data || !Array.isArray(data.events)) {
+    console.error('[Telemetry] Abortando salvamento: estrutura de eventos inválida para evitar perda');
+    return false;
+  }
   try {
+    if (fs.existsSync(STORAGE_PATH)) {
+      fs.copyFileSync(STORAGE_PATH, STORAGE_BACKUP_PATH);
+    }
     const tmpPath = `${STORAGE_PATH}.tmp`;
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2), 'utf-8');
     fs.renameSync(tmpPath, STORAGE_PATH);
+    return true;
   } catch (e) {
     console.error('[Telemetry] Erro ao salvar storage:', e);
+    return false;
   }
 }
 

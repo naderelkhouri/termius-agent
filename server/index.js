@@ -55,6 +55,7 @@ if (fs.existsSync(DIST_PATH)) {
 }
 
 const STORAGE_PATH = path.join(__dirname, 'hostsStorage.json');
+const STORAGE_BACKUP_PATH = path.join(__dirname, 'hostsStorage.json.bak');
 
 function loadStorage() {
   try {
@@ -62,18 +63,34 @@ function loadStorage() {
       return JSON.parse(fs.readFileSync(STORAGE_PATH, 'utf-8'));
     }
   } catch (e) {
-    console.error('Error reading storage:', e);
+    console.error('[Storage] Erro ao ler storage principal, tentando backup...', e);
+    try {
+      if (fs.existsSync(STORAGE_BACKUP_PATH)) {
+        return JSON.parse(fs.readFileSync(STORAGE_BACKUP_PATH, 'utf-8'));
+      }
+    } catch (bakErr) {
+      console.error('[Storage] Erro ao ler backup de storage:', bakErr);
+    }
   }
   return { hosts: [], snippets: [] };
 }
 
 function saveStorage(data) {
+  if (!data || !Array.isArray(data.hosts) || !Array.isArray(data.snippets)) {
+    console.error('[Storage] Abortando salvamento: estrutura inválida para evitar perda de dados', data);
+    return false;
+  }
   try {
+    if (fs.existsSync(STORAGE_PATH)) {
+      fs.copyFileSync(STORAGE_PATH, STORAGE_BACKUP_PATH);
+    }
     const tmpPath = `${STORAGE_PATH}.tmp`;
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2), 'utf-8');
     fs.renameSync(tmpPath, STORAGE_PATH);
+    return true;
   } catch (e) {
-    console.error('Error saving storage:', e);
+    console.error('[Storage] Erro ao salvar storage:', e);
+    return false;
   }
 }
 
@@ -221,6 +238,9 @@ app.post('/api/telemetry/improvements/analyze', async (req, res) => {
   }
 });
 
+// Rastreamento global de PTYs para evitar processos órfãos/zumbis
+const activePtyProcesses = new Set();
+
 // WebSocket Terminal Management
 wss.on('connection', (ws) => {
   let ptyProc = null;
@@ -281,6 +301,8 @@ wss.on('connection', (ws) => {
           }
         });
 
+        activePtyProcesses.add(ptyProc);
+
         const stdoutDecoder = new StringDecoder('utf-8');
         ptyProc.stdout.on('data', (chunk) => {
           if (ws.readyState === WebSocket.OPEN) {
@@ -302,6 +324,7 @@ wss.on('connection', (ws) => {
         });
 
         ptyProc.on('exit', (code) => {
+          activePtyProcesses.delete(ptyProc);
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: 'exit', code }));
             ws.close();
@@ -326,6 +349,7 @@ wss.on('connection', (ws) => {
 
   ws.on('close', () => {
     if (ptyProc) {
+      activePtyProcesses.delete(ptyProc);
       try {
         ptyProc.kill('SIGTERM');
       } catch {}
@@ -348,4 +372,59 @@ app.get('*', (req, res, next) => {
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`Termius Agent Backend running on http://127.0.0.1:${PORT}`);
+});
+
+// Limpeza segura de processos em caso de encerramento do backend
+function cleanupAllProcesses() {
+  if (activePtyProcesses.size > 0) {
+    console.log(`[Termius Agent] Limpando ${activePtyProcesses.size} processos PTY ativos...`);
+    for (const proc of activePtyProcesses) {
+      try {
+        proc.kill('SIGTERM');
+      } catch {}
+    }
+    activePtyProcesses.clear();
+  }
+}
+
+process.on('SIGTERM', () => {
+  cleanupAllProcesses();
+  server.close(() => process.exit(0));
+});
+
+process.on('SIGINT', () => {
+  cleanupAllProcesses();
+  server.close(() => process.exit(0));
+});
+
+process.on('exit', () => {
+  cleanupAllProcesses();
+});
+
+// Captura de exceções e rejeições globais com registro em telemetria
+process.on('uncaughtException', (err) => {
+  console.error('[Termius Agent Server] Uncaught Exception:', err);
+  try {
+    recordEvent({
+      type: 'bug',
+      title: 'Uncaught Exception no Backend Node.js',
+      message: err.message,
+      stack: err.stack,
+      severity: 'critical',
+      source: 'backend_uncaught_exception'
+    });
+  } catch {}
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[Termius Agent Server] Unhandled Rejection:', reason);
+  try {
+    recordEvent({
+      type: 'bug',
+      title: 'Unhandled Rejection no Backend Node.js',
+      message: String(reason),
+      severity: 'medium',
+      source: 'backend_unhandled_rejection'
+    });
+  } catch {}
 });

@@ -78,7 +78,7 @@ export function listConversations({ search = '', limit = 50, offset = 0 } = {}) 
   return { conversations: formattedRows, total };
 }
 
-export function getConversationTranscript(conversationId) {
+export function getConversationTranscript(conversationId, maxSteps = 500) {
   if (!conversationId || typeof conversationId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(conversationId)) {
     return { error: 'Identificador de conversa inválido', steps: [] };
   }
@@ -88,30 +88,52 @@ export function getConversationTranscript(conversationId) {
     return { error: 'Transcript file not found for this conversation', steps: [] };
   }
 
-  const content = fs.readFileSync(transcriptPath, 'utf-8');
-  const lines = content.trim().split('\n');
-  const steps = [];
+  try {
+    const stats = fs.statSync(transcriptPath);
+    let content = '';
 
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    try {
-      const parsed = JSON.parse(line);
-      steps.push({
-        stepIndex: parsed.step_index,
-        source: parsed.source,
-        type: parsed.type,
-        status: parsed.status,
-        createdAt: parsed.created_at,
-        content: parsed.content || '',
-        toolCalls: parsed.tool_calls || [],
-        thinking: parsed.thinking || null,
-      });
-    } catch (err) {
-      // ignore corrupt lines
+    // Se o arquivo for maior que 8MB, lê a parte final para preservar performance do Event Loop
+    if (stats.size > 8 * 1024 * 1024) {
+      const buffer = Buffer.alloc(8 * 1024 * 1024);
+      const fd = fs.openSync(transcriptPath, 'r');
+      fs.readSync(fd, buffer, 0, buffer.length, stats.size - buffer.length);
+      fs.closeSync(fd);
+      content = buffer.toString('utf-8');
+      const firstNewline = content.indexOf('\n');
+      if (firstNewline !== -1) content = content.slice(firstNewline + 1);
+    } else {
+      content = fs.readFileSync(transcriptPath, 'utf-8');
     }
-  }
 
-  return { conversationId, steps };
+    const lines = content.trim().split('\n');
+    const steps = [];
+
+    const startIdx = Math.max(0, lines.length - maxSteps);
+    for (let i = startIdx; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.trim()) continue;
+      try {
+        const parsed = JSON.parse(line);
+        steps.push({
+          stepIndex: parsed.step_index,
+          source: parsed.source,
+          type: parsed.type,
+          status: parsed.status,
+          createdAt: parsed.created_at,
+          content: parsed.content || '',
+          toolCalls: parsed.tool_calls || [],
+          thinking: parsed.thinking || null,
+        });
+      } catch (err) {
+        // ignore corrupt lines
+      }
+    }
+
+    return { conversationId, steps, totalLines: lines.length };
+  } catch (err) {
+    console.error(`[DB] Erro ao carregar transcript de ${conversationId}:`, err);
+    return { error: err.message, steps: [] };
+  }
 }
 
 export function getRecentHistoryPrompts(limit = 30) {

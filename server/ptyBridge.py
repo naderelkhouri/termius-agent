@@ -7,6 +7,8 @@ import struct
 import fcntl
 import termios
 import argparse
+import signal
+import time
 
 def set_winsize(fd, rows, cols):
     try:
@@ -47,6 +49,34 @@ def main():
         # Parent process bridges stdin/stdout to master_fd
         set_winsize(master_fd, args.rows, args.cols)
         stdin_fd = sys.stdin.fileno()
+
+        def cleanup_child(signum=None, frame=None):
+            nonlocal running
+            running = False
+            try:
+                # Envia SIGHUP e SIGTERM para todo o grupo de processos do terminal
+                try:
+                    pgid = os.getpgid(pid)
+                    os.killpg(pgid, signal.SIGHUP)
+                    os.killpg(pgid, signal.SIGTERM)
+                except Exception:
+                    try:
+                        os.kill(pid, signal.SIGHUP)
+                        os.kill(pid, signal.SIGTERM)
+                    except Exception:
+                        pass
+                # Fecha o master_fd do PTY
+                try:
+                    os.close(master_fd)
+                except Exception:
+                    pass
+            finally:
+                sys.exit(0)
+
+        # Captura sinais de término do Node ou do sistema
+        signal.signal(signal.SIGTERM, cleanup_child)
+        signal.signal(signal.SIGHUP, cleanup_child)
+        signal.signal(signal.SIGINT, cleanup_child)
 
         # Check for optional dedicated control fd (fd 3) passed from Node.js
         control_fd = 3
@@ -135,10 +165,7 @@ def main():
                     except OSError:
                         has_control_fd = False
 
-        try:
-            os.close(master_fd)
-        except Exception:
-            pass
+        cleanup_child()
 
 if __name__ == "__main__":
     main()

@@ -6,6 +6,7 @@ import SnippetsManager from './components/SnippetsManager';
 import ConversationHistoryModal from './components/ConversationHistoryModal';
 import AICopilotModal from './components/AICopilotModal';
 import TelemetryManager from './components/TelemetryManager';
+import ErrorBoundary from './components/ErrorBoundary';
 import { 
   Plus, 
   X, 
@@ -616,12 +617,14 @@ export default function App() {
 
                     {/* Terminal View Container */}
                     <div className="flex-1 min-h-0 relative">
-                      <TerminalView
-                        tab={tab}
-                        isActive={isVisible}
-                        onTitleChange={handleTitleChange}
-                        onRegisterCommander={handleRegisterCommander}
-                      />
+                      <ErrorBoundary>
+                        <TerminalView
+                          tab={tab}
+                          isActive={isVisible}
+                          onTitleChange={handleTitleChange}
+                          onRegisterCommander={handleRegisterCommander}
+                        />
+                      </ErrorBoundary>
                     </div>
                   </div>
                 );
