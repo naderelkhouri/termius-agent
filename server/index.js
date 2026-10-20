@@ -72,13 +72,16 @@ function loadStorage() {
       console.error('[Storage] Erro ao ler backup de storage:', bakErr);
     }
   }
-  return { hosts: [], snippets: [] };
+  return { hosts: [], snippets: [], favoriteConversations: [] };
 }
 
 function saveStorage(data) {
   if (!data || !Array.isArray(data.hosts) || !Array.isArray(data.snippets)) {
     console.error('[Storage] Abortando salvamento: estrutura inválida para evitar perda de dados', data);
     return false;
+  }
+  if (!Array.isArray(data.favoriteConversations)) {
+    data.favoriteConversations = [];
   }
   try {
     if (fs.existsSync(STORAGE_PATH)) {
@@ -95,6 +98,35 @@ function saveStorage(data) {
 }
 
 // REST Endpoints
+app.get('/api/conversations/favorites', (req, res) => {
+  const data = loadStorage();
+  res.json(data.favoriteConversations || []);
+});
+
+app.post('/api/conversations/favorites', (req, res) => {
+  const { conversationId } = req.body || {};
+  if (!conversationId) return res.status(400).json({ error: 'conversationId é obrigatório' });
+  const data = loadStorage();
+  if (!Array.isArray(data.favoriteConversations)) {
+    data.favoriteConversations = [];
+  }
+  if (!data.favoriteConversations.includes(conversationId)) {
+    data.favoriteConversations.push(conversationId);
+  }
+  saveStorage(data);
+  res.json(data.favoriteConversations);
+});
+
+app.delete('/api/conversations/favorites/:id', (req, res) => {
+  const conversationId = req.params.id;
+  const data = loadStorage();
+  if (Array.isArray(data.favoriteConversations)) {
+    data.favoriteConversations = data.favoriteConversations.filter(id => id !== conversationId);
+    saveStorage(data);
+  }
+  res.json(data.favoriteConversations || []);
+});
+
 app.get('/api/conversations', (req, res) => {
   try {
     const search = req.query.search || '';

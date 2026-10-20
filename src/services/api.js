@@ -1,5 +1,33 @@
 const BASE_URL = '/api';
 
+export async function fetchFavorites() {
+  try {
+    const res = await fetch(`${BASE_URL}/conversations/favorites`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function addFavorite(conversationId) {
+  const res = await fetch(`${BASE_URL}/conversations/favorites`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ conversationId })
+  });
+  if (!res.ok) throw new Error('Falha ao adicionar favorito');
+  return res.json();
+}
+
+export async function removeFavorite(conversationId) {
+  const res = await fetch(`${BASE_URL}/conversations/favorites/${conversationId}`, {
+    method: 'DELETE'
+  });
+  if (!res.ok) throw new Error('Falha ao remover favorito');
+  return res.json();
+}
+
 export async function fetchConversations({ search = '', limit = 50, offset = 0 } = {}) {
   const params = new URLSearchParams({ search, limit, offset });
   const res = await fetch(`${BASE_URL}/conversations?${params}`);

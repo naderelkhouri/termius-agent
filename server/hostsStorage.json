@@ -92,5 +92,22 @@
       "command": "projetos-terminal.sh screen",
       "category": "Projetos"
     }
+  ],
+  "favoriteConversations": [
+    "9843fea2-1fc1-4cae-bf7f-387a99ed6500",
+    "f4e17c07-3127-414a-bafa-a761bd3cd317",
+    "024a68d2-8090-4db9-b2e6-f1e5bbf3c2b2",
+    "7e8e0164-73c8-4947-b64b-e88ae8d53b52",
+    "e1d9ebc1-da9e-4883-b05a-8431d1c7ad95",
+    "cb52796d-b276-43d9-a4b4-570eecb86f03",
+    "947903b5-bacc-44df-9a80-c3630d379a5c",
+    "4d012593-590a-4728-acab-6b270248b29f",
+    "5633d2bd-5d17-45fb-b560-ec5a513c61d6",
+    "e162d63b-9c4d-40f1-9686-44528cfae025",
+    "7781d897-03bf-4f33-9dde-3fc3176126ee",
+    "7f0cb3be-5509-4ce9-aae1-66dc7d6bb5cc",
+    "b41672b7-6be5-4e83-9909-7a4eeecc90ad",
+    "e83d07a8-1a1d-4412-a966-bd2ce27ee0d6",
+    "ff9b0b67-e87f-4995-b8a7-72b9b4af2589"
   ]
 }
