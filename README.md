@@ -38,9 +38,11 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
   * 🔴 **Destrutivo:** Remoções recursivas ou descartes de repositório.
 * **Execução com 1 Clique:** Pressione `Enter` para injetar o comando diretamente no terminal ativo ou salve-o na biblioteca de Snippets.
 
-### 3. Integração com o Cérebro do Antigravity AI
-* Consulta em tempo real à base SQLite de conversas e transcripts (`.system_generated/logs/transcript.jsonl`).
-* Histórico de ferramentas e chamadas de comando (`run_command`) executadas pelo agente com reexecução instantânea.
+### 3. Integração com o Cérebro do Antigravity AI & Modo Fluido
+* **Consulta Inteligente:** Consulta em tempo real à base SQLite de conversas e transcripts (`.system_generated/logs/transcript.jsonl`).
+* **Visualização Flexível (Blocos vs Tabela):** Alterne entre cartões visuais e uma tabela densa com ordenação crescente/decrescente em todas as colunas (Data, Título, Passos, Workspace e Favoritos).
+* **Sistema de Favoritos (⭐):** Marque sessões prioritárias com persistência no backend e filtro rápido com 1 clique.
+* **Modo Fluido Autônomo (⚡):** Ative por conversa ou na barra superior do terminal para auto-aprovar prompts de ferramentas (`Run this command? 1. Yes, run command; 2. Yes, and...`) via `--dangerously-skip-permissions` e auto-resposta em tempo real no PTY.
 
 ### 4. Gerenciador de Hosts & SSH
 * Cadastro visual de máquinas locais, instâncias de containers e servidores VPS remotos.
@@ -56,10 +58,12 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
 * **Diagnóstico Automático por IA:** Detecção de causa raiz e recomendação de correções para falhas de portas e conexões.
 * **Melhorias Manuais & Automatizadas:** Backlog integrado para registro de melhorias e gatilho de varredura autônoma por IA.
 
-### 7. Hardening de Segurança Local
-* Escuta estritamente vinculada a `127.0.0.1:3001` (sem exposição em interfaces de rede públicas/Wi-Fi).
-* Proteção contra **CSWSH (Cross-Site WebSocket Hijacking)** com bloqueio de origens externas não autorizadas (HTTP 403).
-* Prevenção de Path Traversal e escrita atômica em disco com swap via arquivos `.tmp`.
+### 7. Hardening de Segurança & Alta Resiliência
+* **Single Instance Lock:** Prevenção de instâncias duplicadas no Electron, focando a janela ativa e evitando conflitos de porta.
+* **Prevenção de PTY Órfãos:** Signal traps no Python (`SIGTERM`/`SIGHUP`/`SIGINT`) com encerramento de grupo de processos (`killpg`) e rastreamento ativo no Node.js.
+* **Backups Rotativos:** Gravação atômica com swap temporário e fallback automático para cópias `.bak` em arquivos de storage.
+* **React Error Boundary:** Prevenção contra tela preta em exceções da interface com telemetria automática e recuperação instantânea.
+* **Escuta Local Segura:** Vinculação estrita a `127.0.0.1:3001` com bloqueio a ataques de CSWSH (Cross-Site WebSocket Hijacking).
 
 ---
 
