@@ -1,13 +1,21 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
+import { Zap } from 'lucide-react';
 
 export default function TerminalView({ tab, onTitleChange, isActive, onRegisterCommander }) {
   const containerRef = useRef(null);
   const termRef = useRef(null);
   const socketRef = useRef(null);
   const fitAddonRef = useRef(null);
+  const isFluidRef = useRef(Boolean(tab.isFluid));
+  const lastAutoApproveRef = useRef(0);
+  const [fluidAlert, setFluidAlert] = useState(false);
+
+  useEffect(() => {
+    isFluidRef.current = Boolean(tab.isFluid);
+  }, [tab.isFluid]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -85,6 +93,31 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
         const msg = JSON.parse(event.data);
         if (msg.type === 'output') {
           term.write(msg.data);
+
+          // Auto-aprovação em tempo real no Modo Fluido
+          if (isFluidRef.current && msg.data) {
+            const cleanText = msg.data.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '');
+            // Detecta padrões de confirmação como:
+            // "Run this command? 1. Yes, run command; 2. Yes, and..."
+            const isConfirmationPrompt = /(Run this command\?|1\.\s*Yes,\s*run|Allow this (command|tool)\?|Confirm execution\?|Do you want to run this command\?)/i.test(cleanText);
+
+            if (isConfirmationPrompt) {
+              const now = Date.now();
+              // Cooldown de 1.2s para evitar envio duplicado para o mesmo prompt
+              if (now - lastAutoApproveRef.current > 1200) {
+                lastAutoApproveRef.current = now;
+                setFluidAlert(true);
+                setTimeout(() => setFluidAlert(false), 2400);
+
+                // Envia 1\r automaticamente após renderização do prompt
+                setTimeout(() => {
+                  if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+                    socketRef.current.send(JSON.stringify({ type: 'input', data: '1\r' }));
+                  }
+                }, 100);
+              }
+            }
+          }
         } else if (msg.type === 'exit') {
           term.write('\r\n\x1b[33m[Processo finalizado]\x1b[0m\r\n');
         }
@@ -152,8 +185,16 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
 
   return (
     <div 
-      className={`h-full w-full bg-[#0d1117] ${isActive ? 'block' : 'hidden'}`}
+      className={`h-full w-full bg-[#0d1117] relative ${isActive ? 'block' : 'hidden'}`}
       ref={containerRef}
-    />
+    >
+      {/* Toast flutuante de auto-aprovação do Modo Fluido */}
+      {fluidAlert && (
+        <div className="absolute top-3 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs font-bold shadow-lg shadow-amber-500/10 backdrop-blur-md animate-bounce select-none pointer-events-none">
+          <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+          <span>⚡ Modo Fluido: Comando auto-aprovado (1. Yes)</span>
+        </div>
+      )}
+    </div>
   );
 }

@@ -4,7 +4,10 @@ import {
   fetchTranscript,
   fetchFavorites,
   addFavorite,
-  removeFavorite
+  removeFavorite,
+  fetchFluidConversations,
+  addFluidConversation,
+  removeFluidConversation
 } from '../services/api';
 import { 
   BotMessageSquare, 
@@ -78,6 +81,16 @@ export default function ConversationHistoryModal({
     }
   });
 
+  // Modo Fluido por Conversa
+  const [fluidConversations, setFluidConversations] = useState(() => {
+    try {
+      const stored = localStorage.getItem('termius_fluid_conversations');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
   // Modo de visualização: 'grid' (blocos) ou 'table' (lista em tabela)
   const [viewMode, setViewMode] = useState(() => {
     try {
@@ -91,7 +104,7 @@ export default function ConversationHistoryModal({
   const [filterFavoritesOnly, setFilterFavoritesOnly] = useState(false);
 
   // Ordenação
-  const [sortField, setSortField] = useState('last_modified_time'); // 'favorite' | 'title' | 'workspace' | 'step_count' | 'last_modified_time'
+  const [sortField, setSortField] = useState('last_modified_time'); // 'favorite' | 'fluid' | 'title' | 'workspace' | 'step_count' | 'last_modified_time'
   const [sortDirection, setSortDirection] = useState('desc'); // 'asc' | 'desc'
 
   const detectedCwd = useMemo(() => {
@@ -111,7 +124,7 @@ export default function ConversationHistoryModal({
     return '/home/nader';
   }, [transcript]);
 
-  // Carrega favoritos do backend na montagem
+  // Carrega favoritos e modo fluido do backend na montagem
   useEffect(() => {
     fetchFavorites().then((favs) => {
       if (Array.isArray(favs) && favs.length > 0) {
@@ -119,6 +132,18 @@ export default function ConversationHistoryModal({
           const merged = Array.from(new Set([...prev, ...favs]));
           try {
             localStorage.setItem('termius_favorite_conversations', JSON.stringify(merged));
+          } catch {}
+          return merged;
+        });
+      }
+    }).catch(() => {});
+
+    fetchFluidConversations().then((fluids) => {
+      if (Array.isArray(fluids) && fluids.length > 0) {
+        setFluidConversations((prev) => {
+          const merged = Array.from(new Set([...prev, ...fluids]));
+          try {
+            localStorage.setItem('termius_fluid_conversations', JSON.stringify(merged));
           } catch {}
           return merged;
         });
@@ -183,6 +208,29 @@ export default function ConversationHistoryModal({
     }
   };
 
+  const toggleFluid = async (convId, e) => {
+    if (e) e.stopPropagation();
+    const isFluid = fluidConversations.includes(convId);
+    const nextFluids = isFluid
+      ? fluidConversations.filter((id) => id !== convId)
+      : [...fluidConversations, convId];
+
+    setFluidConversations(nextFluids);
+    try {
+      localStorage.setItem('termius_fluid_conversations', JSON.stringify(nextFluids));
+    } catch {}
+
+    try {
+      if (isFluid) {
+        await removeFluidConversation(convId);
+      } else {
+        await addFluidConversation(convId);
+      }
+    } catch (err) {
+      console.warn('Falha ao sincronizar modo fluido com backend:', err);
+    }
+  };
+
   const handleToggleViewMode = (mode) => {
     setViewMode(mode);
     try {
@@ -210,6 +258,10 @@ export default function ConversationHistoryModal({
         const aFav = favorites.includes(a.conversation_id) ? 1 : 0;
         const bFav = favorites.includes(b.conversation_id) ? 1 : 0;
         cmp = aFav - bFav;
+      } else if (sortField === 'fluid') {
+        const aFluid = fluidConversations.includes(a.conversation_id) ? 1 : 0;
+        const bFluid = fluidConversations.includes(b.conversation_id) ? 1 : 0;
+        cmp = aFluid - bFluid;
       } else if (sortField === 'step_count') {
         cmp = (a.step_count || 0) - (b.step_count || 0);
       } else if (sortField === 'title') {
@@ -229,7 +281,7 @@ export default function ConversationHistoryModal({
       return sortDirection === 'asc' ? cmp : -cmp;
     });
     return list;
-  }, [conversations, favorites, filterFavoritesOnly, sortField, sortDirection]);
+  }, [conversations, favorites, fluidConversations, filterFavoritesOnly, sortField, sortDirection]);
 
   const handleCopy = (text, idx) => {
     navigator.clipboard.writeText(text);
@@ -289,22 +341,51 @@ export default function ConversationHistoryModal({
         </div>
 
         {selectedConversation ? (
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
+            {/* Toggle Modo Fluido para esta conversa específica */}
+            <button
+              type="button"
+              onClick={() => toggleFluid(selectedConversation.conversation_id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all active:scale-95 ${
+                fluidConversations.includes(selectedConversation.conversation_id)
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-amber-500/10'
+                  : 'bg-[#21262d] text-slate-300 border-[#30363d] hover:text-white'
+              }`}
+              title="Modo Fluido: auto-aprova comandos 'Run this command? 1. Yes, run command' do Antigravity"
+            >
+              <Zap className={`w-3.5 h-3.5 ${fluidConversations.includes(selectedConversation.conversation_id) ? 'fill-amber-400 text-amber-400 animate-pulse' : 'text-slate-400'}`} />
+              <span>Modo Fluido: {fluidConversations.includes(selectedConversation.conversation_id) ? 'ATIVO' : 'OFF'}</span>
+            </button>
+
             <button
               onClick={() => {
                 if (onResumeConversation) {
+                  const isFluid = fluidConversations.includes(selectedConversation.conversation_id);
                   onResumeConversation(
                     selectedConversation.conversation_id,
                     selectedConversation.title || 'Conversa IA',
-                    detectedCwd || selectedConversation.workspace || '/home/nader'
+                    detectedCwd || selectedConversation.workspace || '/home/nader',
+                    isFluid
                   );
                 }
               }}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md active:scale-95 whitespace-nowrap"
-              title="Continuar esta conversa interativamente no terminal (agy --conversation)"
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-white text-xs font-bold transition-all shadow-md active:scale-95 whitespace-nowrap ${
+                fluidConversations.includes(selectedConversation.conversation_id)
+                  ? 'bg-amber-600 hover:bg-amber-500 shadow-amber-500/20'
+                  : 'bg-purple-600 hover:bg-purple-500 shadow-purple-500/20'
+              }`}
+              title={
+                fluidConversations.includes(selectedConversation.conversation_id)
+                  ? "Continuar no Modo Fluido (auto-aprovação de comandos sem confirmações manuais)"
+                  : "Continuar esta conversa interativamente no terminal (agy --conversation)"
+              }
             >
               <Zap className="w-3.5 h-3.5 text-yellow-300 fill-yellow-300 animate-pulse" />
-              <span>Continuar Sessão no Terminal</span>
+              <span>
+                {fluidConversations.includes(selectedConversation.conversation_id)
+                  ? '⚡ Continuar Sessão (Fluido)'
+                  : 'Continuar Sessão no Terminal'}
+              </span>
             </button>
 
             <button
@@ -404,15 +485,25 @@ export default function ConversationHistoryModal({
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-[#30363d] bg-[#1c2128]/90 text-slate-300">
-                    <th className="py-3 px-3 w-12 text-center">
-                      <button
-                        type="button"
-                        onClick={() => handleSort('favorite')}
-                        className="p-1 hover:bg-[#30363d] rounded-lg transition-colors"
-                        title="Ordenar por Favoritos"
-                      >
-                        <Star className={`w-4 h-4 mx-auto ${sortField === 'favorite' ? 'fill-yellow-400 text-yellow-400' : 'text-slate-400'}`} />
-                      </button>
+                    <th className="py-3 px-3 w-16 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleSort('favorite')}
+                          className="p-1 hover:bg-[#30363d] rounded-lg transition-colors"
+                          title="Ordenar por Favoritos"
+                        >
+                          <Star className={`w-3.5 h-3.5 mx-auto ${sortField === 'favorite' ? 'fill-yellow-400 text-yellow-400' : 'text-slate-400'}`} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSort('fluid')}
+                          className="p-1 hover:bg-[#30363d] rounded-lg transition-colors"
+                          title="Ordenar por Modo Fluido"
+                        >
+                          <Zap className={`w-3.5 h-3.5 mx-auto ${sortField === 'fluid' ? 'fill-amber-400 text-amber-400' : 'text-slate-400'}`} />
+                        </button>
+                      </div>
                     </th>
                     <th className="py-3 px-4 font-bold">
                       <button
@@ -470,7 +561,7 @@ export default function ConversationHistoryModal({
                         )}
                       </button>
                     </th>
-                    <th className="py-3 px-4 font-bold w-36 text-right">
+                    <th className="py-3 px-4 font-bold w-44 text-right">
                       Ações
                     </th>
                   </tr>
@@ -478,27 +569,50 @@ export default function ConversationHistoryModal({
                 <tbody className="divide-y divide-[#30363d]/50">
                   {sortedAndFilteredConversations.map((c) => {
                     const isFav = favorites.includes(c.conversation_id);
+                    const isFluid = fluidConversations.includes(c.conversation_id);
+
                     return (
                       <tr
                         key={c.conversation_id}
                         onClick={() => handleSelectConversation(c)}
                         className="hover:bg-[#1f242c] transition-colors cursor-pointer group"
                       >
-                        <td className="py-3 px-3 text-center" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            type="button"
-                            onClick={(e) => toggleFavorite(c.conversation_id, e)}
-                            className="p-1 rounded-md hover:bg-[#30363d] transition-colors"
-                            title={isFav ? "Remover dos favoritos" : "Marcar como favorito"}
-                          >
-                            <Star className={`w-4 h-4 transition-transform active:scale-125 ${
-                              isFav ? 'fill-yellow-400 text-yellow-400' : 'text-slate-500 hover:text-slate-300'
-                            }`} />
-                          </button>
+                        <td className="py-3 px-2 text-center" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              type="button"
+                              onClick={(e) => toggleFavorite(c.conversation_id, e)}
+                              className="p-1 rounded-md hover:bg-[#30363d] transition-colors"
+                              title={isFav ? "Remover dos favoritos" : "Marcar como favorito"}
+                            >
+                              <Star className={`w-3.5 h-3.5 transition-transform active:scale-125 ${
+                                isFav ? 'fill-yellow-400 text-yellow-400' : 'text-slate-500 hover:text-slate-300'
+                              }`} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => toggleFluid(c.conversation_id, e)}
+                              className="p-1 rounded-md hover:bg-[#30363d] transition-colors"
+                              title={
+                                isFluid 
+                                  ? "Modo Fluido ATIVADO (auto-aprova comandos 'Run this command?'). Clique para desativar." 
+                                  : "Ativar Modo Fluido para esta conversa"
+                              }
+                            >
+                              <Zap className={`w-3.5 h-3.5 transition-transform active:scale-125 ${
+                                isFluid ? 'fill-amber-400 text-amber-400 animate-pulse' : 'text-slate-500 hover:text-amber-300'
+                              }`} />
+                            </button>
+                          </div>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="font-bold text-slate-100 group-hover:text-purple-300 transition-colors line-clamp-1">
-                            {c.title || c.preview || 'Sem título'}
+                          <div className="font-bold text-slate-100 group-hover:text-purple-300 transition-colors line-clamp-1 flex items-center gap-1.5">
+                            {isFluid && (
+                              <span title="Modo Fluido ativo nesta conversa">
+                                <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
+                              </span>
+                            )}
+                            <span>{c.title || c.preview || 'Sem título'}</span>
                           </div>
                           <div className="text-slate-400 text-[11px] line-clamp-1 font-normal mt-0.5">
                             {c.preview || 'Sem preview disponível.'}
@@ -531,14 +645,22 @@ export default function ConversationHistoryModal({
                               type="button"
                               onClick={() => {
                                 if (onResumeConversation) {
-                                  onResumeConversation(c.conversation_id, c.title || 'Conversa IA', c.workspace || '/home/nader');
+                                  onResumeConversation(c.conversation_id, c.title || 'Conversa IA', c.workspace || '/home/nader', isFluid);
                                 }
                               }}
-                              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white border border-purple-500/40 text-xs font-bold transition-all active:scale-95 shadow-xs whitespace-nowrap"
-                              title="Continuar esta conversa com 1 clique (agy --conversation)"
+                              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-xs whitespace-nowrap border ${
+                                isFluid
+                                  ? 'bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 hover:text-white border-amber-500/40 shadow-amber-500/10'
+                                  : 'bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white border-purple-500/40'
+                              }`}
+                              title={
+                                isFluid
+                                  ? "Continuar no Modo Fluido (--dangerously-skip-permissions + auto-aprovação)"
+                                  : "Continuar esta conversa com 1 clique (agy --conversation)"
+                              }
                             >
-                              <Zap className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                              <span>Continuar</span>
+                              <Zap className={`w-3 h-3 ${isFluid ? 'text-amber-300 fill-amber-300 animate-pulse' : 'text-yellow-400 fill-yellow-400'}`} />
+                              <span>{isFluid ? '⚡ Continuar (Fluido)' : 'Continuar'}</span>
                             </button>
                           </div>
                         </td>
@@ -551,8 +673,8 @@ export default function ConversationHistoryModal({
           ) : (
             /* Block (Grid) View */
             <div>
-              {/* Optional Sort Bar for Grid View */}
-              <div className="flex items-center justify-between mb-3.5 px-1 text-xs text-slate-400">
+              {/* Sort Bar for Grid View */}
+              <div className="flex items-center justify-between mb-3.5 px-1 text-xs text-slate-400 flex-wrap gap-2">
                 <span className="font-semibold text-slate-300">
                   {sortedAndFilteredConversations.length} conversas exibidas
                 </span>
@@ -588,38 +710,71 @@ export default function ConversationHistoryModal({
                   >
                     Passos {sortField === 'step_count' && (sortDirection === 'asc' ? '↑' : '↓')}
                   </button>
+                  <button
+                    onClick={() => handleSort('fluid')}
+                    className={`px-2 py-0.5 rounded-md border text-[11px] font-semibold transition-all ${
+                      sortField === 'fluid'
+                        ? 'bg-amber-600/20 text-amber-300 border-amber-500/40'
+                        : 'bg-[#161b22] text-slate-400 border-[#30363d] hover:text-white'
+                    }`}
+                  >
+                    ⚡ Fluido {sortField === 'fluid' && (sortDirection === 'asc' ? '↑' : '↓')}
+                  </button>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
                 {sortedAndFilteredConversations.map((c) => {
                   const isFav = favorites.includes(c.conversation_id);
+                  const isFluid = fluidConversations.includes(c.conversation_id);
+
                   return (
                     <div
                       key={c.conversation_id}
                       onClick={() => handleSelectConversation(c)}
                       className={`group bg-[#161b22] hover:bg-[#1c2128] border ${
-                        isFav 
-                          ? 'border-yellow-500/40 bg-[#161b22]/95 shadow-sm' 
-                          : 'border-[#30363d] hover:border-purple-500/40'
+                        isFluid
+                          ? 'border-amber-500/40 bg-[#161b22]/95 shadow-sm shadow-amber-500/5'
+                          : isFav 
+                            ? 'border-yellow-500/40 bg-[#161b22]/95 shadow-sm' 
+                            : 'border-[#30363d] hover:border-purple-500/40'
                       } rounded-2xl p-4 cursor-pointer transition-all shadow-xs flex flex-col justify-between`}
                     >
                       <div>
                         <div className="flex items-start justify-between gap-2.5 mb-2">
                           <h2 
-                            className="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-purple-300 transition-colors line-clamp-1 flex-1 pr-1"
+                            className="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-purple-300 transition-colors line-clamp-1 flex-1 pr-1 flex items-center gap-1.5"
                             style={{ textWrap: 'balance' }}
                           >
-                            {c.title || c.preview || 'Sem título'}
+                            {isFluid && (
+                              <span title="Modo Fluido ativo nesta conversa">
+                                <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
+                              </span>
+                            )}
+                            <span>{c.title || c.preview || 'Sem título'}</span>
                           </h2>
                           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              type="button"
+                              onClick={(e) => toggleFluid(c.conversation_id, e)}
+                              className="p-1 rounded-md hover:bg-[#30363d] transition-colors"
+                              title={
+                                isFluid 
+                                  ? "Modo Fluido ATIVADO (auto-aprova comandos 'Run this command?'). Clique para desativar." 
+                                  : "Ativar Modo Fluido para esta conversa"
+                              }
+                            >
+                              <Zap className={`w-3.5 h-3.5 transition-transform active:scale-125 ${
+                                isFluid ? 'fill-amber-400 text-amber-400 animate-pulse' : 'text-slate-500 hover:text-amber-300'
+                              }`} />
+                            </button>
                             <button
                               type="button"
                               onClick={(e) => toggleFavorite(c.conversation_id, e)}
                               className="p-1 rounded-md hover:bg-[#30363d] transition-colors"
                               title={isFav ? "Remover dos favoritos" : "Marcar como favorito"}
                             >
-                              <Star className={`w-4 h-4 transition-transform active:scale-125 ${
+                              <Star className={`w-3.5 h-3.5 transition-transform active:scale-125 ${
                                 isFav ? 'fill-yellow-400 text-yellow-400' : 'text-slate-500 hover:text-slate-300'
                               }`} />
                             </button>
@@ -653,14 +808,22 @@ export default function ConversationHistoryModal({
                             onClick={(e) => {
                               e.stopPropagation();
                               if (onResumeConversation) {
-                                onResumeConversation(c.conversation_id, c.title || 'Conversa IA', c.workspace || '/home/nader');
+                                onResumeConversation(c.conversation_id, c.title || 'Conversa IA', c.workspace || '/home/nader', isFluid);
                               }
                             }}
-                            className="min-h-[28px] flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white border border-purple-500/40 text-xs font-bold transition-all active:scale-95 shadow-xs"
-                            title="Continuar esta conversa com 1 clique (agy --conversation)"
+                            className={`min-h-[28px] flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-xs border ${
+                              isFluid
+                                ? 'bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 hover:text-white border-amber-500/40 shadow-amber-500/10'
+                                : 'bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white border-purple-500/40'
+                            }`}
+                            title={
+                              isFluid
+                                ? "Continuar no Modo Fluido (auto-aprovação de confirmações 'Run this command?')"
+                                : "Continuar esta conversa com 1 clique (agy --conversation)"
+                            }
                           >
-                            <Zap className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                            <span>Continuar</span>
+                            <Zap className={`w-3 h-3 ${isFluid ? 'text-amber-300 fill-amber-300 animate-pulse' : 'text-yellow-400 fill-yellow-400'}`} />
+                            <span>{isFluid ? '⚡ Continuar (Fluido)' : 'Continuar'}</span>
                           </button>
                         </div>
                       </div>

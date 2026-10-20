@@ -28,6 +28,34 @@ export async function removeFavorite(conversationId) {
   return res.json();
 }
 
+export async function fetchFluidConversations() {
+  try {
+    const res = await fetch(`${BASE_URL}/conversations/fluid`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
+export async function addFluidConversation(conversationId) {
+  const res = await fetch(`${BASE_URL}/conversations/fluid`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ conversationId })
+  });
+  if (!res.ok) throw new Error('Falha ao ativar modo fluido');
+  return res.json();
+}
+
+export async function removeFluidConversation(conversationId) {
+  const res = await fetch(`${BASE_URL}/conversations/fluid/${conversationId}`, {
+    method: 'DELETE'
+  });
+  if (!res.ok) throw new Error('Falha ao desativar modo fluido');
+  return res.json();
+}
+
 export async function fetchConversations({ search = '', limit = 50, offset = 0 } = {}) {
   const params = new URLSearchParams({ search, limit, offset });
   const res = await fetch(`${BASE_URL}/conversations?${params}`);

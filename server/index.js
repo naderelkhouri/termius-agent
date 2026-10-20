@@ -72,7 +72,7 @@ function loadStorage() {
       console.error('[Storage] Erro ao ler backup de storage:', bakErr);
     }
   }
-  return { hosts: [], snippets: [], favoriteConversations: [] };
+  return { hosts: [], snippets: [], favoriteConversations: [], fluidConversations: [] };
 }
 
 function saveStorage(data) {
@@ -82,6 +82,9 @@ function saveStorage(data) {
   }
   if (!Array.isArray(data.favoriteConversations)) {
     data.favoriteConversations = [];
+  }
+  if (!Array.isArray(data.fluidConversations)) {
+    data.fluidConversations = [];
   }
   try {
     if (fs.existsSync(STORAGE_PATH)) {
@@ -125,6 +128,35 @@ app.delete('/api/conversations/favorites/:id', (req, res) => {
     saveStorage(data);
   }
   res.json(data.favoriteConversations || []);
+});
+
+app.get('/api/conversations/fluid', (req, res) => {
+  const data = loadStorage();
+  res.json(data.fluidConversations || []);
+});
+
+app.post('/api/conversations/fluid', (req, res) => {
+  const { conversationId } = req.body || {};
+  if (!conversationId) return res.status(400).json({ error: 'conversationId é obrigatório' });
+  const data = loadStorage();
+  if (!Array.isArray(data.fluidConversations)) {
+    data.fluidConversations = [];
+  }
+  if (!data.fluidConversations.includes(conversationId)) {
+    data.fluidConversations.push(conversationId);
+  }
+  saveStorage(data);
+  res.json(data.fluidConversations);
+});
+
+app.delete('/api/conversations/fluid/:id', (req, res) => {
+  const conversationId = req.params.id;
+  const data = loadStorage();
+  if (Array.isArray(data.fluidConversations)) {
+    data.fluidConversations = data.fluidConversations.filter(id => id !== conversationId);
+    saveStorage(data);
+  }
+  res.json(data.fluidConversations || []);
 });
 
 app.get('/api/conversations', (req, res) => {

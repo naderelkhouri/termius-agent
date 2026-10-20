@@ -17,7 +17,8 @@ import {
   Square,
   Pencil,
   RotateCcw,
-  ChevronDown
+  ChevronDown,
+  Zap
 } from 'lucide-react';
 
 export default function App() {
@@ -88,7 +89,7 @@ export default function App() {
     commandersRef.current[tabId] = commanderFn;
   };
 
-  const handleNewTab = (cwd = '/home/nader', title = 'Novo Terminal', host = null, color = '#58a6ff', initialCommand = null) => {
+  const handleNewTab = (cwd = '/home/nader', title = 'Novo Terminal', host = null, color = '#58a6ff', initialCommand = null, isFluid = false) => {
     const newId = `tab-${Date.now()}`;
     const newTab = {
       id: newId,
@@ -96,7 +97,8 @@ export default function App() {
       cwd: cwd || (host ? host.defaultCwd : '/home/nader'),
       color: color || (host ? host.color : '#58a6ff'),
       host,
-      isCustomTitle: Boolean(title && title !== 'Novo Terminal')
+      isCustomTitle: Boolean(title && title !== 'Novo Terminal'),
+      isFluid: Boolean(isFluid)
     };
     setOpenTabs((prev) => [...prev, newTab]);
     setActiveTabId(newId);
@@ -116,14 +118,28 @@ export default function App() {
     }
   };
 
-  const handleResumeConversation = (conversationId, title = 'Conversa Antigravity', cwd = '/home/nader') => {
-    if (!conversationId) return;
-    const cleanTitle = title.length > 22 ? `${title.slice(0, 20)}...` : title;
-    handleNewTab(cwd, `IA: ${cleanTitle}`, null, '#bc8cff', `agy --conversation ${conversationId}`);
+  const handleToggleFluidMode = (tabId) => {
+    setOpenTabs((prev) =>
+      prev.map((tab) => {
+        if (tab.id === tabId) {
+          return { ...tab, isFluid: !tab.isFluid };
+        }
+        return tab;
+      })
+    );
   };
 
-  const handleResumeLastConversation = () => {
-    handleNewTab('/home/nader', 'IA: Antigravity', null, '#bc8cff', 'agy --continue');
+  const handleResumeConversation = (conversationId, title = 'Conversa Antigravity', cwd = '/home/nader', isFluid = false) => {
+    if (!conversationId) return;
+    const cleanTitle = title.length > 22 ? `${title.slice(0, 20)}...` : title;
+    const flag = isFluid ? ' --dangerously-skip-permissions' : '';
+    const color = isFluid ? '#f59e0b' : '#bc8cff';
+    handleNewTab(cwd, `IA: ${cleanTitle}`, null, color, `agy --conversation ${conversationId}${flag}`, isFluid);
+  };
+
+  const handleResumeLastConversation = (isFluid = false) => {
+    const flag = isFluid ? ' --dangerously-skip-permissions' : '';
+    handleNewTab('/home/nader', 'IA: Antigravity', null, isFluid ? '#f59e0b' : '#bc8cff', `agy --continue${flag}`, isFluid);
   };
 
   const handleCloseTab = (tabId, e) => {
@@ -278,7 +294,8 @@ export default function App() {
     ? secondaryTabId
     : (availableSecondaryTabs[0]?.id || null);
 
-  const activeCwd = openTabs.find(t => t.id === activeTabId)?.cwd || '/home/nader';
+  const activeTab = openTabs.find(t => t.id === activeTabId);
+  const activeCwd = activeTab?.cwd || '/home/nader';
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#0d1117] text-slate-100 font-sans">
@@ -358,6 +375,11 @@ export default function App() {
                     />
                   ) : (
                     <div className="flex items-center gap-1.5 max-w-[150px] min-w-0">
+                      {tab.isFluid && (
+                        <span title="Modo Fluido Ativo: Auto-aprovação de comandos sem confirmação">
+                          <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0 animate-pulse" />
+                        </span>
+                      )}
                       <span className="truncate whitespace-nowrap">{tab.title}</span>
                       {tab.isCustomTitle && (
                         <button
@@ -473,8 +495,30 @@ export default function App() {
             )}
           </div>
 
-          {/* Top Actions: AI Copilot & Split Screen Controls */}
+          {/* Top Actions: Modo Fluido, AI Copilot & Split Screen Controls */}
           <div className="flex items-center gap-2 pr-1 shrink-0">
+            {/* Modo Fluido Toggle */}
+            {currentView === 'terminals' && (
+              <button
+                type="button"
+                onClick={() => handleToggleFluidMode(activeTabId)}
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 ${
+                  activeTab?.isFluid
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-amber-500/10'
+                    : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
+                }`}
+                title="Modo Fluido: Auto-aprovação de confirmações do Antigravity ('Run this command? 1. Yes...')"
+              >
+                <Zap className={`w-3.5 h-3.5 ${activeTab?.isFluid ? 'fill-amber-400 text-amber-400 animate-pulse' : 'text-slate-400'}`} />
+                <span className="hidden sm:inline">Modo Fluido</span>
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full border ${
+                  activeTab?.isFluid ? 'bg-amber-500/30 text-amber-300 border-amber-500/50 font-bold' : 'bg-[#161b22] text-slate-500 border-[#30363d]'
+                }`}>
+                  {activeTab?.isFluid ? 'ON' : 'OFF'}
+                </span>
+              </button>
+            )}
+
             {/* AI Copilot Button */}
             <button
               onClick={() => setCopilotOpen(true)}
