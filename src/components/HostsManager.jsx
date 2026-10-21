@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { fetchHosts, createHost, deleteHost } from '../services/api';
-import { Server, Plus, Trash2, ArrowRight, Folder, Globe, Laptop } from 'lucide-react';
+import { fetchHosts, createHost, deleteHost, pingHost, fetchSystemStatus } from '../services/api';
+import { 
+  Server, 
+  Plus, 
+  Trash2, 
+  ArrowRight, 
+  Folder, 
+  Globe, 
+  Laptop, 
+  Activity, 
+  RefreshCw, 
+  Cpu, 
+  HardDrive,
+  Wifi,
+  CheckCircle2,
+  AlertCircle
+} from 'lucide-react';
 
 export default function HostsManager({ onConnectHost }) {
   const [hosts, setHosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [systemStatus, setSystemStatus] = useState(null);
+  const [pingResults, setPingResults] = useState({});
+  const [pingingMap, setPingingMap] = useState({});
+  const [pingingAll, setPingingAll] = useState(false);
   const [form, setForm] = useState({
     label: '',
     address: '127.0.0.1',
@@ -19,6 +38,7 @@ export default function HostsManager({ onConnectHost }) {
 
   useEffect(() => {
     loadHosts();
+    loadSystemStatus();
   }, []);
 
   const loadHosts = async () => {
@@ -30,6 +50,37 @@ export default function HostsManager({ onConnectHost }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadSystemStatus = async () => {
+    try {
+      const data = await fetchSystemStatus();
+      setSystemStatus(data);
+    } catch {}
+  };
+
+  const handlePingHost = async (host, e) => {
+    if (e) e.stopPropagation();
+    setPingingMap((prev) => ({ ...prev, [host.id]: true }));
+    try {
+      const targetPort = host.type === 'local' 
+        ? (window.location.port ? parseInt(window.location.port, 10) : 3001) 
+        : (parseInt(host.port, 10) || 22);
+      const res = await pingHost(host.address || '127.0.0.1', targetPort, 2000);
+      setPingResults((prev) => ({ ...prev, [host.id]: res }));
+    } catch (err) {
+      setPingResults((prev) => ({ ...prev, [host.id]: { online: false, error: err.message } }));
+    } finally {
+      setPingingMap((prev) => ({ ...prev, [host.id]: false }));
+    }
+  };
+
+  const handlePingAll = async () => {
+    setPingingAll(true);
+    for (const host of hosts) {
+      await handlePingHost(host);
+    }
+    setPingingAll(false);
   };
 
   const handleAdd = async (e) => {
@@ -92,14 +143,80 @@ export default function HostsManager({ onConnectHost }) {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="min-h-[38px] flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-sm active:scale-95"
-        >
-          <Plus className="w-4 h-4" />
-          <span className="whitespace-nowrap">Novo Host</span>
-        </button>
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handlePingAll}
+            disabled={pingingAll || hosts.length === 0}
+            className="min-h-[38px] flex items-center gap-2 px-3 py-2 rounded-xl bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white border border-[#30363d] text-xs font-bold transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer"
+            title="Testar latência e conectividade de todos os hosts cadastrados"
+          >
+            <Wifi className={`w-3.5 h-3.5 ${pingingAll ? 'animate-spin text-cyan-400' : 'text-slate-400'}`} />
+            <span className="hidden sm:inline">{pingingAll ? 'Testando...' : 'Testar Conexões'}</span>
+          </button>
+
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="min-h-[38px] flex items-center gap-2 px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-sm active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span className="whitespace-nowrap">Novo Host</span>
+          </button>
+        </div>
       </div>
+
+      {/* Local System Health Banner */}
+      {systemStatus && (
+        <div className="mx-4 sm:mx-6 mt-4 p-3.5 bg-[#161b22] border border-[#30363d] rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+              <Activity className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="font-bold text-white flex items-center gap-2">
+                <span>{systemStatus.hostname}</span>
+                <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                  {systemStatus.platform} ({systemStatus.arch})
+                </span>
+              </div>
+              <div className="text-slate-400 font-medium">
+                Kernel: {systemStatus.release} • Uptime: {Math.floor(systemStatus.uptimeSeconds / 3600)}h {Math.floor((systemStatus.uptimeSeconds % 3600) / 60)}m
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-blue-400 shrink-0" />
+              <div>
+                <span className="text-slate-400 text-xs block">CPU ({systemStatus.cpuCount} cores)</span>
+                <span className="text-white font-mono font-bold">
+                  Load: {systemStatus.loadAvg.join(' ')}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <HardDrive className="w-4 h-4 text-purple-400 shrink-0" />
+              <div>
+                <span className="text-slate-400 text-xs block">Memória RAM</span>
+                <span className="text-white font-mono font-bold">
+                  {systemStatus.memory.usedPercent}% ({Math.round(systemStatus.memory.usedMb / 1024)}GB / {Math.round(systemStatus.memory.totalMb / 1024)}GB)
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={loadSystemStatus}
+              className="p-1.5 rounded-xl hover:bg-[#21262d] text-slate-400 hover:text-white transition-colors cursor-pointer"
+              title="Atualizar métricas de sistema"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
@@ -244,9 +361,41 @@ export default function HostsManager({ onConnectHost }) {
                       </div>
 
                       <div className="mt-4 pt-3 border-t border-[#30363d]/60 flex items-center justify-between text-xs">
-                        <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#21262d] text-slate-300 border border-[#30363d] whitespace-nowrap">
-                          {host.type.toUpperCase()}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-[#21262d] text-slate-300 border border-[#30363d] whitespace-nowrap">
+                            {host.type.toUpperCase()}
+                          </span>
+
+                          {pingingMap[host.id] ? (
+                            <span className="text-xs font-mono text-cyan-400 animate-pulse flex items-center gap-1">
+                              <RefreshCw className="w-3 h-3 animate-spin" />
+                              <span>ping...</span>
+                            </span>
+                          ) : pingResults[host.id] ? (
+                            pingResults[host.id].online ? (
+                              <span className="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/30">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                <span>{pingResults[host.id].latency}ms</span>
+                              </span>
+                            ) : (
+                              <span className="text-xs font-mono font-semibold text-rose-400 flex items-center gap-1 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/30" title={pingResults[host.id].error}>
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+                                <span>Offline</span>
+                              </span>
+                            )
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={(e) => handlePingHost(host, e)}
+                              className="px-2 py-0.5 rounded-md bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-cyan-300 font-mono text-xs transition-colors cursor-pointer flex items-center gap-1"
+                              title="Testar ping e conectividade"
+                            >
+                              <Wifi className="w-3 h-3" />
+                              <span>Testar</span>
+                            </button>
+                          )}
+                        </div>
+
                         <div className="flex items-center gap-1.5 text-blue-400 font-bold group-hover:translate-x-1 transition-transform whitespace-nowrap">
                           <span>Conectar</span>
                           <ArrowRight className="w-3.5 h-3.5" />

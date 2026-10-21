@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
-import { Zap } from 'lucide-react';
+import { SearchAddon } from '@xterm/addon-search';
+import { Zap, Search, ChevronUp, ChevronDown, X as XIcon } from 'lucide-react';
 import { sendNotification } from '../services/notificationService';
 import { recordOutput } from '../services/sessionRecorder';
 
@@ -26,6 +27,13 @@ export default function TerminalView({
   const commandRunningRef = useRef(false);
   const lastCommandNameRef = useRef('');
   const [fluidAlert, setFluidAlert] = useState(false);
+
+  const searchAddonRef = useRef(null);
+  const searchInputRef = useRef(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchCaseSensitive, setSearchCaseSensitive] = useState(false);
+  const [searchResult, setSearchResult] = useState({ resultIndex: -1, resultCount: 0 });
 
   const broadcastRef = useRef({ 
     active: isBroadcastActive, 
@@ -83,14 +91,36 @@ export default function TerminalView({
     });
 
     const fitAddon = new FitAddon();
+    const searchAddon = new SearchAddon();
     term.loadAddon(fitAddon);
     term.loadAddon(new WebLinksAddon());
+    term.loadAddon(searchAddon);
 
     term.open(containerRef.current);
     fitAddon.fit();
 
     termRef.current = term;
     fitAddonRef.current = fitAddon;
+    searchAddonRef.current = searchAddon;
+
+    searchAddon.onDidChangeResults((e) => {
+      if (e) {
+        setSearchResult({
+          resultIndex: e.resultIndex,
+          resultCount: e.resultCount
+        });
+      }
+    });
+
+    term.attachCustomKeyEventHandler((event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {
+        if (event.type === 'keydown') {
+          setSearchOpen((prev) => !prev);
+        }
+        return false;
+      }
+      return true;
+    });
 
     // Listen to terminal title changes (OSC 0 / OSC 2 from shell or running processes)
     term.onTitleChange((newTitle) => {
@@ -275,11 +305,156 @@ export default function TerminalView({
     }
   }, [isActive]);
 
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }, 50);
+    }
+  }, [searchOpen]);
+
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
+    if (!searchAddonRef.current) return;
+    if (!query) {
+      searchAddonRef.current.clearDecorations();
+      setSearchResult({ resultIndex: -1, resultCount: 0 });
+      return;
+    }
+    searchAddonRef.current.findNext(query, {
+      caseSensitive: searchCaseSensitive,
+      incremental: true
+    });
+  };
+
+  const handleFindNext = () => {
+    if (!searchAddonRef.current || !searchQuery) return;
+    searchAddonRef.current.findNext(searchQuery, {
+      caseSensitive: searchCaseSensitive
+    });
+  };
+
+  const handleFindPrevious = () => {
+    if (!searchAddonRef.current || !searchQuery) return;
+    searchAddonRef.current.findPrevious(searchQuery, {
+      caseSensitive: searchCaseSensitive
+    });
+  };
+
+  const handleToggleCase = () => {
+    const nextCase = !searchCaseSensitive;
+    setSearchCaseSensitive(nextCase);
+    if (searchAddonRef.current && searchQuery) {
+      searchAddonRef.current.findNext(searchQuery, {
+        caseSensitive: nextCase
+      });
+    }
+  };
+
+  const handleCloseSearch = () => {
+    setSearchOpen(false);
+    if (searchAddonRef.current) {
+      searchAddonRef.current.clearDecorations();
+    }
+    if (termRef.current) {
+      termRef.current.focus();
+    }
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (e.shiftKey) {
+        handleFindPrevious();
+      } else {
+        handleFindNext();
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      handleCloseSearch();
+    }
+  };
+
   return (
     <div 
-      className={`h-full w-full bg-[#0d1117] relative ${isActive ? 'block' : 'hidden'}`}
+      className={`h-full w-full bg-[#0d1117] relative group ${isActive ? 'block' : 'hidden'}`}
       ref={containerRef}
     >
+      {/* Botão flutuante para abrir busca no terminal (Ctrl+F) */}
+      {!searchOpen && (
+        <button
+          type="button"
+          onClick={() => setSearchOpen(true)}
+          className="absolute top-2.5 right-3 z-20 opacity-0 group-hover:opacity-60 hover:!opacity-100 p-1.5 rounded-lg bg-[#161b22]/80 hover:bg-[#21262d] text-slate-400 hover:text-white border border-[#30363d]/80 transition-all cursor-pointer shadow-md select-none"
+          title="Buscar no buffer do terminal (Ctrl + F)"
+        >
+          <Search className="w-3.5 h-3.5" />
+        </button>
+      )}
+
+      {/* Barra flutuante de Pesquisa In-Buffer (Ctrl + F) */}
+      {searchOpen && (
+        <div className="absolute top-2.5 right-4 z-30 flex items-center gap-1.5 bg-[#161b22]/95 border border-[#30363d] rounded-xl px-2.5 py-1.5 shadow-2xl backdrop-blur-md animate-fade-in text-xs select-none">
+          <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="Buscar no terminal..."
+            className="bg-transparent text-white text-base sm:text-xs font-mono focus:outline-none w-36 sm:w-48 placeholder:text-slate-500"
+          />
+
+          <span className="text-slate-400 font-mono text-xs px-1 min-w-[3rem] text-center">
+            {searchResult.resultCount > 0
+              ? `${searchResult.resultIndex + 1}/${searchResult.resultCount}`
+              : searchQuery ? '0/0' : ''}
+          </span>
+
+          <button
+            type="button"
+            onClick={handleFindPrevious}
+            className="p-1 hover:bg-[#21262d] rounded text-slate-400 hover:text-white transition-colors cursor-pointer"
+            title="Ocorrência anterior (Shift+Enter)"
+          >
+            <ChevronUp className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleFindNext}
+            className="p-1 hover:bg-[#21262d] rounded text-slate-400 hover:text-white transition-colors cursor-pointer"
+            title="Próxima ocorrência (Enter)"
+          >
+            <ChevronDown className="w-3.5 h-3.5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleToggleCase}
+            className={`px-1.5 py-0.5 rounded font-mono text-xs font-bold transition-colors cursor-pointer ${
+              searchCaseSensitive
+                ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40'
+                : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+            }`}
+            title="Diferenciar maiúsculas/minúsculas"
+          >
+            Aa
+          </button>
+
+          <button
+            type="button"
+            onClick={handleCloseSearch}
+            className="p-1 hover:bg-[#21262d] rounded text-slate-400 hover:text-rose-400 transition-colors cursor-pointer ml-1"
+            title="Fechar busca (Esc)"
+          >
+            <XIcon className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Toast flutuante de auto-aprovação do Modo Fluido */}
       {fluidAlert && (
         <div className="absolute top-3 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs font-bold shadow-lg shadow-amber-500/10 backdrop-blur-md animate-bounce select-none pointer-events-none">

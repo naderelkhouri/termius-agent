@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
+import net from 'node:net';
 import { StringDecoder } from 'node:string_decoder';
 import { fileURLToPath } from 'node:url';
 import { listConversations, getConversationTranscript, getRecentHistoryPrompts } from './db.js';
@@ -331,6 +332,78 @@ app.post('/api/notifications', (req, res) => {
     res.json({ success: true });
   } catch (err) {
     console.error('[Server] Erro ao enviar notificação:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Ping e Teste de Conectividade de Host
+app.post('/api/hosts/ping', (req, res) => {
+  const { address, port = 22, timeout = 2500 } = req.body || {};
+  if (!address) {
+    return res.status(400).json({ error: 'Endereço de host é obrigatório' });
+  }
+
+  const start = Date.now();
+  const socket = new net.Socket();
+  let finished = false;
+
+  const done = (payload) => {
+    if (finished) return;
+    finished = true;
+    socket.destroy();
+    res.json(payload);
+  };
+
+  socket.setTimeout(timeout);
+
+  socket.on('connect', () => {
+    const latency = Date.now() - start;
+    done({ online: true, latency, address, port });
+  });
+
+  socket.on('timeout', () => {
+    done({ online: false, error: 'Timeout de conexão', address, port });
+  });
+
+  socket.on('error', (err) => {
+    done({ online: false, error: err.message || 'Falha de conexão', address, port });
+  });
+
+  try {
+    socket.connect(port, address);
+  } catch (err) {
+    done({ online: false, error: err.message, address, port });
+  }
+});
+
+// Métricas de Sistema do Host Local
+app.get('/api/system/status', (req, res) => {
+  try {
+    const totalMem = os.totalmem();
+    const freeMem = os.freemem();
+    const usedMem = totalMem - freeMem;
+    const memUsagePercent = Math.round((usedMem / totalMem) * 100);
+    const cpus = os.cpus() || [];
+    const loadAvg = os.loadavg();
+    const uptime = os.uptime();
+
+    res.json({
+      hostname: os.hostname(),
+      platform: os.platform(),
+      release: os.release(),
+      arch: os.arch(),
+      cpuCount: cpus.length,
+      cpuModel: cpus[0]?.model || 'Desconhecido',
+      loadAvg: loadAvg.map(l => Number(l.toFixed(2))),
+      memory: {
+        totalMb: Math.round(totalMem / (1024 * 1024)),
+        usedMb: Math.round(usedMem / (1024 * 1024)),
+        freeMb: Math.round(freeMem / (1024 * 1024)),
+        usedPercent: memUsagePercent
+      },
+      uptimeSeconds: uptime
+    });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });

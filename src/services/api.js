@@ -246,3 +246,29 @@ export async function exportSpecAndRoadmap(conversationId, options = {}) {
   }
   return res.json();
 }
+
+export async function pingHost(address, port = 22, timeout = 2500) {
+  try {
+    const res = await fetch(`${BASE_URL}/hosts/ping`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address, port, timeout })
+    });
+    if (!res.ok) {
+      return { online: false, error: `HTTP ${res.status}` };
+    }
+    return res.json();
+  } catch (err) {
+    return { online: false, error: err.message };
+  }
+}
+
+export async function fetchSystemStatus() {
+  try {
+    const res = await fetch(`${BASE_URL}/system/status`);
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
