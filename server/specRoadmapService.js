@@ -245,3 +245,104 @@ export function updateSpecAndRoadmap(conversationId, updates) {
   saveStorage(storage);
   return merged;
 }
+
+/**
+ * Converte a Spec e o Roadmap em Markdown formatado e salva em SPEC.md e ROADMAP.md
+ */
+export function exportSpecAndRoadmapToMarkdown(conversationId, options = {}) {
+  const data = generateSpecAndRoadmap(conversationId);
+  const convRes = listConversations ? listConversations({ limit: 100 }) : { conversations: [] };
+  const convList = Array.isArray(convRes) ? convRes : (convRes.conversations || []);
+  const conv = convList.find((c) => c.conversation_id === conversationId);
+
+  // Determina diretório de destino
+  let targetDir = options.targetDir || (conv && conv.workspace) || process.cwd();
+  if (targetDir.startsWith('~')) {
+    targetDir = path.join(process.env.HOME || '/home/nader', targetDir.slice(1));
+  }
+
+  // Se o diretório contiver aspas ou não existir, sanitiza
+  targetDir = targetDir.replace(/^["']|["']$/g, '');
+
+  if (!fs.existsSync(targetDir)) {
+    try {
+      fs.mkdirSync(targetDir, { recursive: true });
+    } catch {
+      targetDir = process.cwd();
+    }
+  }
+
+  const specContent = [
+    `# Especificação Técnica: ${data.title}`,
+    `> **Sessão Antigravity ID:** \`${conversationId}\``,
+    `> **Gerado pelo:** Termius Agent Suite`,
+    `> **Data:** ${new Date(data.generatedAt || Date.now()).toLocaleString('pt-BR')}`,
+    '',
+    '## 1. 🎯 Objetivo Central & Escopo',
+    data.spec.objective,
+    '',
+    '## 2. 🛠️ Stack Tecnológica Identificada',
+    data.spec.techStack && data.spec.techStack.length > 0
+      ? data.spec.techStack.map((t) => `- **${t}**`).join('\n')
+      : '_Nenhuma stack específica identificada automaticamente._',
+    '',
+    '## 3. 📋 Requisitos Funcionais & Entregas',
+    data.spec.functionalRequirements && data.spec.functionalRequirements.length > 0
+      ? data.spec.functionalRequirements.map((req, idx) => {
+          const statusIcon = req.status === 'completed' ? '✅' : '⏳';
+          const statusLabel = req.status === 'completed' ? 'Concluído' : 'Em Progresso';
+          return `### ${idx + 1}. ${req.title} [${statusIcon} ${statusLabel}]\n${req.fullText && req.fullText !== req.title ? `\`\`\`\n${req.fullText}\n\`\`\`\n` : ''}`;
+        }).join('\n')
+      : '_Nenhum requisito explícito mapeado._',
+    '',
+    '## 4. 🏛️ Decisões de Arquitetura & Engenharia',
+    data.spec.architecturalDecisions && data.spec.architecturalDecisions.length > 0
+      ? data.spec.architecturalDecisions.map((dec) => `- ${dec}`).join('\n')
+      : '_Sem decisões registradas._',
+    '',
+    '## 5. 📂 Arquivos Afetados & Inspecionados',
+    data.spec.affectedFiles && data.spec.affectedFiles.length > 0
+      ? data.spec.affectedFiles.map((f) => `- \`${f.path.replace(/^["']|["']$/g, '')}\``).join('\n')
+      : '_Nenhum arquivo modificado detectado._',
+    ''
+  ].join('\n');
+
+  const roadmapContent = [
+    `# Plano de Evolução (Roadmap): ${data.title}`,
+    `> **Progresso Geral:** **${data.overallProgress}% Concluído**`,
+    `> **Sessão:** \`${conversationId}\``,
+    `> **Data:** ${new Date(data.generatedAt || Date.now()).toLocaleString('pt-BR')}`,
+    '',
+    '## 🗺️ Marcos de Evolução (Milestones)',
+    '',
+    ...(data.roadmap.milestones || []).map((m) => {
+      const statusIcon = m.status === 'completed' ? '✅' : m.status === 'in_progress' ? '🔄' : '📌';
+      return [
+        `### ${statusIcon} ${m.title} (${m.progress}%)`,
+        `_${m.description}_`,
+        '',
+        '**Checklist de Tarefas:**',
+        ...m.tasks.map((t) => `- [${t.completed ? 'x' : ' '}] ${t.title}`),
+        ''
+      ].join('\n');
+    }),
+    '## 🚀 Próximos Passos Recomendados',
+    ...(data.roadmap.nextActions || []).map((action) => `- ${action}`),
+    ''
+  ].join('\n');
+
+  const specPath = path.join(targetDir, 'SPEC.md');
+  const roadmapPath = path.join(targetDir, 'ROADMAP.md');
+
+  fs.writeFileSync(specPath, specContent, 'utf-8');
+  fs.writeFileSync(roadmapPath, roadmapContent, 'utf-8');
+
+  return {
+    success: true,
+    targetDir,
+    specPath,
+    roadmapPath,
+    specContent,
+    roadmapContent
+  };
+}

@@ -64,6 +64,7 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
 ### 6. Spec Técnica & Roadmap Automatizados por Conversa
 * **Especificação Técnica Integrada (📋 Spec):** Síntese automática a partir dos transcripts do Antigravity contendo escopo, objetivo principal, stack tecnológica identificada, requisitos funcionais detalhados com status (concluído / em progresso), decisões de arquitetura e lista de arquivos afetados.
 * **Roadmap Interativo com Checklist (🗺️ Roadmap):** Plano de evolução da conversa organizado em milestones com barra de progresso global (`0% a 100%`), checklist de tarefas interativo com persistência automática no backend (`specRoadmapStorage.json`) e sugestões de próximas ações.
+* **Exportação para Markdown com 1 Clique (SPEC.md & ROADMAP.md):** Salva os arquivos de especificação e roadmap formatados diretamente na raiz do projeto (`workspace`) para versionamento no Git e documentação de equipe.
 * **Acesso em Múltiplos Pontos:** Disponível nas abas **Spec** e **Roadmap** do **AI Sidecar**, no **Histórico de Conversas** (tabela e blocos) e em modal dedicado de tela cheia.
 
 ### 7. Integração com o Cérebro do Antigravity AI & Modo Fluido
@@ -72,21 +73,21 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
 * **Sistema de Favoritos (⭐):** Marque sessões prioritárias com persistência no backend e filtro rápido com 1 clique.
 * **Modo Fluido Autônomo (⚡):** Ative por conversa ou na barra superior do terminal para auto-aprovar prompts de ferramentas (`Run this command? 1. Yes, run command; 2. Yes, and...`) via `--dangerously-skip-permissions` e auto-resposta em tempo real no PTY.
 
-### 6. Gerenciador de Hosts & SSH
+### 8. Gerenciador de Hosts & SSH
 * Cadastro visual de máquinas locais, instâncias de containers e servidores VPS remotos.
 * Sanitização estrita contra injeção de parâmetros SSH e separador seguro `--`.
 * Tags coloridas, diretórios iniciais (`CWD`) configuráveis e agrupamento por ambiente (Produção, Local, Projetos).
 
-### 7. Biblioteca de Snippets
+### 9. Biblioteca de Snippets
 * Automações de 1 clique para Docker, Git, Rede e Sistema.
 * CRUD completo com exclusão segura e cópia para área de transferência.
 
-### 8. Serviço Completo de Telemetria & Auto-Melhorias
+### 10. Serviço Completo de Telemetria & Auto-Melhorias
 * **Captura Passiva de Exceções:** Interceptação automática de `window.onerror` e rejeições assíncronas.
 * **Diagnóstico Automático por IA:** Detecção de causa raiz e recomendação de correções para falhas de portas e conexões.
 * **Melhorias Manuais & Automatizadas:** Backlog integrado para registro de melhorias e gatilho de varredura autônoma por IA.
 
-### 9. Hardening de Segurança & Alta Resiliência
+### 11. Hardening de Segurança & Alta Resiliência
 * **Single Instance Lock:** Prevenção de instâncias duplicadas no Electron, focando a janela ativa e evitando conflitos de porta.
 * **Prevenção de PTY Órfãos:** Signal traps no Python (`SIGTERM`/`SIGHUP`/`SIGINT`) com encerramento de grupo de processos (`killpg`) e rastreamento ativo no Node.js.
 * **Backups Rotativos:** Gravação atômica com swap temporário e fallback automático para cópias `.bak` em arquivos de storage.

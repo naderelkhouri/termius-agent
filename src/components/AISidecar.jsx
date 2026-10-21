@@ -7,7 +7,8 @@ import {
   addFluidConversation,
   removeFluidConversation,
   fetchSpecAndRoadmap,
-  saveSpecAndRoadmap
+  saveSpecAndRoadmap,
+  exportSpecAndRoadmap
 } from '../services/api';
 import { 
   BotMessageSquare, 
@@ -32,7 +33,8 @@ import {
   CheckCircle2,
   Clock,
   ListTodo,
-  Target
+  Target,
+  Download
 } from 'lucide-react';
 
 function extractCommandLine(tc) {
@@ -85,6 +87,8 @@ export default function AISidecar({
   const [specLoading, setSpecLoading] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all'); // 'all' | 'commands' | 'files' | 'spec' | 'roadmap'
   const [copiedKey, setCopiedKey] = useState(null);
+  const [exportingSpec, setExportingSpec] = useState(false);
+  const [exportSpecSuccess, setExportSpecSuccess] = useState(false);
   const [fluidConversations, setFluidConversations] = useState([]);
   const [convDropdownOpen, setConvDropdownOpen] = useState(false);
   const [convSearch, setConvSearch] = useState('');
@@ -196,6 +200,21 @@ export default function AISidecar({
       await saveSpecAndRoadmap(selectedConvId, updated);
     } catch (err) {
       console.warn('[AISidecar] Erro ao salvar roadmap:', err);
+    }
+  };
+
+  const handleExportSpecRoadmap = async () => {
+    if (!selectedConvId) return;
+    setExportingSpec(true);
+    setExportSpecSuccess(false);
+    try {
+      await exportSpecAndRoadmap(selectedConvId);
+      setExportSpecSuccess(true);
+      setTimeout(() => setExportSpecSuccess(false), 6000);
+    } catch (err) {
+      alert(`Erro ao exportar Markdown: ${err.message}`);
+    } finally {
+      setExportingSpec(false);
     }
   };
 
@@ -637,6 +656,35 @@ export default function AISidecar({
             </div>
           ) : (
             <div className="space-y-3.5">
+              {/* Export Markdown Bar */}
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-purple-950/25 border border-purple-500/30 text-xs text-purple-200 shadow-xs">
+                <div className="flex items-center gap-2 truncate">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span className="truncate">
+                    {exportSpecSuccess ? 'Exportado para SPEC.md & ROADMAP.md!' : 'Documentação técnica do projeto'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleExportSpecRoadmap}
+                  disabled={exportingSpec}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-600/30 hover:bg-purple-600/60 text-purple-200 hover:text-white border border-purple-500/40 text-xs font-bold transition-all active:scale-95 whitespace-nowrap shrink-0 shadow-xs disabled:opacity-50"
+                  title="Gerar SPEC.md e ROADMAP.md na pasta do projeto com 1 clique"
+                >
+                  {exportSpecSuccess ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-emerald-300">Exportado</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className={`w-3.5 h-3.5 text-purple-400 ${exportingSpec ? 'animate-bounce' : ''}`} />
+                      <span>{exportingSpec ? 'Exportando...' : 'Exportar MD'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
               {/* Header Card: Escopo & Objetivo */}
               <div className="p-3.5 rounded-2xl bg-[#0d1117] border border-[#30363d] shadow-xs">
                 <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[#21262d]">
@@ -777,6 +825,35 @@ export default function AISidecar({
                     style={{ width: `${specRoadmap.overallProgress}%` }}
                   />
                 </div>
+              </div>
+
+              {/* Export Markdown Bar */}
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-blue-950/25 border border-blue-500/30 text-xs text-blue-200 shadow-xs">
+                <div className="flex items-center gap-2 truncate">
+                  <Download className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                  <span className="truncate">
+                    {exportSpecSuccess ? 'Exportado para SPEC.md & ROADMAP.md!' : 'Exportar roadmap para o projeto'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleExportSpecRoadmap}
+                  disabled={exportingSpec}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600/30 hover:bg-blue-600/60 text-blue-200 hover:text-white border border-blue-500/40 text-xs font-bold transition-all active:scale-95 whitespace-nowrap shrink-0 shadow-xs disabled:opacity-50"
+                  title="Gerar SPEC.md e ROADMAP.md na pasta do projeto com 1 clique"
+                >
+                  {exportSpecSuccess ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-emerald-300">Exportado</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className={`w-3.5 h-3.5 text-blue-400 ${exportingSpec ? 'animate-bounce' : ''}`} />
+                      <span>{exportingSpec ? 'Exportando...' : 'Exportar MD'}</span>
+                    </>
+                  )}
+                </button>
               </div>
 
               {/* Milestones List */}

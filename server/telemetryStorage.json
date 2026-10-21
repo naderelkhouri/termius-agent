@@ -1,6 +1,48 @@
 {
   "events": [
     {
+      "id": "evt-1792610313780-2v95",
+      "type": "bug",
+      "title": "Erro de Script: ResizeObserver loop completed with undelivered notifications.",
+      "message": "http://127.0.0.1:3001/:0:0",
+      "stack": null,
+      "severity": "high",
+      "status": "open",
+      "source": "browser_window",
+      "category": "frontend_runtime",
+      "metadata": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) termius-agent/1.0.0 Chrome/152.0.7977.167 Electron/44.9.0 Safari/537.36",
+        "url": "http://127.0.0.1:3001/"
+      },
+      "createdAt": "2026-10-21T19:18:33.780Z",
+      "aiDiagnostic": {
+        "rootCause": "Dessincronização de dimensões do PTY pseudo-terminal.",
+        "suggestedFix": "Invoque fitAddon.fit() após o término da transição de renderização da aba.",
+        "autoFixable": true
+      }
+    },
+    {
+      "id": "evt-1792610044159-15f4",
+      "type": "bug",
+      "title": "Erro de Script: ResizeObserver loop completed with undelivered notifications.",
+      "message": "http://127.0.0.1:3001/:0:0",
+      "stack": null,
+      "severity": "high",
+      "status": "open",
+      "source": "browser_window",
+      "category": "frontend_runtime",
+      "metadata": {
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) termius-agent/1.0.0 Chrome/152.0.7977.167 Electron/44.9.0 Safari/537.36",
+        "url": "http://127.0.0.1:3001/"
+      },
+      "createdAt": "2026-10-21T19:14:04.159Z",
+      "aiDiagnostic": {
+        "rootCause": "Dessincronização de dimensões do PTY pseudo-terminal.",
+        "suggestedFix": "Invoque fitAddon.fit() após o término da transição de renderização da aba.",
+        "autoFixable": true
+      }
+    },
+    {
       "id": "evt-auto-1792420676637-2",
       "type": "automated_improvement",
       "title": "Monitoramento PTY & Buffer Backpressure",

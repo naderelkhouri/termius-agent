@@ -233,3 +233,16 @@ export async function saveSpecAndRoadmap(conversationId, data) {
   if (!res.ok) throw new Error('Falha ao atualizar spec e roadmap');
   return res.json();
 }
+
+export async function exportSpecAndRoadmap(conversationId, options = {}) {
+  const res = await fetch(`${BASE_URL}/conversations/${encodeURIComponent(conversationId)}/export-spec-roadmap`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(options)
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || `HTTP error ${res.status}`);
+  }
+  return res.json();
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchSpecAndRoadmap, saveSpecAndRoadmap } from '../services/api';
+import { fetchSpecAndRoadmap, saveSpecAndRoadmap, exportSpecAndRoadmap } from '../services/api';
 import { 
   FileText, 
   Milestone, 
@@ -14,7 +14,9 @@ import {
   ArrowRight,
   Terminal,
   Zap,
-  Folder
+  Folder,
+  Download,
+  Check
 } from 'lucide-react';
 
 export default function SpecRoadmapModal({
@@ -26,6 +28,8 @@ export default function SpecRoadmapModal({
 }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [exportResult, setExportResult] = useState(null);
   const [activeTab, setActiveTab] = useState('spec'); // 'spec' | 'roadmap'
 
   useEffect(() => {
@@ -83,6 +87,21 @@ export default function SpecRoadmapModal({
       await saveSpecAndRoadmap(conversationId, updated);
     } catch (err) {
       console.warn('[SpecRoadmapModal] Erro ao salvar:', err);
+    }
+  };
+
+  const handleExport = async () => {
+    if (!conversationId) return;
+    setExporting(true);
+    setExportResult(null);
+    try {
+      const res = await exportSpecAndRoadmap(conversationId);
+      setExportResult(res);
+      setTimeout(() => setExportResult(null), 8000);
+    } catch (err) {
+      alert(`Falha ao exportar Markdown: ${err.message}`);
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -175,19 +194,59 @@ export default function SpecRoadmapModal({
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => conversationId && loadData(conversationId)}
-            className="flex items-center gap-1 text-xs text-slate-400 hover:text-white"
-            title="Recalcular"
-          >
-            <RotateCcw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-purple-400' : ''}`} />
-            <span className="hidden sm:inline">Recalcular</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={exporting || !data}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 text-purple-200 border border-purple-500/40 text-xs font-bold transition-all active:scale-95 shadow-xs whitespace-nowrap disabled:opacity-50"
+              title="Gerar SPEC.md e ROADMAP.md na raiz do projeto com 1 clique"
+            >
+              {exportResult ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-300">Exportado!</span>
+                </>
+              ) : (
+                <>
+                  <Download className={`w-3.5 h-3.5 text-purple-400 ${exporting ? 'animate-bounce' : ''}`} />
+                  <span>{exporting ? 'Exportando...' : 'Exportar Markdown'}</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => conversationId && loadData(conversationId)}
+              className="flex items-center gap-1 text-xs text-slate-400 hover:text-white"
+              title="Recalcular"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-purple-400' : ''}`} />
+              <span className="hidden sm:inline">Recalcular</span>
+            </button>
+          </div>
         </div>
 
         {/* Body Content */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4 select-text bg-[#0d1117]">
+          {/* Export Success Notification Banner */}
+          {exportResult && (
+            <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs flex items-center justify-between gap-3 font-mono shadow-xs">
+              <div className="flex items-center gap-2 truncate">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="truncate">
+                  Markdown exportado com sucesso: <strong>{exportResult.targetDir}</strong> (<code>SPEC.md</code> &amp; <code>ROADMAP.md</code>)
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setExportResult(null)}
+                className="text-emerald-400 hover:text-white shrink-0 p-1 rounded hover:bg-emerald-900/50"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
           {loading ? (
             <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs font-semibold gap-2">
               <RotateCcw className="w-6 h-6 animate-spin text-purple-400" />

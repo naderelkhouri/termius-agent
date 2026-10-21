@@ -12,7 +12,7 @@ import { listConversations, getConversationTranscript, getRecentHistoryPrompts }
 import { generateCopilotCommand } from './copilot.js';
 import { getCommandSuggestions } from './commandSuggestions.js';
 import { getAllSkills, getSkillDetail } from './skillsService.js';
-import { generateSpecAndRoadmap, updateSpecAndRoadmap } from './specRoadmapService.js';
+import { generateSpecAndRoadmap, updateSpecAndRoadmap, exportSpecAndRoadmapToMarkdown } from './specRoadmapService.js';
 import { 
   recordEvent, 
   listEvents, 
@@ -307,6 +307,16 @@ app.put('/api/conversations/:id/spec-roadmap', (req, res) => {
     res.json(updated);
   } catch (err) {
     console.error(`[Server] Erro ao atualizar spec/roadmap de ${req.params.id}:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/conversations/:id/export-spec-roadmap', (req, res) => {
+  try {
+    const result = exportSpecAndRoadmapToMarkdown(req.params.id, req.body || {});
+    res.json(result);
+  } catch (err) {
+    console.error(`[Server] Erro ao exportar spec/roadmap de ${req.params.id}:`, err);
     res.status(500).json({ error: err.message });
   }
 });
