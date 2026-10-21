@@ -10,6 +10,7 @@ import { StringDecoder } from 'node:string_decoder';
 import { fileURLToPath } from 'node:url';
 import { listConversations, getConversationTranscript, getRecentHistoryPrompts } from './db.js';
 import { generateCopilotCommand } from './copilot.js';
+import { getCommandSuggestions } from './commandSuggestions.js';
 import { 
   recordEvent, 
   listEvents, 
@@ -237,6 +238,24 @@ app.post('/api/copilot/suggest', async (req, res) => {
     res.json(suggestion);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/commands/suggestions', (req, res) => {
+  try {
+    const { q, query, cwd, category, limit } = req.query;
+    const storage = loadStorage();
+    const suggestions = getCommandSuggestions({
+      query: q || query || '',
+      cwd: cwd || '/home/nader',
+      category: category || 'all',
+      limit: parseInt(limit, 10) || 25,
+      snippets: storage.snippets || []
+    });
+    res.json(suggestions);
+  } catch (err) {
+    console.error('[Server] Erro ao obter sugestões de comandos:', err);
+    res.status(500).json({ error: err.message, suggestions: [] });
   }
 });
 

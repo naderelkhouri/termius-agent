@@ -6,6 +6,7 @@ import SnippetsManager from './components/SnippetsManager';
 import ConversationHistoryModal from './components/ConversationHistoryModal';
 import AICopilotModal from './components/AICopilotModal';
 import AISidecar from './components/AISidecar';
+import SmartCommandBar from './components/SmartCommandBar';
 import TelemetryManager from './components/TelemetryManager';
 import ErrorBoundary from './components/ErrorBoundary';
 import { 
@@ -30,6 +31,7 @@ export default function App() {
   const [secondaryTabId, setSecondaryTabId] = useState(null);
   const [copilotOpen, setCopilotOpen] = useState(false);
   const [sidecarOpen, setSidecarOpen] = useState(false);
+  const [smartBarOpen, setSmartBarOpen] = useState(true);
   const [tabMenuOpen, setTabMenuOpen] = useState(false);
   const tabMenuRef = useRef(null);
 
@@ -87,6 +89,11 @@ export default function App() {
       if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
         e.preventDefault();
         setSidecarOpen(prev => !prev);
+      }
+      // Ctrl+Space or Ctrl+Shift+P -> Toggle Smart Command Bar
+      if ((e.ctrlKey && (e.code === 'Space' || e.key === ' ')) || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'p')) {
+        e.preventDefault();
+        setSmartBarOpen(prev => !prev);
       }
     };
     window.addEventListener('keydown', handleGlobalKeys);
@@ -271,7 +278,7 @@ export default function App() {
     );
   };
 
-  const handleExecuteCommandInActiveTerminal = (cmd) => {
+  const handleExecuteCommandInActiveTerminal = (cmd, execute = true) => {
     if (!cmd) return;
     setCurrentView('terminals');
     setMobileMenuOpen(false);
@@ -284,7 +291,7 @@ export default function App() {
       const targetId = activeTabId || openTabs[0]?.id;
       const commander = commandersRef.current[targetId];
       if (commander) {
-        commander(cmd);
+        commander(cmd, execute);
       } else if (attemptsLeft > 0) {
         setTimeout(() => tryExecute(attemptsLeft - 1), 60);
       }
@@ -539,6 +546,28 @@ export default function App() {
               <span className="text-xs font-mono opacity-75 hidden md:inline">Ctrl+K</span>
             </button>
 
+            {/* Smart Command Bar Toggle */}
+            {currentView === 'terminals' && (
+              <button
+                type="button"
+                onClick={() => setSmartBarOpen((prev) => !prev)}
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 ${
+                  smartBarOpen
+                    ? 'bg-purple-600/20 text-purple-200 border-purple-500/50 shadow-purple-500/10'
+                    : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
+                }`}
+                title="Smart Command Bar: Autocomplete contextual e preditivo (Ctrl + Espaço)"
+              >
+                <Sparkles className={`w-3.5 h-3.5 ${smartBarOpen ? 'text-purple-400 animate-pulse' : 'text-slate-400'}`} />
+                <span className="hidden sm:inline">Smart Bar</span>
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full border ${
+                  smartBarOpen ? 'bg-purple-500/30 text-purple-300 border-purple-500/50 font-bold' : 'bg-[#161b22] text-slate-500 border-[#30363d]'
+                }`}>
+                  {smartBarOpen ? 'ON' : 'OFF'}
+                </span>
+              </button>
+            )}
+
             {/* AI Sidecar Toggle */}
             {currentView === 'terminals' && (
               <button
@@ -613,8 +642,8 @@ export default function App() {
           {/* Terminals (Multiplexed with Split Panes or Single View + Docked AI Sidecar) */}
           <div className={`h-full w-full ${currentView === 'terminals' ? 'flex overflow-hidden' : 'hidden'}`}>
             {/* Terminal Main Grid/Pane */}
-            <div className="flex-1 h-full min-w-0 relative">
-              <div className={`h-full w-full ${
+            <div className="flex-1 h-full min-w-0 relative flex flex-col">
+              <div className={`flex-1 min-h-0 w-full ${
                 splitMode === 'vertical' && effectiveSecondaryTabId
                   ? 'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
                   : splitMode === 'horizontal' && effectiveSecondaryTabId
@@ -707,6 +736,19 @@ export default function App() {
                   );
                 })}
               </div>
+
+              {/* Smart Command Bar (Autocomplete Preditivo Contextual) */}
+              {smartBarOpen && (
+                <ErrorBoundary>
+                  <SmartCommandBar
+                    cwd={activeCwd}
+                    onExecuteCommand={(cmd) => handleExecuteCommandInActiveTerminal(cmd, true)}
+                    onInjectCommand={(cmd) => handleExecuteCommandInActiveTerminal(cmd, false)}
+                    isOpen={smartBarOpen}
+                    onToggle={() => setSmartBarOpen((prev) => !prev)}
+                  />
+                </ErrorBoundary>
+              )}
             </div>
 
             {/* Live Docked AI Sidecar Panel */}

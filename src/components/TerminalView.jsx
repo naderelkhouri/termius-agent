@@ -157,9 +157,9 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
 
     // Expose commander function so snippets and conversation commands can be injected
     if (onRegisterCommander) {
-      onRegisterCommander(tab.id, (command) => {
+      onRegisterCommander(tab.id, (command, execute = true) => {
         if (socket.readyState === WebSocket.OPEN) {
-          socket.send(JSON.stringify({ type: 'input', data: `${command}\n` }));
+          socket.send(JSON.stringify({ type: 'input', data: execute ? `${command}\n` : command }));
           term.focus();
         }
       });

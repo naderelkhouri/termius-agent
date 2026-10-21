@@ -182,3 +182,18 @@ export async function triggerAutomatedAnalysis() {
   if (!res.ok) throw new Error('Falha ao rodar análise automatizada');
   return res.json();
 }
+
+export async function fetchCommandSuggestions(query = '', cwd = '', category = 'all') {
+  try {
+    const params = new URLSearchParams();
+    if (query) params.append('q', query);
+    if (cwd) params.append('cwd', cwd);
+    if (category && category !== 'all') params.append('category', category);
+    const res = await fetch(`${BASE_URL}/commands/suggestions?${params}`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch (err) {
+    console.error('[API] Erro ao buscar sugestões de comandos:', err);
+    return [];
+  }
+}

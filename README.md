@@ -38,7 +38,16 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
   * 🔴 **Destrutivo:** Remoções recursivas ou descartes de repositório.
 * **Execução com 1 Clique:** Pressione `Enter` para injetar o comando diretamente no terminal ativo ou salve-o na biblioteca de Snippets.
 
-### 3. AI Sidecar ao Vivo (`Ctrl + Alt + A`)
+### 3. Smart Command Bar Preditiva (`Ctrl + Espaço`)
+* **Autocomplete Contextual no Terminal:** Barra preditiva acoplada na base do terminal que antecipa comandos com base no histórico real dos agentes Antigravity, scripts do `package.json`, comandos `git` e snippets salvos.
+* **Navegação & Execução Ágil:**
+  * **Navegação por Setas (`↑` / `↓`):** Selecione sugestões com preview instantâneo.
+  * **Inserir no Prompt (`Tab`):** Insere o comando no shell sem executar, permitindo personalizar flags e argumentos antes do envio.
+  * **Execução Direta (`Enter`):** Injeta e roda o comando no terminal ativo com 1 clique ou toque de teclado.
+  * **Classificação de Risco Visual:** Selos em tempo real para comandos seguros (🟢), de atenção (🟡) e potencialmente destrutivos (🔴).
+* **Filtros por Categoria:** Alterne instantaneamente entre `Todos`, `🤖 Antigravity AI`, `📦 NPM Scripts`, `⚡ Git`, `📋 Snippets` e `🔧 Sistema`.
+
+### 4. AI Sidecar ao Vivo (`Ctrl + Alt + A`)
 * **Painel Acoplado Lateralmente:** Acompanhe passos, raciocínio interno, chamadas de ferramentas e comandos bash em tempo real lado a lado com os terminais ativos sem sobreposição.
 * **Abas Rápidas de Inspeção:**
   * **Timeline:** Visualização cronológica dos passos do usuário e do agente com expansão do pensamento da IA (*thinking*).
@@ -47,27 +56,27 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
 * **Seletor Rápido de Conversas:** Dropdown com busca instantânea e sincronização automática com a conversa vinculada à aba ativa.
 * **Auto-Ajuste de Tela:** O terminal xterm se redimensiona automaticamente através de `ResizeObserver` sem desconexão de sessões.
 
-### 4. Integração com o Cérebro do Antigravity AI & Modo Fluido
+### 5. Integração com o Cérebro do Antigravity AI & Modo Fluido
 * **Consulta Inteligente:** Consulta em tempo real à base SQLite de conversas e transcripts (`.system_generated/logs/transcript.jsonl`).
 * **Visualização Flexível (Blocos vs Tabela):** Alterne entre cartões visuais e uma tabela densa com ordenação crescente/decrescente em todas as colunas (Data, Título, Passos, Workspace e Favoritos).
 * **Sistema de Favoritos (⭐):** Marque sessões prioritárias com persistência no backend e filtro rápido com 1 clique.
 * **Modo Fluido Autônomo (⚡):** Ative por conversa ou na barra superior do terminal para auto-aprovar prompts de ferramentas (`Run this command? 1. Yes, run command; 2. Yes, and...`) via `--dangerously-skip-permissions` e auto-resposta em tempo real no PTY.
 
-### 5. Gerenciador de Hosts & SSH
+### 6. Gerenciador de Hosts & SSH
 * Cadastro visual de máquinas locais, instâncias de containers e servidores VPS remotos.
 * Sanitização estrita contra injeção de parâmetros SSH e separador seguro `--`.
 * Tags coloridas, diretórios iniciais (`CWD`) configuráveis e agrupamento por ambiente (Produção, Local, Projetos).
 
-### 6. Biblioteca de Snippets
+### 7. Biblioteca de Snippets
 * Automações de 1 clique para Docker, Git, Rede e Sistema.
 * CRUD completo com exclusão segura e cópia para área de transferência.
 
-### 7. Serviço Completo de Telemetria & Auto-Melhorias
+### 8. Serviço Completo de Telemetria & Auto-Melhorias
 * **Captura Passiva de Exceções:** Interceptação automática de `window.onerror` e rejeições assíncronas.
 * **Diagnóstico Automático por IA:** Detecção de causa raiz e recomendação de correções para falhas de portas e conexões.
 * **Melhorias Manuais & Automatizadas:** Backlog integrado para registro de melhorias e gatilho de varredura autônoma por IA.
 
-### 8. Hardening de Segurança & Alta Resiliência
+### 9. Hardening de Segurança & Alta Resiliência
 * **Single Instance Lock:** Prevenção de instâncias duplicadas no Electron, focando a janela ativa e evitando conflitos de porta.
 * **Prevenção de PTY Órfãos:** Signal traps no Python (`SIGTERM`/`SIGHUP`/`SIGINT`) com encerramento de grupo de processos (`killpg`) e rastreamento ativo no Node.js.
 * **Backups Rotativos:** Gravação atômica com swap temporário e fallback automático para cópias `.bak` em arquivos de storage.
@@ -81,13 +90,16 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
 | Atalho | Ação |
 | :--- | :--- |
 | **`Ctrl + K`** | Abrir AI Terminal Copilot |
+| **`Ctrl + Espaço`** / **`Ctrl + Shift + P`** | Abrir / Alternar **Smart Command Bar Preditiva** |
 | **`Ctrl + Alt + A`** | Abrir / Fechar **AI Sidecar ao Vivo** |
 | **`Ctrl + Alt + V`** | Dividir Terminal Verticalmente (lado a lado) |
 | **`Ctrl + Alt + H`** | Dividir Terminal Horizontalmente |
 | **`Ctrl + Shift + T`** | Nova Aba de Terminal |
 | **`Ctrl + Shift + V`** | Colar no Terminal Ativo |
+| **`Tab`** *(na Smart Bar)* | Inserir comando selecionado no prompt sem executar |
+| **`Enter`** *(na Smart Bar)* | Executar imediatamente no terminal focado |
 | **`Enter`** *(no Copilot)* | Executar comando gerado no terminal focado |
-| **`Esc`** *(no Copilot)* | Fechar modal do Copilot |
+| **`Esc`** | Fechar modais / limpar busca |
 
 ---
 
