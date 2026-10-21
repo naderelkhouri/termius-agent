@@ -20,6 +20,7 @@ export default function Sidebar({
   onSelectTab, 
   onNewTab,
   onResumeLastSession,
+  onOpenSkills,
   mobileOpen,
   onCloseMobile
 }) {
@@ -163,8 +164,27 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* Quick Resume Antigravity Banner */}
-        <div className="p-3 border-t border-[#30363d]/60">
+        {/* Quick Resume Antigravity Banner & Skills IA */}
+        <div className="p-3 border-t border-[#30363d]/60 space-y-2">
+          {onOpenSkills && (
+            <button
+              onClick={() => {
+                onOpenSkills();
+                if (onCloseMobile) onCloseMobile();
+              }}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group"
+              title="Catálogo de 340 Skills & Especialistas em Português BR"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform animate-pulse" />
+                <span>Skills IA (340)</span>
+              </div>
+              <span className="text-[10px] bg-purple-500/30 text-purple-300 font-mono px-1.5 py-0.5 rounded">
+                PT-BR
+              </span>
+            </button>
+          )}
+
           <button
             onClick={() => {
               if (onResumeLastSession) onResumeLastSession();

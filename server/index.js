@@ -11,6 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { listConversations, getConversationTranscript, getRecentHistoryPrompts } from './db.js';
 import { generateCopilotCommand } from './copilot.js';
 import { getCommandSuggestions } from './commandSuggestions.js';
+import { getAllSkills, getSkillDetail } from './skillsService.js';
+import { generateSpecAndRoadmap, updateSpecAndRoadmap } from './specRoadmapService.js';
 import { 
   recordEvent, 
   listEvents, 
@@ -256,6 +258,56 @@ app.get('/api/commands/suggestions', (req, res) => {
   } catch (err) {
     console.error('[Server] Erro ao obter sugestões de comandos:', err);
     res.status(500).json({ error: err.message, suggestions: [] });
+  }
+});
+
+// Skills Endpoints
+app.get('/api/skills', (req, res) => {
+  try {
+    const { search, category, limit } = req.query;
+    const skills = getAllSkills({
+      search: search || '',
+      category: category || 'all',
+      limit: parseInt(limit, 10) || 400
+    });
+    res.json(skills);
+  } catch (err) {
+    console.error('[Server] Erro ao listar skills:', err);
+    res.status(500).json({ error: err.message, skills: [] });
+  }
+});
+
+app.get('/api/skills/:name', (req, res) => {
+  try {
+    const detail = getSkillDetail(req.params.name);
+    if (!detail) {
+      return res.status(404).json({ error: 'Skill não encontrada' });
+    }
+    res.json(detail);
+  } catch (err) {
+    console.error(`[Server] Erro ao obter detalhe da skill ${req.params.name}:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Spec & Roadmap Endpoints
+app.get('/api/conversations/:id/spec-roadmap', (req, res) => {
+  try {
+    const data = generateSpecAndRoadmap(req.params.id);
+    res.json(data);
+  } catch (err) {
+    console.error(`[Server] Erro ao obter spec/roadmap de ${req.params.id}:`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/conversations/:id/spec-roadmap', (req, res) => {
+  try {
+    const updated = updateSpecAndRoadmap(req.params.id, req.body || {});
+    res.json(updated);
+  } catch (err) {
+    console.error(`[Server] Erro ao atualizar spec/roadmap de ${req.params.id}:`, err);
+    res.status(500).json({ error: err.message });
   }
 });
 

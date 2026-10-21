@@ -25,8 +25,11 @@ import {
   Table as TableIcon,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  FileText,
+  Milestone
 } from 'lucide-react';
+import SpecRoadmapModal from './SpecRoadmapModal';
 
 function extractCommandLine(tc) {
   if (!tc) return '';
@@ -70,6 +73,7 @@ export default function ConversationHistoryModal({
   const [transcript, setTranscript] = useState(null);
   const [transcriptLoading, setTranscriptLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const [specModalConv, setSpecModalConv] = useState(null);
 
   // Favoritos
   const [favorites, setFavorites] = useState(() => {
@@ -343,6 +347,16 @@ export default function ConversationHistoryModal({
         {selectedConversation ? (
           <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
             {/* Toggle Modo Fluido para esta conversa específica */}
+            <button
+              type="button"
+              onClick={() => setSpecModalConv(selectedConversation)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/30 text-amber-200 border border-amber-500/35 text-xs font-bold transition-all shrink-0"
+              title="Visualizar a Spec técnica e o Roadmap desta conversa"
+            >
+              <FileText className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Spec & Roadmap</span>
+            </button>
+
             <button
               type="button"
               onClick={() => toggleFluid(selectedConversation.conversation_id)}
@@ -643,6 +657,14 @@ export default function ConversationHistoryModal({
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               type="button"
+                              onClick={() => setSpecModalConv(c)}
+                              className="p-1.5 rounded-lg bg-[#21262d] hover:bg-amber-500/20 text-slate-300 hover:text-amber-300 border border-[#30363d] transition-colors"
+                              title="Ver Spec & Roadmap da Sessão"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
                               onClick={() => {
                                 if (onResumeConversation) {
                                   onResumeConversation(c.conversation_id, c.title || 'Conversa IA', c.workspace || '/home/nader', isFluid);
@@ -802,7 +824,20 @@ export default function ConversationHistoryModal({
                           <span className="font-medium">{formatDate(c.last_modified_time)}</span>
                         </div>
 
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSpecModalConv(c);
+                            }}
+                            className="min-h-[28px] px-2 py-1 rounded-lg bg-[#21262d] hover:bg-amber-500/20 text-slate-300 hover:text-amber-200 border border-[#30363d] text-xs font-semibold flex items-center gap-1 transition-all"
+                            title="Ver Spec & Roadmap da Sessão"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-amber-400" />
+                            <span className="hidden sm:inline">Spec</span>
+                          </button>
+
                           <button
                             type="button"
                             onClick={(e) => {
@@ -945,6 +980,15 @@ export default function ConversationHistoryModal({
           )
         )}
       </div>
+
+      {/* Modal Spec & Roadmap */}
+      <SpecRoadmapModal
+        conversationId={specModalConv?.conversation_id}
+        conversationTitle={specModalConv?.title}
+        isOpen={Boolean(specModalConv)}
+        onClose={() => setSpecModalConv(null)}
+        onResumeConversation={onResumeConversation}
+      />
     </div>
   );
 }

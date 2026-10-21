@@ -197,3 +197,39 @@ export async function fetchCommandSuggestions(query = '', cwd = '', category = '
     return [];
   }
 }
+
+export async function fetchSkills(search = '', category = 'all') {
+  try {
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (category && category !== 'all') params.append('category', category);
+    const res = await fetch(`${BASE_URL}/skills?${params}`);
+    if (!res.ok) return [];
+    return res.json();
+  } catch (err) {
+    console.error('[API] Erro ao carregar skills:', err);
+    return [];
+  }
+}
+
+export async function fetchSkillDetail(name) {
+  const res = await fetch(`${BASE_URL}/skills/${encodeURIComponent(name)}`);
+  if (!res.ok) throw new Error('Falha ao carregar detalhes da skill');
+  return res.json();
+}
+
+export async function fetchSpecAndRoadmap(conversationId) {
+  const res = await fetch(`${BASE_URL}/conversations/${encodeURIComponent(conversationId)}/spec-roadmap`);
+  if (!res.ok) throw new Error('Falha ao carregar spec e roadmap da conversa');
+  return res.json();
+}
+
+export async function saveSpecAndRoadmap(conversationId, data) {
+  const res = await fetch(`${BASE_URL}/conversations/${encodeURIComponent(conversationId)}/spec-roadmap`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) throw new Error('Falha ao atualizar spec e roadmap');
+  return res.json();
+}

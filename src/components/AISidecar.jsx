@@ -5,7 +5,9 @@ import {
   fetchFavorites,
   fetchFluidConversations,
   addFluidConversation,
-  removeFluidConversation
+  removeFluidConversation,
+  fetchSpecAndRoadmap,
+  saveSpecAndRoadmap
 } from '../services/api';
 import { 
   BotMessageSquare, 
@@ -24,7 +26,13 @@ import {
   Search,
   Calendar,
   Layers,
-  ArrowRight
+  ArrowRight,
+  FileText,
+  Milestone,
+  CheckCircle2,
+  Clock,
+  ListTodo,
+  Target
 } from 'lucide-react';
 
 function extractCommandLine(tc) {
@@ -71,9 +79,11 @@ export default function AISidecar({
   const [conversations, setConversations] = useState([]);
   const [selectedConvId, setSelectedConvId] = useState(null);
   const [transcript, setTranscript] = useState([]);
+  const [specRoadmap, setSpecRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
   const [transcriptLoading, setTranscriptLoading] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('all'); // 'all' | 'commands' | 'files'
+  const [specLoading, setSpecLoading] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all'); // 'all' | 'commands' | 'files' | 'spec' | 'roadmap'
   const [copiedKey, setCopiedKey] = useState(null);
   const [fluidConversations, setFluidConversations] = useState([]);
   const [convDropdownOpen, setConvDropdownOpen] = useState(false);
@@ -117,10 +127,11 @@ export default function AISidecar({
     }
   }, [activeTab?.conversationId]);
 
-  // Carrega transcript da conversa selecionada
+  // Carrega transcript e spec/roadmap da conversa selecionada
   useEffect(() => {
     if (!selectedConvId) return;
     loadTranscript(selectedConvId);
+    loadSpecAndRoadmap(selectedConvId);
   }, [selectedConvId]);
 
   const loadTranscript = async (convId) => {
@@ -133,6 +144,58 @@ export default function AISidecar({
       setTranscript([]);
     } finally {
       setTranscriptLoading(false);
+    }
+  };
+
+  const loadSpecAndRoadmap = async (convId) => {
+    setSpecLoading(true);
+    try {
+      const data = await fetchSpecAndRoadmap(convId);
+      setSpecRoadmap(data);
+    } catch (err) {
+      console.error('[AISidecar] Erro ao carregar spec/roadmap:', err);
+    } finally {
+      setSpecLoading(false);
+    }
+  };
+
+  const handleToggleTask = async (milestoneId, taskIndex) => {
+    if (!specRoadmap || !selectedConvId) return;
+    const nextMilestones = specRoadmap.roadmap.milestones.map((m) => {
+      if (m.id !== milestoneId) return m;
+      const nextTasks = m.tasks.map((t, idx) => {
+        if (idx !== taskIndex) return t;
+        return { ...t, completed: !t.completed };
+      });
+      const completedCount = nextTasks.filter((t) => t.completed).length;
+      const prog = nextTasks.length > 0 ? Math.round((completedCount / nextTasks.length) * 100) : 0;
+      return {
+        ...m,
+        tasks: nextTasks,
+        progress: prog,
+        status: prog === 100 ? 'completed' : prog > 0 ? 'in_progress' : 'planned'
+      };
+    });
+
+    const totalTasks = nextMilestones.reduce((acc, m) => acc + m.tasks.length, 0);
+    const completedTasks = nextMilestones.reduce((acc, m) => acc + m.tasks.filter((t) => t.completed).length, 0);
+    const overallProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+    const updated = {
+      ...specRoadmap,
+      overallProgress,
+      roadmap: {
+        ...specRoadmap.roadmap,
+        overallProgress,
+        milestones: nextMilestones
+      }
+    };
+
+    setSpecRoadmap(updated);
+    try {
+      await saveSpecAndRoadmap(selectedConvId, updated);
+    } catch (err) {
+      console.warn('[AISidecar] Erro ao salvar roadmap:', err);
     }
   };
 
@@ -272,11 +335,11 @@ export default function AISidecar({
           {/* Botão Atualizar */}
           <button
             type="button"
-            onClick={() => selectedConvId && loadTranscript(selectedConvId)}
+            onClick={() => selectedConvId && (loadTranscript(selectedConvId), loadSpecAndRoadmap(selectedConvId))}
             className="w-7 h-7 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white flex items-center justify-center transition-colors active:scale-95"
-            title="Atualizar passos da conversa"
+            title="Atualizar passos e roadmap da conversa"
           >
-            <RotateCcw className={`w-3.5 h-3.5 ${transcriptLoading ? 'animate-spin text-purple-400' : ''}`} />
+            <RotateCcw className={`w-3.5 h-3.5 ${transcriptLoading || specLoading ? 'animate-spin text-purple-400' : ''}`} />
           </button>
 
           {/* Botão Fechar Sidecar */}
@@ -380,13 +443,13 @@ export default function AISidecar({
         )}
       </div>
 
-      {/* Filter Tabs: Timeline | Comandos | Arquivos */}
-      <div className="px-3 pt-2 pb-1.5 border-b border-[#30363d] flex items-center justify-between bg-[#161b22] shrink-0">
+      {/* Filter Tabs: Timeline | Comandos | Arquivos | Spec | Roadmap */}
+      <div className="px-3 pt-2 pb-1.5 border-b border-[#30363d] flex items-center justify-between bg-[#161b22] shrink-0 overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => setActiveFilter('all')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
               activeFilter === 'all'
                 ? 'bg-purple-600/20 text-purple-300 border border-purple-500/40 shadow-xs'
                 : 'text-slate-400 hover:text-white'
@@ -398,27 +461,58 @@ export default function AISidecar({
           <button
             type="button"
             onClick={() => setActiveFilter('commands')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
               activeFilter === 'commands'
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-xs'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
             <Terminal className="w-3 h-3 text-cyan-400" />
-            <span>Comandos ({allCommands.length})</span>
+            <span>Cmds ({allCommands.length})</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveFilter('files')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
               activeFilter === 'files'
                 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-xs'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
             <FileCode2 className="w-3 h-3 text-emerald-400" />
-            <span>Arquivos ({allFiles.length})</span>
+            <span>Diffs ({allFiles.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveFilter('spec')}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+              activeFilter === 'spec'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-xs'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <FileText className="w-3 h-3 text-amber-400" />
+            <span>Spec</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveFilter('roadmap')}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+              activeFilter === 'roadmap'
+                ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40 shadow-xs'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Milestone className="w-3 h-3 text-blue-400" />
+            <span>Roadmap</span>
+            {specRoadmap && (
+              <span className="text-[10px] font-mono px-1 rounded bg-blue-500/30 text-blue-200">
+                {specRoadmap.overallProgress}%
+              </span>
+            )}
           </button>
         </div>
       </div>
@@ -529,6 +623,254 @@ export default function AISidecar({
                 </div>
               );
             })
+          )
+        ) : activeFilter === 'spec' ? (
+          /* View Especificação Técnica (Spec) */
+          specLoading ? (
+            <div className="flex flex-col items-center justify-center h-48 text-slate-400 text-xs font-semibold gap-2">
+              <RotateCcw className="w-5 h-5 animate-spin text-amber-400" />
+              <span>Sintetizando especificação técnica da sessão...</span>
+            </div>
+          ) : !specRoadmap?.spec ? (
+            <div className="text-center py-12 text-slate-500 text-xs font-semibold">
+              Nenhuma especificação disponível para esta conversa.
+            </div>
+          ) : (
+            <div className="space-y-3.5">
+              {/* Header Card: Escopo & Objetivo */}
+              <div className="p-3.5 rounded-2xl bg-[#0d1117] border border-[#30363d] shadow-xs">
+                <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[#21262d]">
+                  <FileText className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                    Objetivo Central & Escopo
+                  </span>
+                </div>
+                <h4 className="text-xs font-semibold text-amber-200 mb-1.5 leading-snug">
+                  {specRoadmap.title || 'Sessão Antigravity'}
+                </h4>
+                <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                  {specRoadmap.spec.objective}
+                </p>
+
+                {/* Tech Stack */}
+                <div className="mt-3 pt-2 border-t border-[#21262d]">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1.5">
+                    Stack & Tecnologias Detectadas
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {specRoadmap.spec.techStack?.map((tech, idx) => (
+                      <span
+                        key={idx}
+                        className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Functional Requirements */}
+              <div className="p-3.5 rounded-2xl bg-[#0d1117] border border-[#30363d] shadow-xs">
+                <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-[#21262d]">
+                  <div className="flex items-center gap-2">
+                    <ListTodo className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="text-xs font-bold text-white uppercase tracking-wider">
+                      Requisitos Identificados ({specRoadmap.spec.functionalRequirements?.length || 0})
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {specRoadmap.spec.functionalRequirements?.map((req) => (
+                    <div
+                      key={req.id}
+                      className="p-2.5 rounded-xl bg-[#161b22] border border-[#30363d] text-xs flex items-start gap-2.5"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        <span className="font-semibold text-slate-200 block leading-snug">
+                          {req.title}
+                        </span>
+                        {req.fullText && req.fullText !== req.title && (
+                          <span className="text-[11px] text-slate-400 block mt-1 line-clamp-2 select-text font-mono">
+                            {req.fullText}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Architectural Decisions */}
+              <div className="p-3.5 rounded-2xl bg-[#0d1117] border border-[#30363d] shadow-xs">
+                <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[#21262d]">
+                  <Target className="w-4 h-4 text-blue-400 shrink-0" />
+                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                    Decisões de Arquitetura & Engenharia
+                  </span>
+                </div>
+                <ul className="space-y-1.5 text-xs text-slate-300">
+                  {specRoadmap.spec.architecturalDecisions?.map((dec, idx) => (
+                    <li key={idx} className="flex items-start gap-2 leading-relaxed">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0 mt-1.5" />
+                      <span>{dec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Affected Files */}
+              <div className="p-3.5 rounded-2xl bg-[#0d1117] border border-[#30363d] shadow-xs">
+                <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[#21262d]">
+                  <FileCode2 className="w-4 h-4 text-purple-400 shrink-0" />
+                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                    Arquivos Afetados ({specRoadmap.spec.affectedFiles?.length || 0})
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {specRoadmap.spec.affectedFiles?.map((f, idx) => (
+                    <div
+                      key={idx}
+                      className="px-2.5 py-1 rounded-lg bg-[#161b22] text-[11px] font-mono text-slate-300 truncate flex items-center justify-between"
+                    >
+                      <span className="truncate">{f.path.replace('/home/nader', '~')}</span>
+                      <span className="text-[10px] text-purple-300 shrink-0 ml-2">modificado</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )
+        ) : activeFilter === 'roadmap' ? (
+          /* View Roadmap & Milestones */
+          specLoading ? (
+            <div className="flex flex-col items-center justify-center h-48 text-slate-400 text-xs font-semibold gap-2">
+              <RotateCcw className="w-5 h-5 animate-spin text-blue-400" />
+              <span>Calculando roadmap e fases da evolução...</span>
+            </div>
+          ) : !specRoadmap?.roadmap ? (
+            <div className="text-center py-12 text-slate-500 text-xs font-semibold">
+              Nenhum roadmap gerado para esta conversa.
+            </div>
+          ) : (
+            <div className="space-y-3.5">
+              {/* Overall Progress Banner */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/40 via-purple-950/30 to-[#161b22] border border-blue-500/30 shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Milestone className="w-4 h-4 text-blue-400" />
+                    <span className="text-xs font-bold text-white uppercase tracking-wider">
+                      Progresso Geral da Sessão
+                    </span>
+                  </div>
+                  <span className="text-sm font-extrabold font-mono text-blue-300">
+                    {specRoadmap.overallProgress}% Concluído
+                  </span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full h-2 rounded-full bg-[#21262d] overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+                    style={{ width: `${specRoadmap.overallProgress}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Milestones List */}
+              <div className="space-y-3">
+                {specRoadmap.roadmap.milestones?.map((m) => {
+                  const isDone = m.status === 'completed' || m.progress === 100;
+                  const inProgress = m.status === 'in_progress';
+
+                  return (
+                    <div
+                      key={m.id}
+                      className="p-3.5 rounded-2xl bg-[#0d1117] border border-[#30363d] shadow-xs"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2 pb-2 border-b border-[#21262d]">
+                        <div>
+                          <h5 className="text-xs font-bold text-white flex items-center gap-1.5">
+                            {isDone ? (
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            ) : inProgress ? (
+                              <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0 animate-pulse" />
+                            ) : (
+                              <Milestone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            )}
+                            <span>{m.title}</span>
+                          </h5>
+                          <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed font-sans">
+                            {m.description}
+                          </p>
+                        </div>
+
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase font-mono shrink-0 ${
+                            isDone
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : inProgress
+                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                              : 'bg-slate-800 text-slate-400 border border-slate-700'
+                          }`}
+                        >
+                          {isDone ? '100% OK' : inProgress ? `${m.progress}% Ativo` : 'Planejado'}
+                        </span>
+                      </div>
+
+                      {/* Tasks Checkbox List */}
+                      <div className="space-y-1.5">
+                        {m.tasks.map((task, taskIdx) => (
+                          <div
+                            key={taskIdx}
+                            onClick={() => handleToggleTask(m.id, taskIdx)}
+                            className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-[#161b22] cursor-pointer transition-colors text-xs select-none"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={Boolean(task.completed)}
+                              onChange={() => {}}
+                              className="rounded border-[#30363d] text-purple-600 focus:ring-0 focus:ring-offset-0 bg-[#0d1117] cursor-pointer w-3.5 h-3.5"
+                            />
+                            <span
+                              className={`truncate leading-snug ${
+                                task.completed
+                                  ? 'line-through text-slate-500'
+                                  : 'text-slate-200 font-medium'
+                              }`}
+                            >
+                              {task.title}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Next Steps */}
+              {specRoadmap.roadmap.nextActions?.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-[#0d1117] border border-[#30363d] shadow-xs">
+                  <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[#21262d]">
+                    <Target className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <span className="text-xs font-bold text-white uppercase tracking-wider">
+                      Próximos Passos Recomendados
+                    </span>
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-slate-300">
+                    {specRoadmap.roadmap.nextActions.map((action, idx) => (
+                      <li key={idx} className="flex items-start gap-2 leading-relaxed">
+                        <ArrowRight className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
+                        <span>{action}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           )
         ) : (
           /* View Completa Timeline */

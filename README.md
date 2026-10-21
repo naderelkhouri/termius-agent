@@ -56,7 +56,17 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
 * **Seletor Rápido de Conversas:** Dropdown com busca instantânea e sincronização automática com a conversa vinculada à aba ativa.
 * **Auto-Ajuste de Tela:** O terminal xterm se redimensiona automaticamente através de `ResizeObserver` sem desconexão de sessões.
 
-### 5. Integração com o Cérebro do Antigravity AI & Modo Fluido
+### 5. Hub de Skills IA em Português BR (`Ctrl + Shift + S`)
+* **Catálogo Completo de 340+ Especialistas:** Acesso instantâneo a todas as skills do ecossistema Antigravity e The Agency (`~/.agents/skills` e `~/.gemini/config/skills`).
+* **Explicações em Português BR:** Títulos amigáveis, categorias traduzidas (Frontend, Backend, Segurança, QA, Mobile, etc.) e resumos explicativos em Português do Brasil.
+* **Inspeção de Diretrizes & Adoção de Persona:** Visualize o conteúdo completo (`SKILL.md`) com diretrizes, regras críticas e prompts de ativação. Com 1 clique no botão **"Adotar Persona no Terminal"**, o comando `@skill-name` é injetado no shell ativo pronto para uso.
+
+### 6. Spec Técnica & Roadmap Automatizados por Conversa
+* **Especificação Técnica Integrada (📋 Spec):** Síntese automática a partir dos transcripts do Antigravity contendo escopo, objetivo principal, stack tecnológica identificada, requisitos funcionais detalhados com status (concluído / em progresso), decisões de arquitetura e lista de arquivos afetados.
+* **Roadmap Interativo com Checklist (🗺️ Roadmap):** Plano de evolução da conversa organizado em milestones com barra de progresso global (`0% a 100%`), checklist de tarefas interativo com persistência automática no backend (`specRoadmapStorage.json`) e sugestões de próximas ações.
+* **Acesso em Múltiplos Pontos:** Disponível nas abas **Spec** e **Roadmap** do **AI Sidecar**, no **Histórico de Conversas** (tabela e blocos) e em modal dedicado de tela cheia.
+
+### 7. Integração com o Cérebro do Antigravity AI & Modo Fluido
 * **Consulta Inteligente:** Consulta em tempo real à base SQLite de conversas e transcripts (`.system_generated/logs/transcript.jsonl`).
 * **Visualização Flexível (Blocos vs Tabela):** Alterne entre cartões visuais e uma tabela densa com ordenação crescente/decrescente em todas as colunas (Data, Título, Passos, Workspace e Favoritos).
 * **Sistema de Favoritos (⭐):** Marque sessões prioritárias com persistência no backend e filtro rápido com 1 clique.
@@ -90,6 +100,7 @@ Projetado para desenvolvedores e operadores de infraestrutura, ele unifica conex
 | Atalho | Ação |
 | :--- | :--- |
 | **`Ctrl + K`** | Abrir AI Terminal Copilot |
+| **`Ctrl + Shift + S`** | Abrir **Hub de Skills IA (340+) em Português BR** |
 | **`Ctrl + Espaço`** / **`Ctrl + Shift + P`** | Abrir / Alternar **Smart Command Bar Preditiva** |
 | **`Ctrl + Alt + A`** | Abrir / Fechar **AI Sidecar ao Vivo** |
 | **`Ctrl + Alt + V`** | Dividir Terminal Verticalmente (lado a lado) |

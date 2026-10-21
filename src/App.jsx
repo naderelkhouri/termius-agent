@@ -7,6 +7,7 @@ import ConversationHistoryModal from './components/ConversationHistoryModal';
 import AICopilotModal from './components/AICopilotModal';
 import AISidecar from './components/AISidecar';
 import SmartCommandBar from './components/SmartCommandBar';
+import SkillsDropdownModal from './components/SkillsDropdownModal';
 import TelemetryManager from './components/TelemetryManager';
 import ErrorBoundary from './components/ErrorBoundary';
 import { 
@@ -21,7 +22,8 @@ import {
   RotateCcw,
   ChevronDown,
   Zap,
-  PanelRight
+  PanelRight,
+  BookOpen
 } from 'lucide-react';
 
 export default function App() {
@@ -32,6 +34,7 @@ export default function App() {
   const [copilotOpen, setCopilotOpen] = useState(false);
   const [sidecarOpen, setSidecarOpen] = useState(false);
   const [smartBarOpen, setSmartBarOpen] = useState(true);
+  const [skillsModalOpen, setSkillsModalOpen] = useState(false);
   const [tabMenuOpen, setTabMenuOpen] = useState(false);
   const tabMenuRef = useRef(null);
 
@@ -95,10 +98,20 @@ export default function App() {
         e.preventDefault();
         setSmartBarOpen(prev => !prev);
       }
+      // Ctrl+Shift+S -> Toggle Skills Modal
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        setSkillsModalOpen(prev => !prev);
+      }
     };
     window.addEventListener('keydown', handleGlobalKeys);
     return () => window.removeEventListener('keydown', handleGlobalKeys);
   }, [openTabs]);
+
+  const handleAdoptSkillInTerminal = (skillName, skillTitle) => {
+    const prompt = `Adote a persona e execute segundo as diretrizes de @${skillName}`;
+    handleExecuteCommandInActiveTerminal(prompt, false);
+  };
 
   const handleRegisterCommander = (tabId, commanderFn) => {
     commandersRef.current[tabId] = commanderFn;
@@ -324,6 +337,7 @@ export default function App() {
         onSelectTab={setActiveTabId}
         onNewTab={() => handleNewTab()}
         onResumeLastSession={handleResumeLastConversation}
+        onOpenSkills={() => setSkillsModalOpen(true)}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
@@ -534,6 +548,18 @@ export default function App() {
                 </span>
               </button>
             )}
+
+            {/* Skills IA Catalog Button */}
+            <button
+              type="button"
+              onClick={() => setSkillsModalOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-xs active:scale-95"
+              title="Catálogo de Skills & Especialistas IA em Português BR (Ctrl + Shift + S)"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-purple-400" />
+              <span className="hidden sm:inline">Skills IA</span>
+              <span className="text-[10px] font-mono px-1 rounded bg-purple-500/25 text-purple-300">340</span>
+            </button>
 
             {/* AI Copilot Button */}
             <button
@@ -797,6 +823,13 @@ export default function App() {
           onClose={() => setCopilotOpen(false)}
           onExecuteCommand={handleExecuteCommandInActiveTerminal}
           currentCwd={activeCwd}
+        />
+
+        {/* Skills Catalog & Directives Modal (Ctrl + Shift + S) */}
+        <SkillsDropdownModal
+          isOpen={skillsModalOpen}
+          onClose={() => setSkillsModalOpen(false)}
+          onAdoptSkillInTerminal={handleAdoptSkillInTerminal}
         />
       </main>
     </div>
