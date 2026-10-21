@@ -10,6 +10,7 @@ import {
   saveSpecAndRoadmap,
   exportSpecAndRoadmap
 } from '../services/api';
+import { sendNotification } from '../services/notificationService';
 import { 
   BotMessageSquare, 
   RotateCcw, 
@@ -210,6 +211,10 @@ export default function AISidecar({
     try {
       await exportSpecAndRoadmap(selectedConvId);
       setExportSpecSuccess(true);
+      sendNotification({
+        title: 'Spec & Roadmap Exportados',
+        body: 'Arquivos SPEC.md e ROADMAP.md gerados com sucesso na raiz do projeto!'
+      });
       setTimeout(() => setExportSpecSuccess(false), 6000);
     } catch (err) {
       alert(`Erro ao exportar Markdown: ${err.message}`);

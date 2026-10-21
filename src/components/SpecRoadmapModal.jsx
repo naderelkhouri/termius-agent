@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchSpecAndRoadmap, saveSpecAndRoadmap, exportSpecAndRoadmap } from '../services/api';
+import { sendNotification } from '../services/notificationService';
 import { 
   FileText, 
   Milestone, 
@@ -97,6 +98,10 @@ export default function SpecRoadmapModal({
     try {
       const res = await exportSpecAndRoadmap(conversationId);
       setExportResult(res);
+      sendNotification({
+        title: 'Spec & Roadmap Exportados',
+        body: 'Arquivos SPEC.md e ROADMAP.md gerados com sucesso na raiz do projeto!'
+      });
       setTimeout(() => setExportResult(null), 8000);
     } catch (err) {
       alert(`Falha ao exportar Markdown: ${err.message}`);

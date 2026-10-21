@@ -3,6 +3,7 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Zap } from 'lucide-react';
+import { sendNotification } from '../services/notificationService';
 
 export default function TerminalView({ tab, onTitleChange, isActive, onRegisterCommander }) {
   const containerRef = useRef(null);
@@ -11,6 +12,9 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
   const fitAddonRef = useRef(null);
   const isFluidRef = useRef(Boolean(tab.isFluid));
   const lastAutoApproveRef = useRef(0);
+  const commandStartTimeRef = useRef(0);
+  const commandRunningRef = useRef(false);
+  const lastCommandNameRef = useRef('');
   const [fluidAlert, setFluidAlert] = useState(false);
 
   useEffect(() => {
@@ -109,6 +113,11 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
                 setFluidAlert(true);
                 setTimeout(() => setFluidAlert(false), 2400);
 
+                sendNotification({
+                  title: '⚡ Modo Fluido',
+                  body: `Aba "${tab.title || 'Terminal'}": Confirmação do Antigravity aprovada automaticamente.`
+                });
+
                 // Envia 1\r automaticamente após renderização do prompt
                 setTimeout(() => {
                   if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -118,7 +127,38 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
               }
             }
           }
+
+          // Notificação de conclusão para comandos longos (> 3.5s)
+          if (commandRunningRef.current && msg.data) {
+            const elapsed = Date.now() - commandStartTimeRef.current;
+            if (elapsed >= 3500) {
+              const cleanOutput = msg.data.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '');
+              const isPromptReturned = /(?:[\w\-.]+@[\w\-.]+:.*[#$%>❯➜]\s*$)|(?:^|\n)[#$%>❯➜]\s*$/m.test(cleanOutput.trim());
+              if (isPromptReturned) {
+                commandRunningRef.current = false;
+                const seconds = Math.round(elapsed / 1000);
+                const cmdLabel = lastCommandNameRef.current ? ` ("${lastCommandNameRef.current}")` : '';
+                sendNotification({
+                  title: 'Comando Concluído',
+                  body: `Aba "${tab.title || 'Terminal'}": Execução finalizada em ${seconds}s${cmdLabel}.`
+                });
+                lastCommandNameRef.current = '';
+              }
+            }
+          }
         } else if (msg.type === 'exit') {
+          if (commandRunningRef.current) {
+            const elapsed = Date.now() - commandStartTimeRef.current;
+            if (elapsed >= 3500) {
+              const seconds = Math.round(elapsed / 1000);
+              sendNotification({
+                title: 'Processo Finalizado',
+                body: `Aba "${tab.title || 'Terminal'}": Execução encerrada após ${seconds}s.`
+              });
+            }
+            commandRunningRef.current = false;
+            lastCommandNameRef.current = '';
+          }
           term.write('\r\n\x1b[33m[Processo finalizado]\x1b[0m\r\n');
         }
       } catch {
@@ -133,6 +173,10 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
     // User input to PTY
     term.onData((data) => {
       if (socket.readyState === WebSocket.OPEN) {
+        if (data.includes('\r') || data.includes('\n')) {
+          commandStartTimeRef.current = Date.now();
+          commandRunningRef.current = true;
+        }
         socket.send(JSON.stringify({ type: 'input', data }));
       }
     });
@@ -159,6 +203,11 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
     if (onRegisterCommander) {
       onRegisterCommander(tab.id, (command, execute = true) => {
         if (socket.readyState === WebSocket.OPEN) {
+          if (execute) {
+            commandStartTimeRef.current = Date.now();
+            commandRunningRef.current = true;
+            lastCommandNameRef.current = command.slice(0, 30);
+          }
           socket.send(JSON.stringify({ type: 'input', data: execute ? `${command}\n` : command }));
           term.focus();
         }

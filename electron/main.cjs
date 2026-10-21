@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, Notification } = require('electron');
 const path = require('node:path');
 const http = require('node:http');
 const { spawn } = require('node:child_process');
@@ -162,6 +162,44 @@ ipcMain.on('window:close', () => {
 
 ipcMain.handle('window:isMaximized', () => {
   return mainWindow ? mainWindow.isMaximized() : false;
+});
+
+// IPC handlers para Notificações Desktop Nativas
+ipcMain.on('notification:show', (event, { title, body, silent }) => {
+  if (Notification && Notification.isSupported()) {
+    try {
+      const notif = new Notification({
+        title: title || 'Termius Agent',
+        body: body || '',
+        silent: Boolean(silent),
+        icon: path.join(__dirname, 'icon.png')
+      });
+      notif.on('click', () => {
+        if (mainWindow) {
+          if (mainWindow.isMinimized()) mainWindow.restore();
+          mainWindow.focus();
+        }
+      });
+      notif.show();
+      return;
+    } catch (e) {
+      console.warn('[Electron] Falha ao exibir Notification nativa:', e);
+    }
+  }
+
+  // Fallback via notify-send nativo no Linux
+  if (process.platform === 'linux') {
+    try {
+      spawn('notify-send', ['-a', 'Termius Agent', title || 'Termius Agent', body || ''], { stdio: 'ignore' });
+    } catch {}
+  }
+});
+
+ipcMain.on('window:focus', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+  }
 });
 
 // Single Instance Lock: impede múltiplas instâncias concorrentes

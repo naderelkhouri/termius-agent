@@ -23,8 +23,16 @@ import {
   ChevronDown,
   Zap,
   PanelRight,
-  BookOpen
+  BookOpen,
+  Bell,
+  BellOff
 } from 'lucide-react';
+import { 
+  isNotificationEnabled, 
+  setNotificationEnabled, 
+  requestNotificationPermission, 
+  playNotificationSound 
+} from './services/notificationService';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('terminals');
@@ -36,7 +44,12 @@ export default function App() {
   const [smartBarOpen, setSmartBarOpen] = useState(true);
   const [skillsModalOpen, setSkillsModalOpen] = useState(false);
   const [tabMenuOpen, setTabMenuOpen] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(isNotificationEnabled);
   const tabMenuRef = useRef(null);
+
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
 
   const [openTabs, setOpenTabs] = useState([
     {
@@ -615,6 +628,38 @@ export default function App() {
                 </span>
               </button>
             )}
+
+            {/* Notificações Desktop & Chime de Áudio Toggle */}
+            <button
+              type="button"
+              onClick={() => {
+                const nextState = !notificationsEnabled;
+                setNotificationsEnabled(nextState);
+                setNotificationEnabled(nextState);
+                if (nextState) {
+                  requestNotificationPermission();
+                  playNotificationSound();
+                }
+              }}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
+                notificationsEnabled
+                  ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40 shadow-emerald-500/10'
+                  : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
+              }`}
+              title="Notificações Desktop & Áudio Chime (avisos do Modo Fluido e comandos concluídos)"
+            >
+              {notificationsEnabled ? (
+                <Bell className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <BellOff className="w-3.5 h-3.5 text-slate-400" />
+              )}
+              <span className="hidden xl:inline">Notificações</span>
+              <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
+                notificationsEnabled ? 'bg-emerald-500/30 text-emerald-300 border-emerald-500/50 font-bold' : 'bg-[#161b22] text-slate-400 border-[#30363d]'
+              }`}>
+                {notificationsEnabled ? 'ON' : 'OFF'}
+              </span>
+            </button>
 
             {/* Split Screen Mode Buttons */}
             {currentView === 'terminals' && (

@@ -321,6 +321,20 @@ app.post('/api/conversations/:id/export-spec-roadmap', (req, res) => {
   }
 });
 
+// Notificações Desktop Nativas
+app.post('/api/notifications', (req, res) => {
+  try {
+    const { title, body } = req.body || {};
+    if (process.platform === 'linux') {
+      spawn('notify-send', ['-a', 'Termius Agent', title || 'Termius Agent', body || ''], { stdio: 'ignore' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[Server] Erro ao enviar notificação:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Telemetry & Continuous Improvement Endpoints
 app.get('/api/telemetry/metrics', (req, res) => {
   try {
