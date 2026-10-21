@@ -3,7 +3,7 @@
 1
 > **Progresso Geral:** **84% Concluído**
 > **Sessão:** `9843fea2-1fc1-4cae-bf7f-387a99ed6500`
-> **Data:** 21/10/2026, 16:21:32
+> **Data:** 21/10/2026, 16:40:09
 
 ## 🗺️ Marcos de Evolução (Milestones)
 
@@ -48,13 +48,13 @@ _Menu dropdown de skills com descrições em PT-BR e gerador de Spec e Roadmap p
 - [x] Menu dropdown e modal de inspeção de skills
 - [x] Geração e renderização de Spec e Roadmap dinâmicos
 
-### 📌 Próximas Evoluções & Gravação de Sessões (0%)
+### 📌 Próximas Evoluções & Gravação de Sessões (33%)
 _Asciicast/asciinema session recorder, broadcast multi-host e notificações desktop nativas._
 
 **Checklist de Tarefas:**
+- [x] Notificações Desktop Nativas no Linux/Gnome com Web Audio Chime
 - [ ] Visual Session Recorder & Replay
 - [ ] Cluster Execution em múltiplos servidores
-- [ ] Notificações Desktop Nativas no Linux/Gnome
 
 ## 🚀 Próximos Passos Recomendados
 - Explorar o menu dropdown de Skills IA em Português BR para orquestrar especialistas.
