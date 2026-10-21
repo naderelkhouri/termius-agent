@@ -48,12 +48,12 @@ _Menu dropdown de skills com descrições em PT-BR e gerador de Spec e Roadmap p
 - [x] Menu dropdown e modal de inspeção de skills
 - [x] Geração e renderização de Spec e Roadmap dinâmicos
 
-### 📌 Próximas Evoluções & Gravação de Sessões (33%)
+### 📌 Próximas Evoluções & Gravação de Sessões (67%)
 _Asciicast/asciinema session recorder, broadcast multi-host e notificações desktop nativas._
 
 **Checklist de Tarefas:**
 - [x] Notificações Desktop Nativas no Linux/Gnome com Web Audio Chime
-- [ ] Visual Session Recorder & Replay
+- [x] Visual Session Recorder & Replay (Asciicast v2 com timeline, velocidade e download .cast)
 - [ ] Cluster Execution em múltiplos servidores
 
 ## 🚀 Próximos Passos Recomendados

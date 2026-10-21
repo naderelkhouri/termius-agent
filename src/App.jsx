@@ -9,6 +9,7 @@ import AISidecar from './components/AISidecar';
 import SmartCommandBar from './components/SmartCommandBar';
 import SkillsDropdownModal from './components/SkillsDropdownModal';
 import TelemetryManager from './components/TelemetryManager';
+import SessionReplayModal from './components/SessionReplayModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import { 
   Plus, 
@@ -25,7 +26,9 @@ import {
   PanelRight,
   BookOpen,
   Bell,
-  BellOff
+  BellOff,
+  Film,
+  Circle
 } from 'lucide-react';
 import { 
   isNotificationEnabled, 
@@ -33,6 +36,7 @@ import {
   requestNotificationPermission, 
   playNotificationSound 
 } from './services/notificationService';
+import { startRecording, stopRecording, isRecording } from './services/sessionRecorder';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('terminals');
@@ -45,11 +49,44 @@ export default function App() {
   const [skillsModalOpen, setSkillsModalOpen] = useState(false);
   const [tabMenuOpen, setTabMenuOpen] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(isNotificationEnabled);
+  const [recordingTabId, setRecordingTabId] = useState(null);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [replayRecording, setReplayRecording] = useState(null);
+  const [replayModalOpen, setReplayModalOpen] = useState(false);
   const tabMenuRef = useRef(null);
 
   useEffect(() => {
     requestNotificationPermission();
   }, []);
+
+  // Timer de gravação de terminal
+  useEffect(() => {
+    let interval = null;
+    if (recordingTabId) {
+      setRecordingDuration(0);
+      interval = setInterval(() => {
+        setRecordingDuration((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [recordingTabId]);
+
+  const handleToggleRecord = (tabId) => {
+    if (recordingTabId === tabId) {
+      const result = stopRecording(tabId);
+      setRecordingTabId(null);
+      if (result && result.events && result.events.length > 0) {
+        setReplayRecording(result);
+        setReplayModalOpen(true);
+      }
+    } else {
+      const currentTab = openTabs.find((t) => t.id === tabId);
+      startRecording(tabId, { title: currentTab?.title || 'Terminal' });
+      setRecordingTabId(tabId);
+    }
+  };
 
   const [openTabs, setOpenTabs] = useState([
     {
@@ -661,6 +698,38 @@ export default function App() {
               </span>
             </button>
 
+            {/* Gravador de Sessão (Asciicast v2) */}
+            {currentView === 'terminals' && (
+              <button
+                type="button"
+                onClick={() => handleToggleRecord(activeTabId)}
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
+                  recordingTabId === activeTabId
+                    ? 'bg-rose-600/25 text-rose-300 border-rose-500/50 shadow-rose-500/10'
+                    : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
+                }`}
+                title={recordingTabId === activeTabId ? 'Clique para parar e reproduzir a gravação' : 'Gravar sessão de terminal em formato padrão Asciicast v2'}
+              >
+                {recordingTabId === activeTabId ? (
+                  <Circle className="w-3.5 h-3.5 fill-rose-500 text-rose-500 animate-pulse" />
+                ) : (
+                  <Film className="w-3.5 h-3.5 text-slate-400" />
+                )}
+                <span className="hidden xl:inline">
+                  {recordingTabId === activeTabId ? 'Gravando' : 'Gravar'}
+                </span>
+                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
+                  recordingTabId === activeTabId
+                    ? 'bg-rose-500/30 text-rose-300 border-rose-500/50 font-bold'
+                    : 'bg-[#161b22] text-slate-400 border-[#30363d]'
+                }`}>
+                  {recordingTabId === activeTabId
+                    ? `${Math.floor(recordingDuration / 60).toString().padStart(2, '0')}:${(recordingDuration % 60).toString().padStart(2, '0')}`
+                    : 'REC'}
+                </span>
+              </button>
+            )}
+
             {/* Split Screen Mode Buttons */}
             {currentView === 'terminals' && (
               <div className="flex items-center bg-[#0d1117] p-1 rounded-xl border border-[#30363d] gap-1">
@@ -875,6 +944,13 @@ export default function App() {
           isOpen={skillsModalOpen}
           onClose={() => setSkillsModalOpen(false)}
           onAdoptSkillInTerminal={handleAdoptSkillInTerminal}
+        />
+
+        {/* Modal de Reprodução de Sessão Gravada (Asciicast v2) */}
+        <SessionReplayModal
+          recording={replayRecording}
+          isOpen={replayModalOpen}
+          onClose={() => setReplayModalOpen(false)}
         />
       </main>
     </div>

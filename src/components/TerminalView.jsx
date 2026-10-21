@@ -4,6 +4,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { Zap } from 'lucide-react';
 import { sendNotification } from '../services/notificationService';
+import { recordOutput } from '../services/sessionRecorder';
 
 export default function TerminalView({ tab, onTitleChange, isActive, onRegisterCommander }) {
   const containerRef = useRef(null);
@@ -97,6 +98,7 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
         const msg = JSON.parse(event.data);
         if (msg.type === 'output') {
           term.write(msg.data);
+          recordOutput(tab.id, msg.data);
 
           // Auto-aprovação em tempo real no Modo Fluido
           if (isFluidRef.current && msg.data) {
