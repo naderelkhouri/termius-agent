@@ -307,7 +307,7 @@ export default function AISidecar({
           <div className="min-w-0">
             <span className="text-xs font-bold text-white flex items-center gap-1.5 truncate">
               AI Sidecar
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">
+              <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold whitespace-nowrap">
                 Ao Vivo
               </span>
             </span>
@@ -320,7 +320,7 @@ export default function AISidecar({
             <button
               type="button"
               onClick={() => toggleFluid(selectedConvId)}
-              className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold transition-all border ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all border whitespace-nowrap ${
                 isFluid
                   ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-xs'
                   : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-white'
@@ -328,7 +328,7 @@ export default function AISidecar({
               title={isFluid ? "Modo Fluido ATIVO: Auto-aprova confirmações do Antigravity" : "Ativar Modo Fluido"}
             >
               <Zap className={`w-3.5 h-3.5 ${isFluid ? 'fill-amber-400 text-amber-400 animate-pulse' : 'text-slate-400'}`} />
-              <span className="text-[11px] hidden sm:inline">{isFluid ? 'Fluido' : 'Normal'}</span>
+              <span className="text-xs font-semibold hidden sm:inline">{isFluid ? 'Fluido' : 'Normal'}</span>
             </button>
           )}
 
@@ -336,7 +336,7 @@ export default function AISidecar({
           <button
             type="button"
             onClick={() => selectedConvId && (loadTranscript(selectedConvId), loadSpecAndRoadmap(selectedConvId))}
-            className="w-7 h-7 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white flex items-center justify-center transition-colors active:scale-95"
+            className="w-8 h-8 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white flex items-center justify-center transition-colors active:scale-95"
             title="Atualizar passos e roadmap da conversa"
           >
             <RotateCcw className={`w-3.5 h-3.5 ${transcriptLoading || specLoading ? 'animate-spin text-purple-400' : ''}`} />
@@ -346,7 +346,7 @@ export default function AISidecar({
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-[#21262d] hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 flex items-center justify-center transition-colors active:scale-95"
+            className="w-8 h-8 rounded-lg bg-[#21262d] hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 flex items-center justify-center transition-colors active:scale-95"
             title="Fechar Sidecar (Ctrl + Alt + A)"
           >
             <X className="w-4 h-4" />
@@ -404,7 +404,7 @@ export default function AISidecar({
                   value={convSearch}
                   onChange={(e) => setConvSearch(e.target.value)}
                   placeholder="Pesquisar conversas..."
-                  className="w-full bg-[#161b22] border border-[#30363d] rounded-lg pl-8 pr-2.5 py-1 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#161b22] border border-[#30363d] rounded-lg pl-8 pr-2.5 py-1 text-base sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500"
                 />
               </div>
             </div>
@@ -431,7 +431,7 @@ export default function AISidecar({
                       <div className="font-bold text-slate-200 truncate leading-snug">
                         {c.title || c.preview || 'Sem título'}
                       </div>
-                      <div className="text-[11px] text-slate-400 truncate mt-0.5 font-mono">
+                      <div className="text-xs text-slate-400 truncate mt-0.5 font-mono">
                         {c.step_count} steps • {c.workspace ? c.workspace.replace('/home/nader', '~') : '~'}
                       </div>
                     </div>
@@ -509,7 +509,7 @@ export default function AISidecar({
             <Milestone className="w-3 h-3 text-blue-400" />
             <span>Roadmap</span>
             {specRoadmap && (
-              <span className="text-[10px] font-mono px-1 rounded bg-blue-500/30 text-blue-200">
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-blue-500/30 text-blue-200 font-semibold whitespace-nowrap">
                 {specRoadmap.overallProgress}%
               </span>
             )}
@@ -546,7 +546,7 @@ export default function AISidecar({
                   key={cmd.key}
                   className="bg-[#0d1117] border border-[#30363d] rounded-xl p-3 font-mono text-xs shadow-xs"
                 >
-                  <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-[#21262d] text-slate-400 text-[11px]">
+                  <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-[#21262d] text-slate-400 text-xs">
                     <span className="text-amber-400 font-bold flex items-center gap-1.5">
                       <Terminal className="w-3.5 h-3.5" />
                       Passo {cmd.stepIndex} • {cmd.name}
@@ -563,7 +563,7 @@ export default function AISidecar({
                       <button
                         type="button"
                         onClick={() => onExecuteCommand && onExecuteCommand(cmd.command)}
-                        className="flex items-center gap-1 px-2.5 py-0.5 rounded bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 hover:text-white border border-cyan-500/40 text-[11px] font-bold transition-all active:scale-95"
+                        className="flex items-center gap-1 px-2.5 py-1 rounded bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 hover:text-white border border-cyan-500/40 text-xs font-bold transition-all active:scale-95 whitespace-nowrap"
                         title="Injetar e executar no terminal ativo"
                       >
                         <Play className="w-3 h-3 fill-current" />
@@ -594,28 +594,28 @@ export default function AISidecar({
                   key={f.key}
                   className="bg-[#0d1117] border border-[#30363d] rounded-xl p-3 font-mono text-xs shadow-xs"
                 >
-                  <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-[#21262d] text-slate-400 text-[11px]">
+                  <div className="flex items-center justify-between pb-1.5 mb-2 border-b border-[#21262d] text-slate-400 text-xs">
                     <span className="text-emerald-400 font-bold flex items-center gap-1.5 truncate">
                       <FileCode2 className="w-3.5 h-3.5 shrink-0" />
                       <span className="truncate">{f.path.split('/').pop()}</span>
                     </span>
-                    <span className="text-[10px] uppercase font-bold px-1.5 py-0.2 rounded bg-[#21262d] text-slate-300 border border-[#30363d]">
+                    <span className="text-xs uppercase font-bold px-2 py-0.5 rounded bg-[#21262d] text-slate-300 border border-[#30363d] whitespace-nowrap">
                       {f.name}
                     </span>
                   </div>
 
-                  <div className="text-[11px] text-slate-400 font-mono break-all mb-2">
+                  <div className="text-xs text-slate-400 font-mono break-all mb-2">
                     {f.path}
                   </div>
 
                   {targetDiff && replaceDiff !== null && (
-                    <div className="space-y-1.5 text-[11px] mt-2">
+                    <div className="space-y-1.5 text-xs mt-2">
                       <div className="p-2 rounded bg-rose-950/30 border border-rose-500/30 text-rose-300 overflow-x-auto">
-                        <span className="text-[10px] font-bold text-rose-400 block mb-0.5">- Alvo Removido:</span>
+                        <span className="text-xs font-bold text-rose-400 block mb-0.5">- Alvo Removido:</span>
                         <pre className="whitespace-pre-wrap">{targetDiff}</pre>
                       </div>
                       <div className="p-2 rounded bg-emerald-950/30 border border-emerald-500/30 text-emerald-300 overflow-x-auto">
-                        <span className="text-[10px] font-bold text-emerald-400 block mb-0.5">+ Substituição Inserida:</span>
+                        <span className="text-xs font-bold text-emerald-400 block mb-0.5">+ Substituição Inserida:</span>
                         <pre className="whitespace-pre-wrap">{replaceDiff || '(conteúdo vazio/deletado)'}</pre>
                       </div>
                     </div>
@@ -654,14 +654,14 @@ export default function AISidecar({
 
                 {/* Tech Stack */}
                 <div className="mt-3 pt-2 border-t border-[#21262d]">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1.5">
+                  <span className="text-xs uppercase font-bold text-slate-400 block mb-1.5">
                     Stack & Tecnologias Detectadas
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {specRoadmap.spec.techStack?.map((tech, idx) => (
                       <span
                         key={idx}
-                        className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20"
+                        className="text-xs font-mono px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20 whitespace-nowrap"
                       >
                         {tech}
                       </span>
@@ -693,7 +693,7 @@ export default function AISidecar({
                           {req.title}
                         </span>
                         {req.fullText && req.fullText !== req.title && (
-                          <span className="text-[11px] text-slate-400 block mt-1 line-clamp-2 select-text font-mono">
+                          <span className="text-xs text-slate-400 block mt-1 line-clamp-2 select-text font-mono">
                             {req.fullText}
                           </span>
                         )}
@@ -733,10 +733,10 @@ export default function AISidecar({
                   {specRoadmap.spec.affectedFiles?.map((f, idx) => (
                     <div
                       key={idx}
-                      className="px-2.5 py-1 rounded-lg bg-[#161b22] text-[11px] font-mono text-slate-300 truncate flex items-center justify-between"
+                      className="px-2.5 py-1 rounded-lg bg-[#161b22] text-xs font-mono text-slate-300 truncate flex items-center justify-between"
                     >
                       <span className="truncate">{f.path.replace('/home/nader', '~')}</span>
-                      <span className="text-[10px] text-purple-300 shrink-0 ml-2">modificado</span>
+                      <span className="text-xs text-purple-300 font-semibold shrink-0 ml-2 whitespace-nowrap">modificado</span>
                     </div>
                   ))}
                 </div>
@@ -802,13 +802,13 @@ export default function AISidecar({
                             )}
                             <span>{m.title}</span>
                           </h5>
-                          <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed font-sans">
+                          <p className="text-xs text-slate-400 mt-0.5 leading-relaxed font-sans">
                             {m.description}
                           </p>
                         </div>
 
                         <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase font-mono shrink-0 ${
+                          className={`text-xs font-semibold px-2 py-0.5 rounded-md uppercase font-mono shrink-0 whitespace-nowrap ${
                             isDone
                               ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                               : inProgress
@@ -832,7 +832,7 @@ export default function AISidecar({
                               type="checkbox"
                               checked={Boolean(task.completed)}
                               onChange={() => {}}
-                              className="rounded border-[#30363d] text-purple-600 focus:ring-0 focus:ring-offset-0 bg-[#0d1117] cursor-pointer w-3.5 h-3.5"
+                              className="rounded border-[#30363d] text-purple-600 focus:ring-0 focus:ring-offset-0 bg-[#0d1117] cursor-pointer w-4 h-4"
                             />
                             <span
                               className={`truncate leading-snug ${
@@ -890,7 +890,7 @@ export default function AISidecar({
                 <div className="flex items-center justify-between mb-2 pb-1 border-b border-[#30363d]/50">
                   <div className="flex items-center gap-1.5">
                     <span
-                      className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${
+                      className={`text-xs font-semibold uppercase px-2 py-0.5 rounded-md whitespace-nowrap ${
                         isUser
                           ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                           : 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
@@ -898,26 +898,26 @@ export default function AISidecar({
                     >
                       {isUser ? 'Usuário' : 'Antigravity'}
                     </span>
-                    <span className="text-[11px] text-slate-400 font-mono">
+                    <span className="text-xs text-slate-400 font-mono">
                       Passo {step.stepIndex}
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono">
+                  <span className="text-xs text-slate-500 font-mono">
                     {formatDate(step.createdAt)}
                   </span>
                 </div>
 
                 {/* Thinking Disclosure */}
                 {step.thinking && (
-                  <details className="mb-2 text-[11px] text-purple-300/90 bg-purple-950/20 border border-purple-500/20 rounded-xl p-2 cursor-pointer group">
+                  <details className="mb-2 text-xs text-purple-300/90 bg-purple-950/20 border border-purple-500/20 rounded-xl p-2 cursor-pointer group">
                     <summary className="font-semibold select-none list-none flex items-center justify-between">
                       <span className="flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-purple-400" />
+                        <Sparkles className="w-3.5 h-3.5 text-purple-400" />
                         Raciocínio Interno da IA
                       </span>
                       <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-90 text-purple-400" />
                     </summary>
-                    <p className="mt-2 text-slate-300 font-mono text-[11px] whitespace-pre-wrap leading-relaxed select-text">
+                    <p className="mt-2 text-slate-300 font-mono text-xs whitespace-pre-wrap leading-relaxed select-text">
                       {step.thinking}
                     </p>
                   </details>
@@ -940,7 +940,7 @@ export default function AISidecar({
                   return (
                     <div
                       key={tcIdx}
-                      className="mt-2.5 p-2.5 rounded-xl bg-[#0d1117] border border-[#30363d] font-mono text-[11px]"
+                      className="mt-2.5 p-2.5 rounded-xl bg-[#0d1117] border border-[#30363d] font-mono text-xs"
                     >
                       <div className="flex items-center justify-between text-slate-400 mb-1.5 pb-1 border-b border-[#21262d]">
                         <span className="text-amber-400 font-bold flex items-center gap-1 truncate">
@@ -961,7 +961,7 @@ export default function AISidecar({
                             <button
                               type="button"
                               onClick={() => onExecuteCommand && onExecuteCommand(cmdLine)}
-                              className="flex items-center gap-1 px-2 py-0.5 rounded bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 hover:text-white border border-cyan-500/40 text-[10px] font-bold active:scale-95"
+                              className="flex items-center gap-1 px-2.5 py-0.5 rounded bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 hover:text-white border border-cyan-500/40 text-xs font-bold active:scale-95 whitespace-nowrap"
                               title="Executar no terminal focado"
                             >
                               <Play className="w-2.5 h-2.5 fill-current" />
@@ -976,7 +976,7 @@ export default function AISidecar({
                           {cmdLine}
                         </pre>
                       ) : filePath ? (
-                        <div className="text-emerald-300 text-[11px] truncate">
+                        <div className="text-emerald-300 text-xs truncate">
                           📄 {filePath}
                         </div>
                       ) : (
@@ -995,7 +995,7 @@ export default function AISidecar({
 
       {/* Bottom Footer Info */}
       <div className="px-3.5 py-2.5 border-t border-[#30363d] bg-[#1c2128]/90 flex items-center justify-between shrink-0 text-xs">
-        <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
+        <div className="flex items-center gap-1.5 text-slate-400 text-xs font-medium">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <span>Sidecar Conectado</span>
         </div>
@@ -1013,7 +1013,7 @@ export default function AISidecar({
                 );
               }
             }}
-            className="flex items-center gap-1 text-[11px] font-bold text-purple-300 hover:text-white transition-colors"
+            className="flex items-center gap-1 text-xs font-bold text-purple-300 hover:text-white transition-colors"
           >
             <span>Continuar Sessão</span>
             <ArrowRight className="w-3.5 h-3.5" />

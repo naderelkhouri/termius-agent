@@ -168,7 +168,7 @@ export default function SpecRoadmapModal({
               <Milestone className="w-4 h-4 text-blue-400" />
               <span>Plano de Evolução (Roadmap)</span>
               {data && (
-                <span className="text-[10px] font-mono px-1.5 rounded bg-blue-500/30 text-blue-200">
+                <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-200 font-semibold whitespace-nowrap">
                   {data.overallProgress}%
                 </span>
               )}
@@ -217,7 +217,7 @@ export default function SpecRoadmapModal({
 
                 {/* Stack */}
                 <div className="mt-3 pt-3 border-t border-[#21262d]">
-                  <span className="text-[11px] uppercase font-bold text-slate-400 block mb-2">
+                  <span className="text-xs uppercase font-bold text-slate-400 block mb-2">
                     Stack & Tecnologias Detectadas
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -254,7 +254,7 @@ export default function SpecRoadmapModal({
                           {req.title}
                         </span>
                         {req.fullText && req.fullText !== req.title && (
-                          <span className="text-[11px] text-slate-400 block mt-1 line-clamp-2 select-text font-mono">
+                          <span className="text-xs text-slate-400 block mt-1 line-clamp-2 select-text font-mono">
                             {req.fullText}
                           </span>
                         )}
@@ -297,7 +297,7 @@ export default function SpecRoadmapModal({
                       className="px-3 py-1.5 rounded-xl bg-[#0d1117] text-xs font-mono text-slate-300 truncate flex items-center justify-between border border-[#30363d]/60"
                     >
                       <span className="truncate">{f.path.replace('/home/nader', '~')}</span>
-                      <span className="text-[10px] text-purple-300 shrink-0 ml-2">modificado</span>
+                      <span className="text-xs text-purple-300 font-semibold shrink-0 ml-2 whitespace-nowrap">modificado</span>
                     </div>
                   ))}
                 </div>

@@ -179,7 +179,7 @@ export default function Sidebar({
                 <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform animate-pulse" />
                 <span>Skills IA (340)</span>
               </div>
-              <span className="text-[10px] bg-purple-500/30 text-purple-300 font-mono px-1.5 py-0.5 rounded">
+              <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
                 PT-BR
               </span>
             </button>
@@ -197,7 +197,7 @@ export default function Sidebar({
               <Zap className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 group-hover:scale-110 transition-transform" />
               <span>Retomar Última IA</span>
             </div>
-            <span className="text-[10px] bg-purple-500/30 text-purple-300 font-mono px-1.5 py-0.5 rounded">
+            <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
               agy -c
             </span>
           </button>

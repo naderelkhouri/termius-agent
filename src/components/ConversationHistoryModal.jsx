@@ -421,7 +421,7 @@ export default function ConversationHistoryModal({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Pesquisar histórico..."
-                className="w-full bg-[#0d1117] border border-[#30363d] rounded-xl pl-9 pr-3.5 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition-colors"
+                className="w-full bg-[#0d1117] border border-[#30363d] rounded-xl pl-9 pr-3.5 py-1.5 text-base sm:text-xs text-white placeholder-slate-400 focus:outline-none focus:border-purple-500 transition-colors"
               />
             </div>
 
@@ -437,7 +437,7 @@ export default function ConversationHistoryModal({
             >
               <Star className={`w-3.5 h-3.5 ${filterFavoritesOnly ? 'fill-yellow-400 text-yellow-400' : 'text-slate-400'}`} />
               <span className="hidden sm:inline">Favoritas</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[#161b22] border border-[#30363d]">
+              <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full bg-[#161b22] border border-[#30363d] whitespace-nowrap">
                 {favorites.length}
               </span>
             </button>
@@ -628,13 +628,13 @@ export default function ConversationHistoryModal({
                             )}
                             <span>{c.title || c.preview || 'Sem título'}</span>
                           </div>
-                          <div className="text-slate-400 text-[11px] line-clamp-1 font-normal mt-0.5">
+                          <div className="text-slate-400 text-xs line-clamp-1 font-normal mt-0.5">
                             {c.preview || 'Sem preview disponível.'}
                           </div>
                         </td>
                         <td className="py-3 px-4 hidden md:table-cell">
                           {c.workspace ? (
-                            <div className="flex items-center gap-1.5 text-slate-400 font-mono text-[11px] truncate max-w-[170px]">
+                            <div className="flex items-center gap-1.5 text-slate-400 font-mono text-xs truncate max-w-[170px]">
                               <Folder className="w-3.5 h-3.5 text-purple-400/80 shrink-0" />
                               <span className="truncate">{c.workspace.replace('/home/nader', '~')}</span>
                             </div>
@@ -643,11 +643,11 @@ export default function ConversationHistoryModal({
                           )}
                         </td>
                         <td className="py-3 px-4 text-center">
-                          <span className="inline-block text-[11px] font-bold px-2 py-0.5 rounded-md bg-[#21262d] text-slate-300 border border-[#30363d] font-mono">
+                          <span className="inline-block text-xs font-semibold px-2.5 py-0.5 rounded-md bg-[#21262d] text-slate-300 border border-[#30363d] font-mono">
                             {c.step_count}
                           </span>
                         </td>
-                        <td className="py-3 px-4 hidden sm:table-cell text-slate-400 text-[11px] whitespace-nowrap font-medium">
+                        <td className="py-3 px-4 hidden sm:table-cell text-slate-400 text-xs whitespace-nowrap font-medium">
                           <div className="flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5 text-slate-400" />
                             <span>{formatDate(c.last_modified_time)}</span>
@@ -701,10 +701,10 @@ export default function ConversationHistoryModal({
                   {sortedAndFilteredConversations.length} conversas exibidas
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px]">Ordenar por:</span>
+                  <span className="text-xs font-medium">Ordenar por:</span>
                   <button
                     onClick={() => handleSort('last_modified_time')}
-                    className={`px-2 py-0.5 rounded-md border text-[11px] font-semibold transition-all ${
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all ${
                       sortField === 'last_modified_time'
                         ? 'bg-purple-600/20 text-purple-300 border-purple-500/40'
                         : 'bg-[#161b22] text-slate-400 border-[#30363d] hover:text-white'
@@ -714,7 +714,7 @@ export default function ConversationHistoryModal({
                   </button>
                   <button
                     onClick={() => handleSort('title')}
-                    className={`px-2 py-0.5 rounded-md border text-[11px] font-semibold transition-all ${
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all ${
                       sortField === 'title'
                         ? 'bg-purple-600/20 text-purple-300 border-purple-500/40'
                         : 'bg-[#161b22] text-slate-400 border-[#30363d] hover:text-white'
@@ -724,7 +724,7 @@ export default function ConversationHistoryModal({
                   </button>
                   <button
                     onClick={() => handleSort('step_count')}
-                    className={`px-2 py-0.5 rounded-md border text-[11px] font-semibold transition-all ${
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all ${
                       sortField === 'step_count'
                         ? 'bg-purple-600/20 text-purple-300 border-purple-500/40'
                         : 'bg-[#161b22] text-slate-400 border-[#30363d] hover:text-white'
@@ -734,7 +734,7 @@ export default function ConversationHistoryModal({
                   </button>
                   <button
                     onClick={() => handleSort('fluid')}
-                    className={`px-2 py-0.5 rounded-md border text-[11px] font-semibold transition-all ${
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all ${
                       sortField === 'fluid'
                         ? 'bg-amber-600/20 text-amber-300 border-amber-500/40'
                         : 'bg-[#161b22] text-slate-400 border-[#30363d] hover:text-white'

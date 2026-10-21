@@ -401,7 +401,7 @@ export default function App() {
                       }}
                       onBlur={() => handleSaveEditTab(tab.id)}
                       onClick={(e) => e.stopPropagation()}
-                      className="bg-[#161b22] text-white border border-blue-500 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none w-28 sm:w-36"
+                      className="bg-[#161b22] text-white border border-blue-500 rounded px-2 py-0.5 text-base sm:text-xs font-semibold focus:outline-none w-28 sm:w-36"
                     />
                   ) : (
                     <div className="flex items-center gap-1.5 max-w-[150px] min-w-0">
@@ -501,7 +501,7 @@ export default function App() {
                           />
                           <span className="truncate">{t.title}</span>
                           {isTabActive && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0 whitespace-nowrap">
                               Foco
                             </span>
                           )}
@@ -532,7 +532,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => handleToggleFluidMode(activeTabId)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
                   activeTab?.isFluid
                     ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-amber-500/10'
                     : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
@@ -541,8 +541,8 @@ export default function App() {
               >
                 <Zap className={`w-3.5 h-3.5 ${activeTab?.isFluid ? 'fill-amber-400 text-amber-400 animate-pulse' : 'text-slate-400'}`} />
                 <span className="hidden sm:inline">Modo Fluido</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full border ${
-                  activeTab?.isFluid ? 'bg-amber-500/30 text-amber-300 border-amber-500/50 font-bold' : 'bg-[#161b22] text-slate-500 border-[#30363d]'
+                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
+                  activeTab?.isFluid ? 'bg-amber-500/30 text-amber-300 border-amber-500/50 font-bold' : 'bg-[#161b22] text-slate-400 border-[#30363d]'
                 }`}>
                   {activeTab?.isFluid ? 'ON' : 'OFF'}
                 </span>
@@ -553,18 +553,18 @@ export default function App() {
             <button
               type="button"
               onClick={() => setSkillsModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-xs active:scale-95"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap"
               title="Catálogo de Skills & Especialistas IA em Português BR (Ctrl + Shift + S)"
             >
               <BookOpen className="w-3.5 h-3.5 text-purple-400" />
               <span className="hidden sm:inline">Skills IA</span>
-              <span className="text-[10px] font-mono px-1 rounded bg-purple-500/25 text-purple-300">340</span>
+              <span className="text-xs font-mono px-1.5 py-0.5 rounded-md bg-purple-500/25 text-purple-300 border border-purple-500/30">340</span>
             </button>
 
             {/* AI Copilot Button */}
             <button
               onClick={() => setCopilotOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-bold transition-all shadow-xs active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap"
               title="AI Copilot (Ctrl + K)"
             >
               <Sparkles className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
@@ -577,7 +577,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setSmartBarOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
                   smartBarOpen
                     ? 'bg-purple-600/20 text-purple-200 border-purple-500/50 shadow-purple-500/10'
                     : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
@@ -586,8 +586,8 @@ export default function App() {
               >
                 <Sparkles className={`w-3.5 h-3.5 ${smartBarOpen ? 'text-purple-400 animate-pulse' : 'text-slate-400'}`} />
                 <span className="hidden sm:inline">Smart Bar</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full border ${
-                  smartBarOpen ? 'bg-purple-500/30 text-purple-300 border-purple-500/50 font-bold' : 'bg-[#161b22] text-slate-500 border-[#30363d]'
+                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
+                  smartBarOpen ? 'bg-purple-500/30 text-purple-300 border-purple-500/50 font-bold' : 'bg-[#161b22] text-slate-400 border-[#30363d]'
                 }`}>
                   {smartBarOpen ? 'ON' : 'OFF'}
                 </span>
@@ -599,7 +599,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setSidecarOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
                   sidecarOpen
                     ? 'bg-purple-600/25 text-purple-200 border-purple-500/50 shadow-purple-500/10'
                     : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
@@ -608,8 +608,8 @@ export default function App() {
               >
                 <PanelRight className={`w-3.5 h-3.5 ${sidecarOpen ? 'text-purple-400' : 'text-slate-400'}`} />
                 <span className="hidden sm:inline">AI Sidecar</span>
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full border ${
-                  sidecarOpen ? 'bg-purple-500/30 text-purple-300 border-purple-500/50 font-bold' : 'bg-[#161b22] text-slate-500 border-[#30363d]'
+                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
+                  sidecarOpen ? 'bg-purple-500/30 text-purple-300 border-purple-500/50 font-bold' : 'bg-[#161b22] text-slate-400 border-[#30363d]'
                 }`}>
                   {sidecarOpen ? 'ON' : 'OFF'}
                 </span>
@@ -719,12 +719,12 @@ export default function App() {
                               {tab.title}
                             </span>
                             {tab.isCustomTitle && (
-                              <span className="text-[10px] text-blue-300/80 font-mono px-1 rounded bg-blue-500/10 border border-blue-500/20">
+                              <span className="text-xs text-blue-300/80 font-mono px-1.5 py-0.5 rounded bg-blue-500/10 border border-blue-500/20 whitespace-nowrap">
                                 editado
                               </span>
                             )}
                             {isPrimary && (
-                              <span className="text-[10px] bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded border border-blue-500/30 shrink-0">
+                              <span className="text-xs bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded border border-blue-500/30 shrink-0 whitespace-nowrap">
                                 Foco
                               </span>
                             )}

@@ -62,7 +62,7 @@ export default class ErrorBoundary extends React.Component {
             </p>
 
             {this.state.error?.message && (
-              <div className="w-full bg-[#0d1117] border border-[#30363d] rounded-xl p-3 mb-5 text-left font-mono text-[11px] text-rose-300 break-all max-h-24 overflow-y-auto">
+              <div className="w-full bg-[#0d1117] border border-[#30363d] rounded-xl p-3 mb-5 text-left font-mono text-xs text-rose-300 break-all max-h-24 overflow-y-auto">
                 {this.state.error.message}
               </div>
             )}

@@ -162,7 +162,7 @@ export default function SkillsDropdownModal({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Pesquisar skill por nome, tecnologia ou função (ex: frontend, backend, sql, auditor, seo)..."
-              className="w-full bg-[#161b22] border border-[#30363d] focus:border-purple-500/80 rounded-xl pl-10 pr-3 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+              className="w-full bg-[#161b22] border border-[#30363d] focus:border-purple-500/80 rounded-xl pl-10 pr-3 py-2 text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
             />
             {search && (
               <button
@@ -184,7 +184,7 @@ export default function SkillsDropdownModal({
         <div className="flex-1 min-h-0 flex overflow-hidden">
           {/* Categories Sidebar */}
           <div className="w-56 border-r border-[#30363d] bg-[#161b22]/70 p-3 overflow-y-auto space-y-1 shrink-0 hidden md:block">
-            <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 mb-1">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider px-2 py-1 mb-1">
               Categorias
             </div>
             {categories.map((cat) => {
@@ -201,7 +201,7 @@ export default function SkillsDropdownModal({
                   }`}
                 >
                   <span className="truncate">{cat.label}</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#0d1117] text-slate-400 border border-[#30363d]/60 shrink-0">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#0d1117] text-slate-300 border border-[#30363d]/60 shrink-0 font-semibold whitespace-nowrap">
                     {cat.count}
                   </span>
                 </button>
@@ -235,10 +235,10 @@ export default function SkillsDropdownModal({
                         <span className="text-xs font-bold text-white group-hover:text-purple-300 transition-colors">
                           {s.title}
                         </span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                        <span className="text-xs font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 whitespace-nowrap">
                           {s.name}
                         </span>
-                        <span className="text-[10px] font-medium px-2 py-0.2 rounded-full bg-[#21262d] text-slate-300 border border-[#30363d]">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-[#21262d] text-slate-300 border border-[#30363d] whitespace-nowrap">
                           {s.category}
                         </span>
                       </div>
@@ -305,7 +305,7 @@ export default function SkillsDropdownModal({
                     <h3 className="text-xs sm:text-sm font-bold text-white truncate">
                       {detailSkill.title}
                     </h3>
-                    <p className="text-[10px] font-mono text-purple-300 truncate">
+                    <p className="text-xs font-mono text-purple-300 truncate font-semibold">
                       @{detailSkill.name}
                     </p>
                   </div>
@@ -313,9 +313,9 @@ export default function SkillsDropdownModal({
                 <button
                   type="button"
                   onClick={() => setDetailSkill(null)}
-                  className="w-7 h-7 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-white flex items-center justify-center transition-colors"
+                  className="w-8 h-8 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-white flex items-center justify-center transition-colors"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
@@ -332,7 +332,7 @@ export default function SkillsDropdownModal({
               </div>
 
               <div className="p-3 border-t border-[#30363d] bg-[#1c2128] flex items-center justify-between shrink-0">
-                <span className="text-[11px] text-slate-400 font-mono">
+                <span className="text-xs text-slate-400 font-mono">
                   {detailSkill.category}
                 </span>
                 {onAdoptSkillInTerminal && (
@@ -343,7 +343,7 @@ export default function SkillsDropdownModal({
                       setDetailSkill(null);
                       onClose();
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all"
+                    className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
                   >
                     <Terminal className="w-3.5 h-3.5" />
                     <span>Adotar no Terminal Agora</span>
@@ -360,7 +360,7 @@ export default function SkillsDropdownModal({
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>The Agency Protocol ativo • 340 especialidades disponíveis</span>
           </div>
-          <div className="hidden sm:block font-mono text-[11px]">
+          <div className="hidden sm:block font-mono text-xs">
             Pressione <kbd className="bg-[#21262d] px-1.5 py-0.5 rounded text-white border border-[#30363d]">Esc</kbd> para fechar
           </div>
         </div>

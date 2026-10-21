@@ -19,6 +19,20 @@ html, body {
   padding-top: max(env(safe-area-inset-top), 16px);
 }
 
+/* Typography Harmony & Balance */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Hide scrollbars for clean horizontal tab lists */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
