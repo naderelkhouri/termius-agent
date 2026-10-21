@@ -28,7 +28,10 @@ import {
   Bell,
   BellOff,
   Film,
-  Circle
+  Circle,
+  Radio,
+  CheckSquare,
+  Layers
 } from 'lucide-react';
 import { 
   isNotificationEnabled, 
@@ -53,11 +56,28 @@ export default function App() {
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [replayRecording, setReplayRecording] = useState(null);
   const [replayModalOpen, setReplayModalOpen] = useState(false);
+  const [broadcastEnabled, setBroadcastEnabled] = useState(false);
+  const [broadcastTargetIds, setBroadcastTargetIds] = useState([]); // [] = todas as abas abertas
+  const [broadcastMenuOpen, setBroadcastMenuOpen] = useState(false);
   const tabMenuRef = useRef(null);
+  const broadcastMenuRef = useRef(null);
 
   useEffect(() => {
     requestNotificationPermission();
   }, []);
+
+  // Fecha menu de seleção de broadcast ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (broadcastMenuRef.current && !broadcastMenuRef.current.contains(e.target)) {
+        setBroadcastMenuOpen(false);
+      }
+    };
+    if (broadcastMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [broadcastMenuOpen]);
 
   // Timer de gravação de terminal
   useEffect(() => {
@@ -153,10 +173,39 @@ export default function App() {
         e.preventDefault();
         setSkillsModalOpen(prev => !prev);
       }
+      // Ctrl+Shift+B -> Toggle Cluster Broadcast Mode
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        setBroadcastEnabled(prev => !prev);
+      }
     };
     window.addEventListener('keydown', handleGlobalKeys);
     return () => window.removeEventListener('keydown', handleGlobalKeys);
   }, [openTabs]);
+
+  const handleBroadcastInput = (sourceTabId, rawData) => {
+    if (!broadcastEnabled) return;
+    openTabs.forEach((tab) => {
+      if (tab.id !== sourceTabId && (broadcastTargetIds.length === 0 || broadcastTargetIds.includes(tab.id))) {
+        const commander = commandersRef.current[tab.id];
+        if (commander && typeof commander.sendRaw === 'function') {
+          commander.sendRaw(rawData);
+        }
+      }
+    });
+  };
+
+  const handleToggleBroadcastTarget = (tabId) => {
+    setBroadcastTargetIds((prev) => {
+      if (prev.length === 0) {
+        return openTabs.map(t => t.id).filter(id => id !== tabId);
+      }
+      if (prev.includes(tabId)) {
+        return prev.filter(id => id !== tabId);
+      }
+      return [...prev, tabId];
+    });
+  };
 
   const handleAdoptSkillInTerminal = (skillName, skillTitle) => {
     const prompt = `Adote a persona e execute segundo as diretrizes de @${skillName}`;
@@ -355,6 +404,16 @@ export default function App() {
       const commander = commandersRef.current[targetId];
       if (commander) {
         commander(cmd, execute);
+        if (broadcastEnabled) {
+          openTabs.forEach((tab) => {
+            if (tab.id !== targetId && (broadcastTargetIds.length === 0 || broadcastTargetIds.includes(tab.id))) {
+              const otherCmd = commandersRef.current[tab.id];
+              if (otherCmd) {
+                otherCmd(cmd, execute);
+              }
+            }
+          });
+        }
       } else if (attemptsLeft > 0) {
         setTimeout(() => tryExecute(attemptsLeft - 1), 60);
       }
@@ -730,6 +789,116 @@ export default function App() {
               </button>
             )}
 
+            {/* Cluster Broadcast (Multi-Host Keystroke Mirroring) */}
+            {currentView === 'terminals' && (
+              <div className="relative shrink-0" ref={broadcastMenuRef}>
+                <div className="flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => setBroadcastEnabled((prev) => !prev)}
+                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-l-xl text-xs font-bold transition-all border-y border-l shadow-xs active:scale-95 whitespace-nowrap ${
+                      broadcastEnabled
+                        ? 'bg-cyan-600/25 text-cyan-300 border-cyan-500/50 shadow-cyan-500/10'
+                        : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
+                    }`}
+                    title="Cluster Broadcast: Espelha digitação e comandos em múltiplas abas simultaneamente (Ctrl+Shift+B)"
+                  >
+                    <Radio className={`w-3.5 h-3.5 ${broadcastEnabled ? 'text-cyan-400 animate-pulse' : 'text-slate-400'}`} />
+                    <span className="hidden xl:inline">Broadcast</span>
+                    <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
+                      broadcastEnabled
+                        ? 'bg-cyan-500/30 text-cyan-300 border-cyan-500/50 font-bold'
+                        : 'bg-[#161b22] text-slate-400 border-[#30363d]'
+                    }`}>
+                      {broadcastEnabled ? 'ON' : 'OFF'}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setBroadcastMenuOpen((prev) => !prev)}
+                    className={`px-1.5 py-1.5 rounded-r-xl border border-[#30363d] text-xs font-semibold transition-all active:scale-95 ${
+                      broadcastEnabled
+                        ? 'bg-cyan-900/40 text-cyan-300 border-cyan-500/50 hover:bg-cyan-800/50'
+                        : 'bg-[#21262d] text-slate-400 hover:text-white hover:bg-[#30363d]'
+                    }`}
+                    title="Configurar alvos do cluster broadcast"
+                  >
+                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${broadcastMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
+
+                {/* Dropdown de Configuração de Alvos do Cluster */}
+                {broadcastMenuOpen && (
+                  <div className="absolute right-0 top-11 w-72 bg-[#161b22] border border-[#30363d] rounded-2xl shadow-2xl z-50 py-2 divide-y divide-[#30363d]/60 animate-fade-in">
+                    <div className="px-3.5 py-2 flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
+                      <div className="flex items-center gap-1.5">
+                        <Radio className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Alvos do Cluster</span>
+                      </div>
+                      <span className="text-xs font-mono text-cyan-400 lowercase">
+                        {broadcastTargetIds.length === 0 ? `${openTabs.length} todas` : `${broadcastTargetIds.length} selecionadas`}
+                      </span>
+                    </div>
+
+                    <div className="p-2 flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setBroadcastTargetIds([])}
+                        className="flex-1 px-2 py-1 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white text-xs font-semibold text-center transition-colors cursor-pointer"
+                      >
+                        Todas as Abas
+                      </button>
+                      {effectiveSecondaryTabId && (
+                        <button
+                          type="button"
+                          onClick={() => setBroadcastTargetIds([activeTabId, effectiveSecondaryTabId])}
+                          className="flex-1 px-2 py-1 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white text-xs font-semibold text-center transition-colors cursor-pointer"
+                        >
+                          Apenas Split
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="max-h-56 overflow-y-auto py-1">
+                      {openTabs.map((t) => {
+                        const isTarget = broadcastTargetIds.length === 0 || broadcastTargetIds.includes(t.id);
+                        const isCurrentActive = t.id === activeTabId;
+                        return (
+                          <div
+                            key={t.id}
+                            onClick={() => handleToggleBroadcastTarget(t.id)}
+                            className="w-full px-3 py-1.5 flex items-center justify-between text-xs hover:bg-[#21262d] cursor-pointer transition-colors"
+                          >
+                            <div className="flex items-center gap-2 truncate pr-2 min-w-0">
+                              <span
+                                className="w-2.5 h-2.5 rounded-full shrink-0"
+                                style={{ backgroundColor: t.color || '#3fb950' }}
+                              />
+                              <span className={`truncate ${isTarget ? 'text-white font-bold' : 'text-slate-400 line-through'}`}>
+                                {t.title}
+                              </span>
+                              {isCurrentActive && (
+                                <span className="text-xs font-semibold px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shrink-0">
+                                  Fonte
+                                </span>
+                              )}
+                            </div>
+                            <input
+                              type="checkbox"
+                              checked={isTarget}
+                              onChange={() => {}}
+                              className="accent-cyan-500 shrink-0 cursor-pointer rounded"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Split Screen Mode Buttons */}
             {currentView === 'terminals' && (
               <div className="flex items-center bg-[#0d1117] p-1 rounded-xl border border-[#30363d] gap-1">
@@ -842,6 +1011,18 @@ export default function App() {
                                 Foco
                               </span>
                             )}
+                            {broadcastEnabled && (
+                              <span className={`text-xs font-semibold px-1.5 py-0.5 rounded border whitespace-nowrap flex items-center gap-1 ${
+                                isPrimary 
+                                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' 
+                                  : (broadcastTargetIds.length === 0 || broadcastTargetIds.includes(tab.id))
+                                  ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40'
+                                  : 'bg-slate-800 text-slate-500 border-slate-700'
+                              }`}>
+                                <Radio className="w-2.5 h-2.5" />
+                                <span>{isPrimary ? 'Fonte' : (broadcastTargetIds.length === 0 || broadcastTargetIds.includes(tab.id)) ? 'Cluster' : 'Pausado'}</span>
+                              </span>
+                            )}
                           </div>
 
                           {isSecondary && (
@@ -869,6 +1050,10 @@ export default function App() {
                             isActive={isVisible}
                             onTitleChange={handleTitleChange}
                             onRegisterCommander={handleRegisterCommander}
+                            onBroadcastInput={handleBroadcastInput}
+                            isBroadcastActive={broadcastEnabled}
+                            isBroadcastOrigin={broadcastEnabled && isPrimary}
+                            isBroadcastTarget={broadcastEnabled && !isPrimary && (broadcastTargetIds.length === 0 || broadcastTargetIds.includes(tab.id))}
                           />
                         </ErrorBoundary>
                       </div>

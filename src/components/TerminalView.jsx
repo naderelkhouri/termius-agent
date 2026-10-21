@@ -6,7 +6,16 @@ import { Zap } from 'lucide-react';
 import { sendNotification } from '../services/notificationService';
 import { recordOutput } from '../services/sessionRecorder';
 
-export default function TerminalView({ tab, onTitleChange, isActive, onRegisterCommander }) {
+export default function TerminalView({ 
+  tab, 
+  onTitleChange, 
+  isActive, 
+  onRegisterCommander,
+  onBroadcastInput,
+  isBroadcastActive,
+  isBroadcastOrigin,
+  isBroadcastTarget
+}) {
   const containerRef = useRef(null);
   const termRef = useRef(null);
   const socketRef = useRef(null);
@@ -17,6 +26,20 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
   const commandRunningRef = useRef(false);
   const lastCommandNameRef = useRef('');
   const [fluidAlert, setFluidAlert] = useState(false);
+
+  const broadcastRef = useRef({ 
+    active: isBroadcastActive, 
+    origin: isBroadcastOrigin, 
+    cb: onBroadcastInput 
+  });
+
+  useEffect(() => {
+    broadcastRef.current = { 
+      active: isBroadcastActive, 
+      origin: isBroadcastOrigin, 
+      cb: onBroadcastInput 
+    };
+  }, [isBroadcastActive, isBroadcastOrigin, onBroadcastInput]);
 
   useEffect(() => {
     isFluidRef.current = Boolean(tab.isFluid);
@@ -180,6 +203,11 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
           commandRunningRef.current = true;
         }
         socket.send(JSON.stringify({ type: 'input', data }));
+
+        // Espelha digitação em tempo real se Broadcast Mode estiver ativo
+        if (broadcastRef.current.active && broadcastRef.current.origin && typeof broadcastRef.current.cb === 'function') {
+          broadcastRef.current.cb(tab.id, data);
+        }
       }
     });
 
@@ -201,9 +229,9 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
     });
     resizeObserver.observe(containerRef.current);
 
-    // Expose commander function so snippets and conversation commands can be injected
+    // Expose commander function so snippets, AI copilot and cluster broadcast can be injected
     if (onRegisterCommander) {
-      onRegisterCommander(tab.id, (command, execute = true) => {
+      const commanderFn = (command, execute = true) => {
         if (socket.readyState === WebSocket.OPEN) {
           if (execute) {
             commandStartTimeRef.current = Date.now();
@@ -213,7 +241,20 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
           socket.send(JSON.stringify({ type: 'input', data: execute ? `${command}\n` : command }));
           term.focus();
         }
-      });
+      };
+
+      // Injeção direta de raw input para espelhamento em cluster sem forçar quebra de linha
+      commanderFn.sendRaw = (rawData) => {
+        if (socket.readyState === WebSocket.OPEN) {
+          if (rawData.includes('\r') || rawData.includes('\n')) {
+            commandStartTimeRef.current = Date.now();
+            commandRunningRef.current = true;
+          }
+          socket.send(JSON.stringify({ type: 'input', data: rawData }));
+        }
+      };
+
+      onRegisterCommander(tab.id, commanderFn);
     }
 
     return () => {
@@ -244,6 +285,21 @@ export default function TerminalView({ tab, onTitleChange, isActive, onRegisterC
         <div className="absolute top-3 right-4 z-20 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs font-bold shadow-lg shadow-amber-500/10 backdrop-blur-md animate-bounce select-none pointer-events-none">
           <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
           <span>⚡ Modo Fluido: Comando auto-aprovado (1. Yes)</span>
+        </div>
+      )}
+
+      {/* Badges de Cluster Broadcast */}
+      {isBroadcastActive && isBroadcastOrigin && (
+        <div className="absolute top-3 right-4 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 text-xs font-bold shadow-md shadow-cyan-500/10 backdrop-blur-md select-none pointer-events-none">
+          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+          <span>📡 Cluster: Fonte (Replicando)</span>
+        </div>
+      )}
+
+      {isBroadcastActive && isBroadcastTarget && (
+        <div className="absolute top-3 right-4 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 text-xs font-bold shadow-md shadow-indigo-500/10 backdrop-blur-md select-none pointer-events-none">
+          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+          <span>📡 Cluster: Alvo (Espelhado)</span>
         </div>
       )}
     </div>
