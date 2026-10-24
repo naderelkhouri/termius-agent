@@ -35,6 +35,9 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
       borderColor: 'border-blue-500/30',
       shortcuts: [
         { keys: ['Ctrl', 'Shift', 'T'], description: 'Abrir nova aba de terminal local' },
+        { keys: ['Ctrl', 'Shift', 'W'], description: 'Fechar a aba de terminal ativa' },
+        { keys: ['Alt', '1...9'], description: 'Alternar diretamente para a aba 1 a 9' },
+        { keys: ['Ctrl', 'PgUp', 'ou', 'PgDn'], description: 'Navegar para aba anterior ou próxima' },
         { keys: ['Ctrl', 'F'], description: 'Buscar texto no buffer do terminal (In-Buffer Find)' },
         { keys: ['Enter'], description: 'Próxima ocorrência na busca do terminal' },
         { keys: ['Shift', 'Enter'], description: 'Ocorrência anterior na busca do terminal' },

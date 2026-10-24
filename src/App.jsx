@@ -154,69 +154,6 @@ export default function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [tabMenuOpen]);
 
-  // Keyboard Shortcuts Listener
-  useEffect(() => {
-    const handleGlobalKeys = (e) => {
-      // F1 -> Central de Atalhos (Cheat Sheet)
-      if (e.key === 'F1') {
-        e.preventDefault();
-        setShortcutsModalOpen(prev => !prev);
-        return;
-      }
-
-      // '?' (Shift + /) -> Central de Atalhos (se não estiver em campos de texto)
-      const isInput = e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable);
-      if (e.key === '?' && !isInput && !e.ctrlKey && !e.altKey && !e.metaKey) {
-        e.preventDefault();
-        setShortcutsModalOpen(prev => !prev);
-        return;
-      }
-
-      // Ctrl+K -> AI Copilot
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setCopilotOpen(prev => !prev);
-      }
-      // Ctrl+Alt+V -> Split Vertical
-      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'v') {
-        e.preventDefault();
-        setSplitMode(prev => prev === 'vertical' ? 'single' : 'vertical');
-      }
-      // Ctrl+Alt+H -> Split Horizontal
-      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'h') {
-        e.preventDefault();
-        setSplitMode(prev => prev === 'horizontal' ? 'single' : 'horizontal');
-      }
-      // Ctrl+Shift+T -> Nova Aba
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
-        e.preventDefault();
-        handleNewTab();
-      }
-      // Ctrl+Alt+A -> Toggle AI Sidecar
-      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
-        e.preventDefault();
-        setSidecarOpen(prev => !prev);
-      }
-      // Ctrl+Space or Ctrl+Shift+P -> Toggle Smart Command Bar
-      if ((e.ctrlKey && (e.code === 'Space' || e.key === ' ')) || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'p')) {
-        e.preventDefault();
-        setSmartBarOpen(prev => !prev);
-      }
-      // Ctrl+Shift+S -> Toggle Skills Modal
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
-        e.preventDefault();
-        setSkillsModalOpen(prev => !prev);
-      }
-      // Ctrl+Shift+B -> Toggle Cluster Broadcast Mode
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'b') {
-        e.preventDefault();
-        setBroadcastEnabled(prev => !prev);
-      }
-    };
-    window.addEventListener('keydown', handleGlobalKeys);
-    return () => window.removeEventListener('keydown', handleGlobalKeys);
-  }, [openTabs]);
-
   const handleBroadcastInput = (sourceTabId, rawData) => {
     if (!broadcastEnabled) return;
     openTabs.forEach((tab) => {
@@ -323,6 +260,111 @@ export default function App() {
       setSecondaryTabId(null);
     }
   };
+
+  // Global Keyboard Shortcuts Listener
+  useEffect(() => {
+    const handleGlobalKeys = (e) => {
+      // F1 -> Central de Atalhos (Cheat Sheet)
+      if (e.key === 'F1') {
+        e.preventDefault();
+        setShortcutsModalOpen((prev) => !prev);
+        return;
+      }
+
+      // '?' (Shift + /) -> Central de Atalhos (se não estiver digitando em campo de texto)
+      const isInput = e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable);
+      if (e.key === '?' && !isInput && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault();
+        setShortcutsModalOpen((prev) => !prev);
+        return;
+      }
+
+      // Alt+1 ... Alt+9 -> Alternar diretamente para a aba 1 a 9
+      if (e.altKey && !e.ctrlKey && !e.metaKey && e.key >= '1' && e.key <= '9') {
+        const targetIndex = parseInt(e.key, 10) - 1;
+        if (targetIndex < openTabs.length) {
+          e.preventDefault();
+          setActiveTabId(openTabs[targetIndex].id);
+          setCurrentView('terminals');
+          return;
+        }
+      }
+
+      // Ctrl+Shift+W -> Fechar aba ativa
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'w') {
+        e.preventDefault();
+        if (activeTabId) {
+          handleCloseTab(activeTabId);
+          return;
+        }
+      }
+
+      // Ctrl+PageDown / Ctrl+PageUp -> Próxima ou Aba Anterior
+      if (e.ctrlKey && e.key === 'PageDown') {
+        e.preventDefault();
+        const currentIndex = openTabs.findIndex((t) => t.id === activeTabId);
+        if (currentIndex !== -1 && openTabs.length > 1) {
+          const nextIndex = (currentIndex + 1) % openTabs.length;
+          setActiveTabId(openTabs[nextIndex].id);
+          setCurrentView('terminals');
+        }
+        return;
+      }
+      if (e.ctrlKey && e.key === 'PageUp') {
+        e.preventDefault();
+        const currentIndex = openTabs.findIndex((t) => t.id === activeTabId);
+        if (currentIndex !== -1 && openTabs.length > 1) {
+          const prevIndex = (currentIndex - 1 + openTabs.length) % openTabs.length;
+          setActiveTabId(openTabs[prevIndex].id);
+          setCurrentView('terminals');
+        }
+        return;
+      }
+
+      // Ctrl+K -> AI Copilot
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setCopilotOpen((prev) => !prev);
+      }
+      // Ctrl+Alt+V -> Split Vertical
+      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'v') {
+        e.preventDefault();
+        setSplitMode((prev) => prev === 'vertical' ? 'single' : 'vertical');
+      }
+      // Ctrl+Alt+H -> Split Horizontal
+      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'h') {
+        e.preventDefault();
+        setSplitMode((prev) => prev === 'horizontal' ? 'single' : 'horizontal');
+      }
+      // Ctrl+Shift+T -> Nova Aba
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        handleNewTab();
+      }
+      // Ctrl+Alt+A -> Toggle AI Sidecar
+      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        setSidecarOpen((prev) => !prev);
+      }
+      // Ctrl+Space or Ctrl+Shift+P -> Toggle Smart Command Bar
+      if ((e.ctrlKey && (e.code === 'Space' || e.key === ' ')) || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'p')) {
+        e.preventDefault();
+        setSmartBarOpen((prev) => !prev);
+      }
+      // Ctrl+Shift+S -> Toggle Skills Modal
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        setSkillsModalOpen((prev) => !prev);
+      }
+      // Ctrl+Shift+B -> Toggle Cluster Broadcast Mode
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        setBroadcastEnabled((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeys);
+    return () => window.removeEventListener('keydown', handleGlobalKeys);
+  }, [openTabs, activeTabId]);
 
   const handleTitleChange = (tabId, rawTitle) => {
     if (!rawTitle) return;
