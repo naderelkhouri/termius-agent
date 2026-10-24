@@ -241,7 +241,8 @@ export default function TerminalView({
       }
     });
 
-    // Resize handling
+    // Resize handling with requestAnimationFrame to eliminate ResizeObserver loop warnings
+    let resizeRafId = null;
     const handleResize = () => {
       if (!fitAddonRef.current || !termRef.current) return;
       fitAddonRef.current.fit();
@@ -255,7 +256,10 @@ export default function TerminalView({
     };
 
     const resizeObserver = new ResizeObserver(() => {
-      handleResize();
+      if (resizeRafId) cancelAnimationFrame(resizeRafId);
+      resizeRafId = requestAnimationFrame(() => {
+        handleResize();
+      });
     });
     resizeObserver.observe(containerRef.current);
 
@@ -288,6 +292,7 @@ export default function TerminalView({
     }
 
     return () => {
+      if (resizeRafId) cancelAnimationFrame(resizeRafId);
       resizeObserver.disconnect();
       if (socket.readyState === WebSocket.OPEN) {
         socket.close();
