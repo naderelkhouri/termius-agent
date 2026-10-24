@@ -8,6 +8,8 @@ if (process.platform === 'linux') {
   app.commandLine.appendSwitch('disable-gpu-sandbox');
 }
 
+app.setName('Termius Agent');
+
 let mainWindow = null;
 let serverProcess = null;
 const SERVER_URL = 'http://127.0.0.1:3001';
