@@ -10,28 +10,31 @@ import SmartCommandBar from './components/SmartCommandBar';
 import SkillsDropdownModal from './components/SkillsDropdownModal';
 import TelemetryManager from './components/TelemetryManager';
 import SessionReplayModal from './components/SessionReplayModal';
+import KeyboardShortcutsModal from './components/KeyboardShortcutsModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import { 
   Plus, 
   X, 
-  Menu,
-  Sparkles,
-  Columns2,
-  Rows2,
-  Square,
-  Pencil,
-  RotateCcw,
-  ChevronDown,
-  Zap,
-  PanelRight,
-  BookOpen,
-  Bell,
-  BellOff,
-  Film,
-  Circle,
-  Radio,
-  CheckSquare,
-  Layers
+  Menu, 
+  Sparkles, 
+  Columns2, 
+  Rows2, 
+  Square, 
+  Pencil, 
+  RotateCcw, 
+  ChevronDown, 
+  Zap, 
+  PanelRight, 
+  BookOpen, 
+  Bell, 
+  BellOff, 
+  Film, 
+  Circle, 
+  Radio, 
+  CheckSquare, 
+  Layers,
+  SlidersHorizontal,
+  HelpCircle
 } from 'lucide-react';
 import { 
   isNotificationEnabled, 
@@ -59,12 +62,28 @@ export default function App() {
   const [broadcastEnabled, setBroadcastEnabled] = useState(false);
   const [broadcastTargetIds, setBroadcastTargetIds] = useState([]); // [] = todas as abas abertas
   const [broadcastMenuOpen, setBroadcastMenuOpen] = useState(false);
+  const [shortcutsModalOpen, setShortcutsModalOpen] = useState(false);
+  const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
   const tabMenuRef = useRef(null);
   const broadcastMenuRef = useRef(null);
+  const toolsMenuRef = useRef(null);
 
   useEffect(() => {
     requestNotificationPermission();
   }, []);
+
+  // Fecha menu de ferramentas ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (toolsMenuRef.current && !toolsMenuRef.current.contains(e.target)) {
+        setToolsMenuOpen(false);
+      }
+    };
+    if (toolsMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [toolsMenuOpen]);
 
   // Fecha menu de seleção de broadcast ao clicar fora
   useEffect(() => {
@@ -138,6 +157,21 @@ export default function App() {
   // Keyboard Shortcuts Listener
   useEffect(() => {
     const handleGlobalKeys = (e) => {
+      // F1 -> Central de Atalhos (Cheat Sheet)
+      if (e.key === 'F1') {
+        e.preventDefault();
+        setShortcutsModalOpen(prev => !prev);
+        return;
+      }
+
+      // '?' (Shift + /) -> Central de Atalhos (se não estiver em campos de texto)
+      const isInput = e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable);
+      if (e.key === '?' && !isInput && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.preventDefault();
+        setShortcutsModalOpen(prev => !prev);
+        return;
+      }
+
       // Ctrl+K -> AI Copilot
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
@@ -447,6 +481,7 @@ export default function App() {
         onNewTab={() => handleNewTab()}
         onResumeLastSession={handleResumeLastConversation}
         onOpenSkills={() => setSkillsModalOpen(true)}
+        onOpenShortcuts={() => setShortcutsModalOpen(true)}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
@@ -634,35 +669,13 @@ export default function App() {
             )}
           </div>
 
-          {/* Top Actions: Modo Fluido, AI Copilot & Split Screen Controls */}
-          <div className="flex items-center gap-2 pr-1 shrink-0">
-            {/* Modo Fluido Toggle */}
-            {currentView === 'terminals' && (
-              <button
-                type="button"
-                onClick={() => handleToggleFluidMode(activeTabId)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
-                  activeTab?.isFluid
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-amber-500/10'
-                    : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
-                }`}
-                title="Modo Fluido: Auto-aprovação de confirmações do Antigravity ('Run this command? 1. Yes...')"
-              >
-                <Zap className={`w-3.5 h-3.5 ${activeTab?.isFluid ? 'fill-amber-400 text-amber-400 animate-pulse' : 'text-slate-400'}`} />
-                <span className="hidden sm:inline">Modo Fluido</span>
-                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
-                  activeTab?.isFluid ? 'bg-amber-500/30 text-amber-300 border-amber-500/50 font-bold' : 'bg-[#161b22] text-slate-400 border-[#30363d]'
-                }`}>
-                  {activeTab?.isFluid ? 'ON' : 'OFF'}
-                </span>
-              </button>
-            )}
-
+          {/* Top Actions: AI Tools, Ferramentas Popover & Split Screen Controls */}
+          <div className="flex items-center gap-1.5 sm:gap-2 pr-1 shrink-0">
             {/* Skills IA Catalog Button */}
             <button
               type="button"
               onClick={() => setSkillsModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
               title="Catálogo de Skills & Especialistas IA em Português BR (Ctrl + Shift + S)"
             >
               <BookOpen className="w-3.5 h-3.5 text-purple-400" />
@@ -672,8 +685,9 @@ export default function App() {
 
             {/* AI Copilot Button */}
             <button
+              type="button"
               onClick={() => setCopilotOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
               title="AI Copilot (Ctrl + K)"
             >
               <Sparkles className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
@@ -681,218 +695,292 @@ export default function App() {
               <span className="text-xs font-mono opacity-75 hidden md:inline">Ctrl+K</span>
             </button>
 
-            {/* Smart Command Bar Toggle */}
-            {currentView === 'terminals' && (
-              <button
-                type="button"
-                onClick={() => setSmartBarOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
-                  smartBarOpen
-                    ? 'bg-purple-600/20 text-purple-200 border-purple-500/50 shadow-purple-500/10'
-                    : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
-                }`}
-                title="Smart Command Bar: Autocomplete contextual e preditivo (Ctrl + Espaço)"
-              >
-                <Sparkles className={`w-3.5 h-3.5 ${smartBarOpen ? 'text-purple-400 animate-pulse' : 'text-slate-400'}`} />
-                <span className="hidden sm:inline">Smart Bar</span>
-                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
-                  smartBarOpen ? 'bg-purple-500/30 text-purple-300 border-purple-500/50 font-bold' : 'bg-[#161b22] text-slate-400 border-[#30363d]'
-                }`}>
-                  {smartBarOpen ? 'ON' : 'OFF'}
-                </span>
-              </button>
-            )}
-
             {/* AI Sidecar Toggle */}
             {currentView === 'terminals' && (
               <button
                 type="button"
                 onClick={() => setSidecarOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap cursor-pointer ${
                   sidecarOpen
                     ? 'bg-purple-600/25 text-purple-200 border-purple-500/50 shadow-purple-500/10'
-                    : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
+                    : 'bg-[#21262d] text-slate-300 border-[#30363d] hover:text-white hover:bg-[#30363d]'
                 }`}
                 title="AI Sidecar: Acompanhe passos, raciocínio, comandos e diffs ao vivo (Ctrl + Alt + A)"
               >
                 <PanelRight className={`w-3.5 h-3.5 ${sidecarOpen ? 'text-purple-400' : 'text-slate-400'}`} />
                 <span className="hidden sm:inline">AI Sidecar</span>
-                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
-                  sidecarOpen ? 'bg-purple-500/30 text-purple-300 border-purple-500/50 font-bold' : 'bg-[#161b22] text-slate-400 border-[#30363d]'
-                }`}>
-                  {sidecarOpen ? 'ON' : 'OFF'}
-                </span>
               </button>
             )}
 
-            {/* Notificações Desktop & Chime de Áudio Toggle */}
-            <button
-              type="button"
-              onClick={() => {
-                const nextState = !notificationsEnabled;
-                setNotificationsEnabled(nextState);
-                setNotificationEnabled(nextState);
-                if (nextState) {
-                  requestNotificationPermission();
-                  playNotificationSound();
-                }
-              }}
-              className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
-                notificationsEnabled
-                  ? 'bg-emerald-600/20 text-emerald-300 border-emerald-500/40 shadow-emerald-500/10'
-                  : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
-              }`}
-              title="Notificações Desktop & Áudio Chime (avisos do Modo Fluido e comandos concluídos)"
-            >
-              {notificationsEnabled ? (
-                <Bell className="w-3.5 h-3.5 text-emerald-400" />
-              ) : (
-                <BellOff className="w-3.5 h-3.5 text-slate-400" />
-              )}
-              <span className="hidden xl:inline">Notificações</span>
-              <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
-                notificationsEnabled ? 'bg-emerald-500/30 text-emerald-300 border-emerald-500/50 font-bold' : 'bg-[#161b22] text-slate-400 border-[#30363d]'
-              }`}>
-                {notificationsEnabled ? 'ON' : 'OFF'}
-              </span>
-            </button>
-
-            {/* Gravador de Sessão (Asciicast v2) */}
-            {currentView === 'terminals' && (
+            {/* Indicador direto de Gravação Ativa (1-click para parar se estiver gravando) */}
+            {recordingTabId === activeTabId && (
               <button
                 type="button"
                 onClick={() => handleToggleRecord(activeTabId)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap ${
-                  recordingTabId === activeTabId
-                    ? 'bg-rose-600/25 text-rose-300 border-rose-500/50 shadow-rose-500/10'
-                    : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
-                }`}
-                title={recordingTabId === activeTabId ? 'Clique para parar e reproduzir a gravação' : 'Gravar sessão de terminal em formato padrão Asciicast v2'}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-rose-600/30 text-rose-300 border border-rose-500/50 shadow-rose-500/10 text-xs font-bold animate-pulse cursor-pointer"
+                title="Sessão gravando. Clique para parar e assistir ao replay."
               >
-                {recordingTabId === activeTabId ? (
-                  <Circle className="w-3.5 h-3.5 fill-rose-500 text-rose-500 animate-pulse" />
-                ) : (
-                  <Film className="w-3.5 h-3.5 text-slate-400" />
-                )}
-                <span className="hidden xl:inline">
-                  {recordingTabId === activeTabId ? 'Gravando' : 'Gravar'}
+                <Circle className="w-3 h-3 fill-rose-500 text-rose-500" />
+                <span className="font-mono">
+                  {`${Math.floor(recordingDuration / 60).toString().padStart(2, '0')}:${(recordingDuration % 60).toString().padStart(2, '0')}`}
                 </span>
-                <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
-                  recordingTabId === activeTabId
-                    ? 'bg-rose-500/30 text-rose-300 border-rose-500/50 font-bold'
-                    : 'bg-[#161b22] text-slate-400 border-[#30363d]'
-                }`}>
-                  {recordingTabId === activeTabId
-                    ? `${Math.floor(recordingDuration / 60).toString().padStart(2, '0')}:${(recordingDuration % 60).toString().padStart(2, '0')}`
-                    : 'REC'}
-                </span>
+                <span className="text-xs uppercase bg-rose-500/30 px-1 py-0.2 rounded font-mono">REC</span>
               </button>
             )}
 
-            {/* Cluster Broadcast (Multi-Host Keystroke Mirroring) */}
+            {/* Ferramentas / Quick Controls Popover */}
             {currentView === 'terminals' && (
-              <div className="relative shrink-0" ref={broadcastMenuRef}>
-                <div className="flex items-center">
-                  <button
-                    type="button"
-                    onClick={() => setBroadcastEnabled((prev) => !prev)}
-                    className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-l-xl text-xs font-bold transition-all border-y border-l shadow-xs active:scale-95 whitespace-nowrap ${
-                      broadcastEnabled
-                        ? 'bg-cyan-600/25 text-cyan-300 border-cyan-500/50 shadow-cyan-500/10'
-                        : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-slate-200 hover:bg-[#30363d]'
-                    }`}
-                    title="Cluster Broadcast: Espelha digitação e comandos em múltiplas abas simultaneamente (Ctrl+Shift+B)"
-                  >
-                    <Radio className={`w-3.5 h-3.5 ${broadcastEnabled ? 'text-cyan-400 animate-pulse' : 'text-slate-400'}`} />
-                    <span className="hidden xl:inline">Broadcast</span>
-                    <span className={`text-xs font-mono px-1.5 py-0.5 rounded-full border ${
-                      broadcastEnabled
-                        ? 'bg-cyan-500/30 text-cyan-300 border-cyan-500/50 font-bold'
-                        : 'bg-[#161b22] text-slate-400 border-[#30363d]'
-                    }`}>
-                      {broadcastEnabled ? 'ON' : 'OFF'}
-                    </span>
-                  </button>
+              <div className="relative shrink-0" ref={toolsMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setToolsMenuOpen((prev) => !prev)}
+                  className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap cursor-pointer ${
+                    toolsMenuOpen || activeTab?.isFluid || broadcastEnabled
+                      ? 'bg-[#21262d] text-white border-blue-500/50 shadow-blue-500/10'
+                      : 'bg-[#21262d] text-slate-300 border-[#30363d] hover:text-white hover:bg-[#30363d]'
+                  }`}
+                  title="Painel de Ferramentas: Modo Fluido, Broadcast, Gravação, Smart Bar, Notificações e Atalhos F1"
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5 text-blue-400" />
+                  <span className="hidden sm:inline">Ferramentas</span>
+                  {/* Status Indicator Pills */}
+                  <div className="flex items-center gap-1">
+                    {activeTab?.isFluid && (
+                      <span className="w-2 h-2 rounded-full bg-amber-400 ring-2 ring-amber-400/20 animate-pulse" title="Modo Fluido Ativo" />
+                    )}
+                    {broadcastEnabled && (
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 ring-2 ring-cyan-400/20 animate-pulse" title="Broadcast Ativo" />
+                    )}
+                    {recordingTabId === activeTabId && (
+                      <span className="w-2 h-2 rounded-full bg-rose-400 ring-2 ring-rose-400/20 animate-pulse" title="Gravação Ativa" />
+                    )}
+                  </div>
+                  <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${toolsMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setBroadcastMenuOpen((prev) => !prev)}
-                    className={`px-1.5 py-1.5 rounded-r-xl border border-[#30363d] text-xs font-semibold transition-all active:scale-95 ${
-                      broadcastEnabled
-                        ? 'bg-cyan-900/40 text-cyan-300 border-cyan-500/50 hover:bg-cyan-800/50'
-                        : 'bg-[#21262d] text-slate-400 hover:text-white hover:bg-[#30363d]'
-                    }`}
-                    title="Configurar alvos do cluster broadcast"
-                  >
-                    <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${broadcastMenuOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                </div>
-
-                {/* Dropdown de Configuração de Alvos do Cluster */}
-                {broadcastMenuOpen && (
-                  <div className="absolute right-0 top-11 w-72 bg-[#161b22] border border-[#30363d] rounded-2xl shadow-2xl z-50 py-2 divide-y divide-[#30363d]/60 animate-fade-in">
-                    <div className="px-3.5 py-2 flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
-                      <div className="flex items-center gap-1.5">
-                        <Radio className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>Alvos do Cluster</span>
+                {/* Popover Menu de Ferramentas */}
+                {toolsMenuOpen && (
+                  <div className="absolute right-0 top-11 w-80 bg-[#161b22] border border-[#30363d] rounded-2xl shadow-2xl z-50 py-2.5 px-3 divide-y divide-[#30363d]/60 animate-fade-in select-none">
+                    {/* Header do Menu */}
+                    <div className="pb-2 flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <SlidersHorizontal className="w-4 h-4 text-blue-400" />
+                        <span className="font-bold text-white">Painel de Ferramentas</span>
                       </div>
-                      <span className="text-xs font-mono text-cyan-400 lowercase">
-                        {broadcastTargetIds.length === 0 ? `${openTabs.length} todas` : `${broadcastTargetIds.length} selecionadas`}
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-[#21262d] text-slate-400 border border-[#30363d]">
+                        Controles
                       </span>
                     </div>
 
-                    <div className="p-2 flex gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setBroadcastTargetIds([])}
-                        className="flex-1 px-2 py-1 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white text-xs font-semibold text-center transition-colors cursor-pointer"
-                      >
-                        Todas as Abas
-                      </button>
-                      {effectiveSecondaryTabId && (
+                    {/* Quick Toggles List */}
+                    <div className="py-2.5 space-y-2">
+                      {/* Modo Fluido Toggle */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors">
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${activeTab?.isFluid ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-[#21262d] text-slate-400'}`}>
+                            <Zap className={`w-4 h-4 ${activeTab?.isFluid ? 'fill-amber-400 text-amber-400' : ''}`} />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-bold text-xs text-white block leading-tight truncate">Modo Fluido</span>
+                            <span className="text-xs text-slate-400 block truncate">Auto-aprova perguntas</span>
+                          </div>
+                        </div>
                         <button
                           type="button"
-                          onClick={() => setBroadcastTargetIds([activeTabId, effectiveSecondaryTabId])}
-                          className="flex-1 px-2 py-1 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white text-xs font-semibold text-center transition-colors cursor-pointer"
+                          onClick={() => handleToggleFluidMode(activeTabId)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer ${
+                            activeTab?.isFluid
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-xs'
+                              : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-white'
+                          }`}
                         >
-                          Apenas Split
+                          {activeTab?.isFluid ? 'ATIVO' : 'DESL'}
                         </button>
-                      )}
+                      </div>
+
+                      {/* Cluster Broadcast Toggle */}
+                      <div className="p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${broadcastEnabled ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'bg-[#21262d] text-slate-400'}`}>
+                              <Radio className={`w-4 h-4 ${broadcastEnabled ? 'animate-pulse text-cyan-400' : ''}`} />
+                            </div>
+                            <div className="min-w-0">
+                              <span className="font-bold text-xs text-white block leading-tight truncate">Cluster Broadcast</span>
+                              <span className="text-xs text-slate-400 block truncate">Espelha digitação em abas</span>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setBroadcastEnabled((prev) => !prev)}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer ${
+                              broadcastEnabled
+                                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-xs'
+                                : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-white'
+                            }`}
+                          >
+                            {broadcastEnabled ? 'ATIVO' : 'DESL'}
+                          </button>
+                        </div>
+
+                        {/* Configuração de Alvos se Broadcast Ativo */}
+                        {broadcastEnabled && (
+                          <div className="pt-2 border-t border-[#21262d] space-y-1.5">
+                            <div className="flex items-center justify-between text-xs text-slate-400">
+                              <span>Alvos: {broadcastTargetIds.length === 0 ? 'Todas as abas' : `${broadcastTargetIds.length} selecionadas`}</span>
+                              <div className="flex gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setBroadcastTargetIds([])}
+                                  className="px-1.5 py-0.5 rounded bg-[#21262d] hover:bg-[#30363d] text-slate-300 text-xs font-semibold cursor-pointer"
+                                >
+                                  Todas
+                                </button>
+                                {effectiveSecondaryTabId && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setBroadcastTargetIds([activeTabId, effectiveSecondaryTabId])}
+                                    className="px-1.5 py-0.5 rounded bg-[#21262d] hover:bg-[#30363d] text-slate-300 text-xs font-semibold cursor-pointer"
+                                  >
+                                    Split
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            <div className="max-h-28 overflow-y-auto space-y-1 pr-1">
+                              {openTabs.map((t) => {
+                                const isTarget = broadcastTargetIds.length === 0 || broadcastTargetIds.includes(t.id);
+                                return (
+                                  <div
+                                    key={t.id}
+                                    onClick={() => handleToggleBroadcastTarget(t.id)}
+                                    className="flex items-center justify-between px-2 py-1 rounded-lg hover:bg-[#21262d] cursor-pointer text-xs"
+                                  >
+                                    <div className="flex items-center gap-2 truncate">
+                                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: t.color || '#3fb950' }} />
+                                      <span className={`truncate ${isTarget ? 'text-white font-medium' : 'text-slate-500 line-through'}`}>{t.title}</span>
+                                    </div>
+                                    <input
+                                      type="checkbox"
+                                      checked={isTarget}
+                                      onChange={() => {}}
+                                      className="accent-cyan-500 rounded cursor-pointer"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Gravador de Sessão (Asciicast v2) */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors">
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${recordingTabId === activeTabId ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-[#21262d] text-slate-400'}`}>
+                            {recordingTabId === activeTabId ? (
+                              <Circle className="w-3.5 h-3.5 fill-rose-500 text-rose-500 animate-pulse" />
+                            ) : (
+                              <Film className="w-3.5 h-3.5" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-bold text-xs text-white block leading-tight truncate">Gravador de Sessão</span>
+                            <span className="text-xs text-slate-400 block truncate">
+                              {recordingTabId === activeTabId
+                                ? `Gravando (${Math.floor(recordingDuration / 60).toString().padStart(2, '0')}:${(recordingDuration % 60).toString().padStart(2, '0')})`
+                                : 'Exporta em Asciicast v2'}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleRecord(activeTabId)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer ${
+                            recordingTabId === activeTabId
+                              ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 animate-pulse shadow-xs'
+                              : 'bg-[#21262d] text-slate-300 border-[#30363d] hover:text-white'
+                          }`}
+                        >
+                          {recordingTabId === activeTabId ? 'PARAR' : 'REC'}
+                        </button>
+                      </div>
+
+                      {/* Smart Command Bar Toggle */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors">
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${smartBarOpen ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40' : 'bg-[#21262d] text-slate-400'}`}>
+                            <Sparkles className="w-4 h-4 text-purple-400" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-bold text-xs text-white block leading-tight truncate">Smart Command Bar</span>
+                            <span className="text-xs text-slate-400 block truncate">Autocomplete preditivo (Ctrl+Espaço)</span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSmartBarOpen((prev) => !prev)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer ${
+                            smartBarOpen
+                              ? 'bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-xs'
+                              : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-white'
+                          }`}
+                        >
+                          {smartBarOpen ? 'ATIVO' : 'DESL'}
+                        </button>
+                      </div>
+
+                      {/* Notificações Desktop & Chime */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors">
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${notificationsEnabled ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-[#21262d] text-slate-400'}`}>
+                            {notificationsEnabled ? <Bell className="w-4 h-4 text-emerald-400" /> : <BellOff className="w-4 h-4 text-slate-400" />}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-bold text-xs text-white block leading-tight truncate">Notificações & Áudio</span>
+                            <span className="text-xs text-slate-400 block truncate">Alerta sonoro de conclusão</span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const nextState = !notificationsEnabled;
+                            setNotificationsEnabled(nextState);
+                            setNotificationEnabled(nextState);
+                            if (nextState) {
+                              requestNotificationPermission();
+                              playNotificationSound();
+                            }
+                          }}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer ${
+                            notificationsEnabled
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-xs'
+                              : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-white'
+                          }`}
+                        >
+                          {notificationsEnabled ? 'ATIVO' : 'DESL'}
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="max-h-56 overflow-y-auto py-1">
-                      {openTabs.map((t) => {
-                        const isTarget = broadcastTargetIds.length === 0 || broadcastTargetIds.includes(t.id);
-                        const isCurrentActive = t.id === activeTabId;
-                        return (
-                          <div
-                            key={t.id}
-                            onClick={() => handleToggleBroadcastTarget(t.id)}
-                            className="w-full px-3 py-1.5 flex items-center justify-between text-xs hover:bg-[#21262d] cursor-pointer transition-colors"
-                          >
-                            <div className="flex items-center gap-2 truncate pr-2 min-w-0">
-                              <span
-                                className="w-2.5 h-2.5 rounded-full shrink-0"
-                                style={{ backgroundColor: t.color || '#3fb950' }}
-                              />
-                              <span className={`truncate ${isTarget ? 'text-white font-bold' : 'text-slate-400 line-through'}`}>
-                                {t.title}
-                              </span>
-                              {isCurrentActive && (
-                                <span className="text-xs font-semibold px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 shrink-0">
-                                  Fonte
-                                </span>
-                              )}
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={isTarget}
-                              onChange={() => {}}
-                              className="accent-cyan-500 shrink-0 cursor-pointer rounded"
-                            />
-                          </div>
-                        );
-                      })}
+                    {/* Central de Atalhos Link */}
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setToolsMenuOpen(false);
+                          setShortcutsModalOpen(true);
+                        }}
+                        className="w-full flex items-center justify-between p-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold transition-colors cursor-pointer group"
+                      >
+                        <div className="flex items-center gap-2">
+                          <HelpCircle className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
+                          <span>Ver Central de Atalhos</span>
+                        </div>
+                        <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-200 border border-blue-500/30">
+                          F1
+                        </span>
+                      </button>
                     </div>
                   </div>
                 )}
@@ -903,8 +991,9 @@ export default function App() {
             {currentView === 'terminals' && (
               <div className="flex items-center bg-[#0d1117] p-1 rounded-xl border border-[#30363d] gap-1">
                 <button
+                  type="button"
                   onClick={() => setSplitMode('single')}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 ${
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
                     splitMode === 'single'
                       ? 'bg-[#21262d] text-blue-400 shadow-xs'
                       : 'text-slate-400 hover:text-white'
@@ -914,11 +1003,12 @@ export default function App() {
                   <Square className="w-4 h-4" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     if (openTabs.length < 2) handleNewTab();
                     setSplitMode('vertical');
                   }}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 ${
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
                     splitMode === 'vertical'
                       ? 'bg-[#21262d] text-blue-400 shadow-xs'
                       : 'text-slate-400 hover:text-white'
@@ -928,11 +1018,12 @@ export default function App() {
                   <Columns2 className="w-4 h-4" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     if (openTabs.length < 2) handleNewTab();
                     setSplitMode('horizontal');
                   }}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 ${
+                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
                     splitMode === 'horizontal'
                       ? 'bg-[#21262d] text-blue-400 shadow-xs'
                       : 'text-slate-400 hover:text-white'
@@ -1136,6 +1227,12 @@ export default function App() {
           recording={replayRecording}
           isOpen={replayModalOpen}
           onClose={() => setReplayModalOpen(false)}
+        />
+
+        {/* Central de Atalhos de Teclado (F1 / ?) */}
+        <KeyboardShortcutsModal
+          isOpen={shortcutsModalOpen}
+          onClose={() => setShortcutsModalOpen(false)}
         />
       </main>
     </div>

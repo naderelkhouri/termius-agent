@@ -329,7 +329,10 @@ export default function AISidecar({
             <BotMessageSquare className="w-4 h-4 text-purple-400" />
           </div>
           <div className="min-w-0">
-            <span className="text-xs font-bold text-white flex items-center gap-1.5 truncate">
+            <span 
+              className="text-xs font-bold text-white flex items-center gap-1.5 truncate"
+              style={{ textWrap: 'balance' }}
+            >
               AI Sidecar
               <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold whitespace-nowrap">
                 Ao Vivo
@@ -468,7 +471,7 @@ export default function AISidecar({
       </div>
 
       {/* Filter Tabs: Timeline | Comandos | Arquivos | Spec | Roadmap */}
-      <div className="px-3 pt-2 pb-1.5 border-b border-[#30363d] flex items-center justify-between bg-[#161b22] shrink-0 overflow-x-auto scrollbar-none">
+      <div className="px-3 pt-2 pb-1.5 border-b border-[#30363d] flex items-center justify-between bg-[#161b22] shrink-0 overflow-x-auto scrollbar-none [mask-image:linear-gradient(to_right,white_calc(100%-16px),transparent)]">
         <div className="flex items-center gap-1">
           <button
             type="button"

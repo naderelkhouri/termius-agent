@@ -9,7 +9,8 @@ import {
   Sparkles,
   X,
   Activity,
-  Zap
+  Zap,
+  HelpCircle
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -21,6 +22,7 @@ export default function Sidebar({
   onNewTab,
   onResumeLastSession,
   onOpenSkills,
+  onOpenShortcuts,
   mobileOpen,
   onCloseMobile
 }) {
@@ -203,8 +205,28 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* Footer / Agent Status */}
-        <div className="p-3 border-t border-[#30363d] bg-[#0d1117]/60 safe-area-bottom">
+        {/* Footer / Agent Status & Shortcuts */}
+        <div className="p-3 border-t border-[#30363d] bg-[#0d1117]/60 safe-area-bottom space-y-2">
+          {onOpenShortcuts && (
+            <button
+              type="button"
+              onClick={() => {
+                onOpenShortcuts();
+                if (onCloseMobile) onCloseMobile();
+              }}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#21262d]/60 hover:bg-[#21262d] border border-[#30363d] text-slate-300 hover:text-white text-xs font-semibold transition-all active:scale-95 group cursor-pointer"
+              title="Central de Atalhos de Teclado (F1 ou ?)"
+            >
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
+                <span>Atalhos de Teclado</span>
+              </div>
+              <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-[#161b22] text-slate-400 border border-[#30363d]">
+                F1
+              </span>
+            </button>
+          )}
+
           <div className="flex items-center justify-between text-xs px-3 py-2 rounded-xl bg-[#21262d]/70 border border-[#30363d]">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-400" />
