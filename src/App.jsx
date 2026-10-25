@@ -1126,46 +1126,49 @@ export default function App() {
             {shouldShowTopActions && (
               <>
 
-            {/* Skills IA Catalog Button */}
-            <button
-              type="button"
-              onClick={() => setSkillsModalOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
-              title="Catálogo de Skills & Especialistas IA em Português BR (Ctrl + Shift + S)"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-purple-400" />
-              <span className="hidden sm:inline">Skills IA</span>
-              <span className="text-xs font-mono px-1.5 py-0.5 rounded-md bg-purple-500/25 text-purple-300 border border-purple-500/30">340</span>
-            </button>
-
-            {/* AI Copilot Button */}
-            <button
-              type="button"
-              onClick={() => setCopilotOpen(true)}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
-              title="AI Copilot (Ctrl + K)"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
-              <span className="hidden sm:inline">AI Copilot</span>
-              <span className="text-xs font-mono opacity-75 hidden md:inline">Ctrl+K</span>
-            </button>
-
-            {/* AI Sidecar Toggle */}
-            {currentView === 'terminals' && (
+            {/* AI Suite Toolbar: Copilot, Sidecar, Skills */}
+            <div className="flex items-center p-0.5 rounded-xl bg-[#0d1117] border border-[#30363d] gap-0.5">
+              {/* AI Copilot Button */}
               <button
                 type="button"
-                onClick={() => setSidecarOpen((prev) => !prev)}
-                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs active:scale-95 whitespace-nowrap cursor-pointer ${
-                  sidecarOpen
-                    ? 'bg-purple-600/25 text-purple-200 border-purple-500/50 shadow-purple-500/10'
-                    : 'bg-[#21262d] text-slate-300 border-[#30363d] hover:text-white hover:bg-[#30363d]'
-                }`}
-                title="AI Sidecar: Acompanhe passos, raciocínio, comandos e diffs ao vivo (Ctrl + Alt + A)"
+                onClick={() => setCopilotOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-blue-300 hover:text-white hover:bg-[#21262d] transition-all cursor-pointer"
+                title="AI Copilot: Sugestões inteligentes (Ctrl + K)"
               >
-                <PanelRight className={`w-3.5 h-3.5 ${sidecarOpen ? 'text-purple-400' : 'text-slate-400'}`} />
-                <span className="hidden sm:inline">AI Sidecar</span>
+                <Sparkles className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
+                <span className="hidden sm:inline">Copilot</span>
+                <span className="text-[10px] font-mono opacity-70 hidden md:inline">Ctrl+K</span>
               </button>
-            )}
+
+              {/* AI Sidecar Toggle */}
+              {currentView === 'terminals' && (
+                <button
+                  type="button"
+                  onClick={() => setSidecarOpen((prev) => !prev)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    sidecarOpen
+                      ? 'bg-purple-600/30 text-purple-200 border border-purple-500/40 shadow-xs'
+                      : 'text-slate-300 hover:text-white hover:bg-[#21262d]'
+                  }`}
+                  title="AI Sidecar: Acompanhe passos, comandos e diffs ao vivo (Ctrl + Alt + A)"
+                >
+                  <PanelRight className={`w-3.5 h-3.5 ${sidecarOpen ? 'text-purple-300' : 'text-slate-400'}`} />
+                  <span className="hidden sm:inline">Sidecar</span>
+                </button>
+              )}
+
+              {/* Skills IA Catalog Button */}
+              <button
+                type="button"
+                onClick={() => setSkillsModalOpen(true)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-purple-300 hover:text-white hover:bg-[#21262d] transition-all cursor-pointer"
+                title="Catálogo de Skills & Especialistas IA em Português BR (Ctrl + Shift + S)"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-purple-400" />
+                <span className="hidden md:inline">Skills</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-500/25 text-purple-300 border border-purple-500/30">340</span>
+              </button>
+            </div>
 
             {/* Ferramentas / Quick Controls Popover */}
             {currentView === 'terminals' && (

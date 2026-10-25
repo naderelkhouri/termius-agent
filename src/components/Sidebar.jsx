@@ -326,43 +326,17 @@ export default function Sidebar({
           </div>
 
           {/* Active Terminal Tabs Quick List */}
-          {showActiveSessions && openTabs.length > 0 && (
-            <div className={`pt-2.5 border-t border-[#30363d] ${isCompact ? 'px-1' : 'px-3'}`}>
-              {!isCompact && (
-                <div className="flex items-center justify-between px-3 py-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Sessões ({openTabs.length})
-                  </span>
-                  <Layers className="w-3.5 h-3.5 text-slate-400" />
-                </div>
-              )}
-              <div className={`space-y-1 max-h-48 overflow-y-auto ${isCompact ? 'flex flex-col items-center py-1' : 'pr-1'}`}>
+          {showActiveSessions && !isCompact && openTabs.length > 0 && (
+            <div className="pt-2.5 border-t border-[#30363d] px-3">
+              <div className="flex items-center justify-between px-3 py-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Sessões ({openTabs.length})
+                </span>
+                <Layers className="w-3.5 h-3.5 text-slate-400" />
+              </div>
+              <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
                 {openTabs.map((tab) => {
                   const isSelected = activeTabId === tab.id && currentView === 'terminals';
-                  if (isCompact) {
-                    return (
-                      <button
-                        key={tab.id}
-                        onClick={() => {
-                          onSelectTab(tab.id);
-                          setCurrentView('terminals');
-                          if (onCloseMobile) onCloseMobile();
-                        }}
-                        className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
-                          isSelected 
-                            ? 'bg-[#21262d] border border-cyan-500/50 scale-105' 
-                            : 'hover:bg-[#21262d]/50'
-                        }`}
-                        title={`Sessão: ${tab.title}`}
-                      >
-                        <span 
-                          className="w-2.5 h-2.5 rounded-full shadow-xs" 
-                          style={{ backgroundColor: tab.color || '#3fb950' }} 
-                        />
-                      </button>
-                    );
-                  }
-
                   return (
                     <button
                       key={tab.id}
@@ -458,10 +432,10 @@ export default function Sidebar({
             </div>
           )}
 
-          {/* Footer / Agent Status & Shortcuts */}
-          <div className={`border-t border-[#30363d] bg-[#0d1117]/60 safe-area-bottom ${isCompact ? 'p-2 space-y-2 flex flex-col items-center' : 'p-3 space-y-2'}`}>
-            {onOpenShortcuts && (
-              isCompact ? (
+          {/* Footer / Shortcuts */}
+          {onOpenShortcuts && (
+            <div className={`border-t border-[#30363d] bg-[#0d1117]/60 safe-area-bottom ${isCompact ? 'p-2 flex flex-col items-center' : 'p-3'}`}>
+              {isCompact ? (
                 <button
                   type="button"
                   onClick={() => {
@@ -491,28 +465,9 @@ export default function Sidebar({
                     F1
                   </span>
                 </button>
-              )
-            )}
-
-            {isCompact ? (
-              <div 
-                className="w-10 h-10 rounded-xl bg-[#21262d]/70 border border-[#30363d] flex items-center justify-center cursor-help"
-                title="Agente Ativo: Antigravity"
-              >
-                <Sparkles className="w-4 h-4 text-purple-400" />
-              </div>
-            ) : (
-              <div className="flex items-center justify-between text-xs px-3 py-2 rounded-xl bg-[#21262d]/70 border border-[#30363d]">
-                <div className="flex items-center gap-2 min-w-0">
-                  <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span className="text-slate-200 font-semibold text-xs whitespace-nowrap truncate">Agente Ativo</span>
-                </div>
-                <span className="text-xs bg-purple-500/20 text-purple-300 font-bold px-2 py-0.5 rounded-md font-mono whitespace-nowrap">
-                  Antigravity
-                </span>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Drag Resizer Handle for Modo Personalizado */}
