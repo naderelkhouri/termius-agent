@@ -10,7 +10,9 @@ import {
   Zap, 
   Command,
   PanelRight,
-  BookOpen
+  BookOpen,
+  Copy,
+  MousePointer
 } from 'lucide-react';
 
 export default function KeyboardShortcutsModal({ isOpen, onClose }) {
@@ -42,6 +44,21 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
         { keys: ['Enter'], description: 'Próxima ocorrência na busca do terminal' },
         { keys: ['Shift', 'Enter'], description: 'Ocorrência anterior na busca do terminal' },
         { keys: ['Duplo-clique'], description: 'Renomear título da aba ativa' }
+      ]
+    },
+    {
+      category: 'Copiar, Colar & Seleção',
+      icon: Copy,
+      color: 'text-emerald-400',
+      bgColor: 'bg-emerald-500/10',
+      borderColor: 'border-emerald-500/30',
+      shortcuts: [
+        { keys: ['Ctrl', 'C'], description: 'Copiar seleção (ou enviar SIGINT se sem seleção)' },
+        { keys: ['Ctrl', 'V'], description: 'Colar da área de transferência (sem travar terminal)' },
+        { keys: ['Ctrl', 'Shift', 'C', 'ou', 'V'], description: 'Copiar e colar no formato clássico terminal' },
+        { keys: ['Ctrl', 'Shift', 'A'], description: 'Selecionar todo o texto do terminal ativo' },
+        { keys: ['Botão Direito'], description: 'Menu de contexto flutuante com ações rápidas' },
+        { keys: ['Botão do Meio'], description: 'Colar rápido via clique central do mouse' }
       ]
     },
     {

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, Notification } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, Notification, clipboard } = require('electron');
 const path = require('node:path');
 const http = require('node:http');
 const { spawn } = require('node:child_process');
@@ -201,6 +201,26 @@ ipcMain.on('window:focus', () => {
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();
     mainWindow.focus();
+  }
+});
+
+// Handlers de Área de Transferência (Clipboard)
+ipcMain.handle('clipboard:readText', () => {
+  try {
+    return clipboard.readText();
+  } catch (err) {
+    console.warn('[Electron] Falha ao ler clipboard:', err);
+    return '';
+  }
+});
+
+ipcMain.on('clipboard:writeText', (event, text) => {
+  try {
+    if (typeof text === 'string') {
+      clipboard.writeText(text);
+    }
+  } catch (err) {
+    console.warn('[Electron] Falha ao gravar clipboard:', err);
   }
 });
 

@@ -3,10 +3,22 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { WebLinksAddon } from '@xterm/addon-web-links';
 import { SearchAddon } from '@xterm/addon-search';
-import { Zap, Search, ChevronUp, ChevronDown, X as XIcon } from 'lucide-react';
+import { 
+  Zap, 
+  Search, 
+  ChevronUp, 
+  ChevronDown, 
+  X as XIcon,
+  Copy,
+  Check,
+  CornerDownLeft,
+  CheckSquare,
+  Trash2
+} from 'lucide-react';
 import { sendNotification } from '../services/notificationService';
 import { recordOutput } from '../services/sessionRecorder';
 import { getThemeDefinition, DEFAULT_TERMINAL_SETTINGS } from '../services/terminalThemes';
+import { copyToClipboard, readFromClipboard } from '../services/clipboardService';
 
 export default function TerminalView({ 
   tab, 
@@ -29,6 +41,33 @@ export default function TerminalView({
   const commandRunningRef = useRef(false);
   const lastCommandNameRef = useRef('');
   const [fluidAlert, setFluidAlert] = useState(false);
+
+  // Estados de Área de Transferência & Menu de Contexto
+  const [copyFeedback, setCopyFeedback] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null); // { x, y, hasSelection }
+  const contextMenuRef = useRef(null);
+  const copyFeedbackTimerRef = useRef(null);
+
+  const triggerCopyToast = () => {
+    if (copyFeedbackTimerRef.current) clearTimeout(copyFeedbackTimerRef.current);
+    setCopyFeedback(true);
+    copyFeedbackTimerRef.current = setTimeout(() => {
+      setCopyFeedback(false);
+    }, 1800);
+  };
+
+  // Fecha menu de contexto ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target)) {
+        setContextMenu(null);
+      }
+    };
+    if (contextMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [contextMenu]);
 
   const searchAddonRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -99,12 +138,60 @@ export default function TerminalView({
     });
 
     term.attachCustomKeyEventHandler((event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {
-        if (event.type === 'keydown') {
-          setSearchOpen((prev) => !prev);
-        }
+      if (event.type !== 'keydown') return true;
+
+      const isCtrlOrMeta = event.ctrlKey || event.metaKey;
+      const key = event.key ? event.key.toLowerCase() : '';
+
+      // 1. Ctrl+F / Cmd+F -> In-Buffer Search
+      if (isCtrlOrMeta && !event.shiftKey && !event.altKey && key === 'f') {
+        setSearchOpen((prev) => !prev);
         return false;
       }
+
+      // 2. Ctrl+C ou Ctrl+Shift+C -> Smart Copy
+      if (isCtrlOrMeta && key === 'c') {
+        if (term.hasSelection()) {
+          const selectedText = term.getSelection();
+          copyToClipboard(selectedText);
+          triggerCopyToast();
+          return false; // Interrompe para NÃO enviar SIGINT (\x03) quando houver seleção
+        }
+        if (event.shiftKey) {
+          return false;
+        }
+        // Sem seleção: Ctrl+C normal envia SIGINT ao shell para cancelar processo
+        return true;
+      }
+
+      // 3. Ctrl+V ou Ctrl+Shift+V -> Smart Paste
+      if (isCtrlOrMeta && key === 'v') {
+        event.preventDefault();
+        readFromClipboard().then((clipboardText) => {
+          if (clipboardText && termRef.current) {
+            termRef.current.paste(clipboardText);
+          }
+        });
+        return false; // Interrompe para NÃO enviar raw ^V (\x16) ao shell
+      }
+
+      // 4. Ctrl+Shift+A -> Selecionar Tudo
+      if (isCtrlOrMeta && event.shiftKey && key === 'a') {
+        term.selectAll();
+        return false;
+      }
+
+      // 5. Deixar atalhos globais passarem para o listener da janela
+      if (
+        event.key === 'F1' ||
+        (event.altKey && event.key >= '1' && event.key <= '9') ||
+        (isCtrlOrMeta && event.shiftKey && key === 'w') ||
+        (isCtrlOrMeta && (key === 'k' || key === 'a' || key === 'b' || key === 's')) ||
+        (event.ctrlKey && (event.key === 'PageDown' || event.key === 'PageUp'))
+      ) {
+        return false;
+      }
+
       return true;
     });
 
@@ -388,10 +475,69 @@ export default function TerminalView({
     }
   };
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    const term = termRef.current;
+    const hasSelection = term ? term.hasSelection() : false;
+    const rect = containerRef.current?.getBoundingClientRect();
+    const posX = e.clientX - (rect ? rect.left : 0);
+    const posY = e.clientY - (rect ? rect.top : 0);
+    setContextMenu({
+      x: Math.min(posX, Math.max(10, (rect?.width || 300) - 220)),
+      y: Math.min(posY, Math.max(10, (rect?.height || 200) - 210)),
+      hasSelection
+    });
+  };
+
+  const handleAuxClick = async (e) => {
+    // Botão do meio do mouse (Linux middle-click paste)
+    if (e.button === 1) {
+      e.preventDefault();
+      const text = await readFromClipboard();
+      if (text && termRef.current) {
+        termRef.current.paste(text);
+      }
+    }
+  };
+
+  const handleCopyFromMenu = async () => {
+    if (termRef.current?.hasSelection()) {
+      const text = termRef.current.getSelection();
+      await copyToClipboard(text);
+      triggerCopyToast();
+    }
+    setContextMenu(null);
+  };
+
+  const handlePasteFromMenu = async () => {
+    const text = await readFromClipboard();
+    if (text && termRef.current) {
+      termRef.current.paste(text);
+    }
+    setContextMenu(null);
+  };
+
+  const handleSelectAllFromMenu = () => {
+    termRef.current?.selectAll();
+    setContextMenu(null);
+  };
+
+  const handleClearTerminalFromMenu = () => {
+    termRef.current?.clear();
+    setContextMenu(null);
+  };
+
+  const handleSearchFromMenu = () => {
+    setSearchOpen(true);
+    setContextMenu(null);
+  };
+
   return (
     <div 
       className={`h-full w-full bg-[#0d1117] relative group ${isActive ? 'block' : 'hidden'}`}
       ref={containerRef}
+      onContextMenu={handleContextMenu}
+      onAuxClick={handleAuxClick}
     >
       {/* Botão flutuante para abrir busca no terminal (Ctrl+F) */}
       {!searchOpen && (
@@ -487,6 +633,92 @@ export default function TerminalView({
         <div className="absolute top-3 right-4 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 text-xs font-bold shadow-md shadow-indigo-500/10 backdrop-blur-md select-none pointer-events-none">
           <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
           <span>📡 Cluster: Alvo (Espelhado)</span>
+        </div>
+      )}
+
+      {/* Toast flutuante de confirmação de cópia */}
+      {copyFeedback && (
+        <div className="absolute bottom-5 right-5 z-40 flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 text-xs font-semibold shadow-2xl backdrop-blur-md animate-fade-in select-none pointer-events-none">
+          <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <span>Copiado para a área de transferência!</span>
+        </div>
+      )}
+
+      {/* Menu de contexto flutuante com botão direito */}
+      {contextMenu && (
+        <div
+          ref={contextMenuRef}
+          style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+          className="absolute z-50 w-52 bg-[#161b22]/95 border border-[#30363d] rounded-xl shadow-2xl backdrop-blur-md py-1.5 text-xs text-slate-200 animate-fade-in select-none"
+        >
+          <button
+            type="button"
+            onClick={handleCopyFromMenu}
+            disabled={!contextMenu.hasSelection}
+            className={`w-full flex items-center justify-between px-3 py-1.5 text-left transition-colors ${
+              contextMenu.hasSelection 
+                ? 'hover:bg-[#21262d] text-slate-100 hover:text-white cursor-pointer' 
+                : 'text-slate-500 cursor-not-allowed'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <Copy className="w-3.5 h-3.5" />
+              <span>Copiar</span>
+            </span>
+            <kbd className="text-[10px] text-slate-400 font-mono">Ctrl+C</kbd>
+          </button>
+
+          <button
+            type="button"
+            onClick={handlePasteFromMenu}
+            className="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-[#21262d] text-slate-100 hover:text-white transition-colors cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <CornerDownLeft className="w-3.5 h-3.5" />
+              <span>Colar</span>
+            </span>
+            <kbd className="text-[10px] text-slate-400 font-mono">Ctrl+V</kbd>
+          </button>
+
+          <div className="my-1 border-t border-[#30363d]/70" />
+
+          <button
+            type="button"
+            onClick={handleSelectAllFromMenu}
+            className="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-[#21262d] text-slate-100 hover:text-white transition-colors cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <CheckSquare className="w-3.5 h-3.5" />
+              <span>Selecionar Tudo</span>
+            </span>
+            <kbd className="text-[10px] text-slate-400 font-mono">Ctrl+Shift+A</kbd>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSearchFromMenu}
+            className="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-[#21262d] text-slate-100 hover:text-white transition-colors cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <Search className="w-3.5 h-3.5" />
+              <span>Buscar no Buffer</span>
+            </span>
+            <kbd className="text-[10px] text-slate-400 font-mono">Ctrl+F</kbd>
+          </button>
+
+          <div className="my-1 border-t border-[#30363d]/70" />
+
+          <button
+            type="button"
+            onClick={handleClearTerminalFromMenu}
+            className="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-rose-950/40 text-slate-300 hover:text-rose-300 transition-colors cursor-pointer"
+          >
+            <span className="flex items-center gap-2">
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Limpar Tela</span>
+            </span>
+            <kbd className="text-[10px] text-slate-500 font-mono">clear</kbd>
+          </button>
         </div>
       )}
     </div>

@@ -9,5 +9,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   close: () => ipcRenderer.send('window:close'),
   isMaximized: () => ipcRenderer.invoke('window:isMaximized'),
   notify: (opts) => ipcRenderer.send('notification:show', opts),
-  focusWindow: () => ipcRenderer.send('window:focus')
+  focusWindow: () => ipcRenderer.send('window:focus'),
+  clipboard: {
+    readText: () => ipcRenderer.invoke('clipboard:readText'),
+    writeText: (text) => ipcRenderer.send('clipboard:writeText', text)
+  }
 });
