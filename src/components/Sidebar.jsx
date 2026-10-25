@@ -15,7 +15,8 @@ import {
   PanelLeftOpen,
   Target,
   Columns,
-  Sliders
+  Sliders,
+  SlidersHorizontal
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -35,9 +36,16 @@ export default function Sidebar({
   sidebarWidth = 280,
   setSidebarWidth,
   isCollapsed = false,
-  onToggleCollapse
+  onToggleCollapse,
+  visible = true,
+  showActiveSessions = true,
+  showAiBanners = true,
+  onOpenCustomModal
 }) {
   const [isResizing, setIsResizing] = useState(false);
+
+  // Se a barra estiver oculta e o menu mobile não estiver aberto, não renderiza
+  if (!visible && !mobileOpen) return null;
 
   // Consideramos modo compacto quando colapsado ou quando a largura for menor que 90px
   const isCompact = isCollapsed || workMode === 'foco' || sidebarWidth <= 90;
@@ -153,7 +161,7 @@ export default function Sidebar({
                       ? 'bg-blue-600 text-white shadow-xs'
                       : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
                   }`}
-                  title="Modo FOCO: Barra lateral ultra-compacta (apenas ícones), maximizando a tela do terminal"
+                  title="Modo FOCO: Apenas terminais (oculta barras e menus para foco total)"
                 >
                   <Target className="w-3 h-3 text-cyan-300 shrink-0" />
                   <span className="text-[11px] truncate">FOCO</span>
@@ -167,42 +175,73 @@ export default function Sidebar({
                       ? 'bg-blue-600 text-white shadow-xs'
                       : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
                   }`}
-                  title="Modo Expansivo: Barra lateral aberta (280px) com todos os rótulos e ferramentas"
+                  title="Modo Expansivo: Todas as opções, barras e ferramentas à mostra"
                 >
                   <Columns className="w-3 h-3 text-blue-300 shrink-0" />
                   <span className="text-[11px] truncate">Expansivo</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => setWorkMode && setWorkMode('personalizado')}
-                  className={`flex-1 py-1 px-1 rounded-lg font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                    workMode === 'personalizado'
-                      ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
-                  }`}
-                  title="Modo Personalizado: Arraste a borda direita para definir a largura ideal"
-                >
-                  <Sliders className="w-3 h-3 text-amber-300 shrink-0" />
-                  <span className="text-[11px] truncate">Custom</span>
-                </button>
+                <div className="flex-1 flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => setWorkMode && setWorkMode('personalizado')}
+                    className={`flex-1 py-1 px-1 rounded-l-lg font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                      workMode === 'personalizado'
+                        ? 'bg-amber-600 text-white shadow-xs'
+                        : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                    }`}
+                    title="Modo Custom: Configurado pelo menu multiseletor"
+                  >
+                    <Sliders className="w-3 h-3 text-amber-300 shrink-0" />
+                    <span className="text-[11px] truncate">Custom</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onOpenCustomModal && onOpenCustomModal()}
+                    className={`p-1 rounded-r-lg border-l border-[#30363d] transition-colors cursor-pointer ${
+                      workMode === 'personalizado'
+                        ? 'bg-amber-600/80 hover:bg-amber-600 text-white'
+                        : 'text-slate-400 hover:text-amber-300 hover:bg-[#21262d]'
+                    }`}
+                    title="Abrir Multiseletor do Modo Custom"
+                  >
+                    <SlidersHorizontal className="w-3 h-3" />
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-1 py-2 border-b border-[#30363d]/60">
               <button
                 type="button"
+                onClick={() => setWorkMode && setWorkMode('foco')}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                  workMode === 'foco' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                }`}
+                title="Modo FOCO: Apenas terminais"
+              >
+                <Target className="w-4 h-4 text-cyan-300" />
+              </button>
+              <button
+                type="button"
                 onClick={() => setWorkMode && setWorkMode('expansivo')}
-                className="w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-[#21262d] flex items-center justify-center transition-all cursor-pointer"
-                title="Modo Expansivo: Expandir barra lateral (280px)"
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                  workMode === 'expansivo' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                }`}
+                title="Modo Expansivo: Todas as opções à mostra (280px)"
               >
                 <Columns className="w-4 h-4 text-blue-400" />
               </button>
               <button
                 type="button"
-                onClick={() => setWorkMode && setWorkMode('personalizado')}
-                className="w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-[#21262d] flex items-center justify-center transition-all cursor-pointer"
-                title="Modo Personalizado: Largura livre arrastável"
+                onClick={() => {
+                  setWorkMode && setWorkMode('personalizado');
+                  onOpenCustomModal && onOpenCustomModal();
+                }}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                  workMode === 'personalizado' ? 'bg-amber-600 text-white' : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                }`}
+                title="Modo Custom: Configurar no menu multiseletor"
               >
                 <Sliders className="w-4 h-4 text-amber-400" />
               </button>
@@ -287,7 +326,7 @@ export default function Sidebar({
           </div>
 
           {/* Active Terminal Tabs Quick List */}
-          {openTabs.length > 0 && (
+          {showActiveSessions && openTabs.length > 0 && (
             <div className={`pt-2.5 border-t border-[#30363d] ${isCompact ? 'px-1' : 'px-3'}`}>
               {!isCompact && (
                 <div className="flex items-center justify-between px-3 py-1">
@@ -353,69 +392,71 @@ export default function Sidebar({
 
         {/* Bottom Actions: Quick Resume Antigravity Banner & Skills IA */}
         <div className="flex flex-col">
-          <div className={`border-t border-[#30363d]/60 ${isCompact ? 'p-2 space-y-2 flex flex-col items-center' : 'p-3 space-y-2'}`}>
-            {onOpenSkills && (
-              isCompact ? (
+          {showAiBanners && (
+            <div className={`border-t border-[#30363d]/60 ${isCompact ? 'p-2 space-y-2 flex flex-col items-center' : 'p-3 space-y-2'}`}>
+              {onOpenSkills && (
+                isCompact ? (
+                  <button
+                    onClick={() => {
+                      onOpenSkills();
+                      if (onCloseMobile) onCloseMobile();
+                    }}
+                    className="w-10 h-10 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer"
+                    title="Catálogo de 340 Skills & Especialistas IA"
+                  >
+                    <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      onOpenSkills();
+                      if (onCloseMobile) onCloseMobile();
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group cursor-pointer"
+                    title="Catálogo de 340 Skills & Especialistas em Português BR"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform animate-pulse shrink-0" />
+                      <span className="truncate">Skills IA (340)</span>
+                    </div>
+                    <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
+                      PT-BR
+                    </span>
+                  </button>
+                )
+              )}
+
+              {isCompact ? (
                 <button
                   onClick={() => {
-                    onOpenSkills();
+                    if (onResumeLastSession) onResumeLastSession();
                     if (onCloseMobile) onCloseMobile();
                   }}
-                  className="w-10 h-10 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer"
-                  title="Catálogo de 340 Skills & Especialistas IA"
+                  className="w-10 h-10 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-500/40 text-purple-200 flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer"
+                  title="Retomar a conversa mais recente do Antigravity CLI com 1 clique (agy --continue)"
                 >
-                  <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                  <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                 </button>
               ) : (
                 <button
                   onClick={() => {
-                    onOpenSkills();
+                    if (onResumeLastSession) onResumeLastSession();
                     if (onCloseMobile) onCloseMobile();
                   }}
-                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group cursor-pointer"
-                  title="Catálogo de 340 Skills & Especialistas em Português BR"
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group cursor-pointer"
+                  title="Retomar a conversa mais recente do Antigravity CLI com 1 clique (agy --continue)"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform animate-pulse shrink-0" />
-                    <span className="truncate">Skills IA (340)</span>
+                    <Zap className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 group-hover:scale-110 transition-transform shrink-0" />
+                    <span className="truncate">Retomar Última IA</span>
                   </div>
                   <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
-                    PT-BR
+                    agy -c
                   </span>
                 </button>
-              )
-            )}
-
-            {isCompact ? (
-              <button
-                onClick={() => {
-                  if (onResumeLastSession) onResumeLastSession();
-                  if (onCloseMobile) onCloseMobile();
-                }}
-                className="w-10 h-10 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-500/40 text-purple-200 flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer"
-                title="Retomar a conversa mais recente do Antigravity CLI com 1 clique (agy --continue)"
-              >
-                <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  if (onResumeLastSession) onResumeLastSession();
-                  if (onCloseMobile) onCloseMobile();
-                }}
-                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group cursor-pointer"
-                title="Retomar a conversa mais recente do Antigravity CLI com 1 clique (agy --continue)"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <Zap className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 group-hover:scale-110 transition-transform shrink-0" />
-                  <span className="truncate">Retomar Última IA</span>
-                </div>
-                <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
-                  agy -c
-                </span>
-              </button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Footer / Agent Status & Shortcuts */}
           <div className={`border-t border-[#30363d] bg-[#0d1117]/60 safe-area-bottom ${isCompact ? 'p-2 space-y-2 flex flex-col items-center' : 'p-3 space-y-2'}`}>

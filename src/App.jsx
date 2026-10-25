@@ -12,6 +12,7 @@ import TelemetryManager from './components/TelemetryManager';
 import SessionReplayModal from './components/SessionReplayModal';
 import KeyboardShortcutsModal from './components/KeyboardShortcutsModal';
 import TerminalThemeModal from './components/TerminalThemeModal';
+import CustomWorkModeModal from './components/CustomWorkModeModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import { 
   Plus, 
@@ -110,7 +111,7 @@ export default function App() {
   const commandersRef = useRef({});
 
 
-  // 3 Modos de Trabalho: 'foco' | 'expansivo' | 'personalizado'
+  // 3 Modos de Trabalho: 'foco' (apenas terminais) | 'expansivo' (todas as opções) | 'personalizado' (multiseletor)
   const [workMode, setWorkMode] = useState(() => {
     try {
       return localStorage.getItem('termius_work_mode') || 'expansivo';
@@ -118,6 +119,29 @@ export default function App() {
       return 'expansivo';
     }
   });
+
+  const DEFAULT_CUSTOM_CONFIG = {
+    showSidebar: true,
+    sidebarCompact: false,
+    showActiveSessions: true,
+    showAiBanners: true,
+    showSmartBar: true,
+    showSidecar: false,
+    showStatusBar: true,
+    showTopActions: true,
+    showSplitControls: true
+  };
+
+  const [customConfig, setCustomConfig] = useState(() => {
+    try {
+      const stored = localStorage.getItem('termius_custom_config');
+      return stored ? { ...DEFAULT_CUSTOM_CONFIG, ...JSON.parse(stored) } : DEFAULT_CUSTOM_CONFIG;
+    } catch {
+      return DEFAULT_CUSTOM_CONFIG;
+    }
+  });
+
+  const [customModalOpen, setCustomModalOpen] = useState(false);
 
   const [customSidebarWidth, setCustomSidebarWidth] = useState(() => {
     try {
@@ -137,12 +161,124 @@ export default function App() {
     }
   });
 
+  const isFoco = workMode === 'foco';
+  const isExpansivo = workMode === 'expansivo';
+  const isCustom = workMode === 'personalizado';
+
+  // Lógica de visibilidade dos elementos nos 3 modos
+  const shouldShowSidebar = isFoco 
+    ? false 
+    : isExpansivo 
+    ? true 
+    : Boolean(customConfig.showSidebar);
+
+  const sidebarCompact = isFoco
+    ? true
+    : isExpansivo
+    ? false
+    : Boolean(customConfig.sidebarCompact);
+
   const effectiveSidebarWidth = useMemo(() => {
-    if (isCollapsed || workMode === 'foco') return 64;
-    if (workMode === 'expansivo') return 280;
-    if (workMode === 'personalizado') return customSidebarWidth;
-    return 280;
-  }, [isCollapsed, workMode, customSidebarWidth]);
+    if (!shouldShowSidebar) return 0;
+    if (sidebarCompact) return 64;
+    if (isExpansivo) return 280;
+    return customSidebarWidth || 280;
+  }, [shouldShowSidebar, sidebarCompact, isExpansivo, customSidebarWidth]);
+
+  const shouldShowActiveSessions = isFoco
+    ? false
+    : isExpansivo
+    ? true
+    : Boolean(customConfig.showActiveSessions);
+
+  const shouldShowAiBanners = isFoco
+    ? false
+    : isExpansivo
+    ? true
+    : Boolean(customConfig.showAiBanners);
+
+  const shouldShowSmartBar = isFoco
+    ? false
+    : isExpansivo
+    ? smartBarOpen
+    : (Boolean(customConfig.showSmartBar) && smartBarOpen);
+
+  const shouldShowStatusBar = isFoco
+    ? false
+    : isExpansivo
+    ? true
+    : Boolean(customConfig.showStatusBar);
+
+  const shouldShowTopActions = isFoco
+    ? false
+    : isExpansivo
+    ? true
+    : Boolean(customConfig.showTopActions);
+
+  const shouldShowSplitControls = isFoco
+    ? false
+    : isExpansivo
+    ? true
+    : Boolean(customConfig.showSplitControls);
+
+  const shouldShowSidecar = isFoco
+    ? false
+    : isExpansivo
+    ? sidecarOpen
+    : (Boolean(customConfig.showSidecar) || sidecarOpen);
+
+  const handleUpdateCustomConfig = (key, value) => {
+    setCustomConfig((prev) => {
+      const updated = { ...prev, [key]: value };
+      try {
+        localStorage.setItem('termius_custom_config', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  const handleResetCustomConfig = () => {
+    setCustomConfig(DEFAULT_CUSTOM_CONFIG);
+    try {
+      localStorage.setItem('termius_custom_config', JSON.stringify(DEFAULT_CUSTOM_CONFIG));
+    } catch {}
+  };
+
+  const handleSelectAllCustomConfig = () => {
+    const allTrue = {
+      showSidebar: true,
+      sidebarCompact: false,
+      showActiveSessions: true,
+      showAiBanners: true,
+      showSmartBar: true,
+      showSidecar: true,
+      showStatusBar: true,
+      showTopActions: true,
+      showSplitControls: true,
+    };
+    setCustomConfig(allTrue);
+    try {
+      localStorage.setItem('termius_custom_config', JSON.stringify(allTrue));
+    } catch {}
+  };
+
+  const handleSelectMinimalCustomConfig = () => {
+    const minimal = {
+      showSidebar: true,
+      sidebarCompact: true,
+      showActiveSessions: false,
+      showAiBanners: false,
+      showSmartBar: false,
+      showSidecar: false,
+      showStatusBar: false,
+      showTopActions: false,
+      showSplitControls: false,
+    };
+    setCustomConfig(minimal);
+    try {
+      localStorage.setItem('termius_custom_config', JSON.stringify(minimal));
+    } catch {}
+  };
 
   const handleSetWorkMode = (mode) => {
     setWorkMode(mode);
@@ -160,24 +296,12 @@ export default function App() {
   };
 
   const handleToggleSidebarCollapse = () => {
-    setIsCollapsed((prev) => {
-      const next = !prev;
-      if (next) {
-        setWorkMode('foco');
-        try {
-          localStorage.setItem('termius_work_mode', 'foco');
-        } catch {}
-      } else {
-        let prevMode = 'expansivo';
-        try {
-          prevMode = localStorage.getItem('termius_work_mode_prev') || 'expansivo';
-          if (prevMode === 'foco') prevMode = 'expansivo';
-          localStorage.setItem('termius_work_mode', prevMode);
-        } catch {}
-        setWorkMode(prevMode);
-      }
-      return next;
-    });
+    if (workMode === 'foco') {
+      const prevMode = localStorage.getItem('termius_work_mode_prev') || 'expansivo';
+      handleSetWorkMode(prevMode === 'foco' ? 'expansivo' : prevMode);
+    } else {
+      handleSetWorkMode('foco');
+    }
   };
 
   const handleSetSidebarWidth = (newWidth) => {
@@ -789,6 +913,10 @@ export default function App() {
         setSidebarWidth={handleSetSidebarWidth}
         isCollapsed={isCollapsed}
         onToggleCollapse={handleToggleSidebarCollapse}
+        visible={shouldShowSidebar}
+        showActiveSessions={shouldShowActiveSessions}
+        showAiBanners={shouldShowAiBanners}
+        onOpenCustomModal={() => setCustomModalOpen(true)}
       />
 
       {/* Main Workspace */}
@@ -800,9 +928,9 @@ export default function App() {
             type="button"
             onClick={handleToggleSidebarCollapse}
             className="hidden md:flex w-8 h-8 rounded-xl bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white items-center justify-center shrink-0 active:scale-95 transition-all border border-[#30363d] cursor-pointer"
-            title={isCollapsed ? "Expandir barra lateral (Ctrl + B)" : "Recolher barra lateral (Ctrl + B)"}
+            title={!shouldShowSidebar ? "Expandir barra lateral (Ctrl + B)" : "Recolher barra lateral (Ctrl + B)"}
           >
-            {isCollapsed ? <PanelLeftOpen className="w-4 h-4 text-blue-400" /> : <PanelLeftClose className="w-4 h-4 text-slate-400" />}
+            {!shouldShowSidebar ? <PanelLeftOpen className="w-4 h-4 text-blue-400" /> : <PanelLeftClose className="w-4 h-4 text-slate-400" />}
           </button>
 
           {/* Tabs list with overflow mask and mouse wheel access */}
@@ -1044,8 +1172,8 @@ export default function App() {
 
           {/* Top Actions: AI Tools, Ferramentas Popover & Split Screen Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 pr-1 shrink-0">
-            {/* Work Modes Switcher (FOCO | Expansivo | Personalizado) */}
-            <div className="hidden xl:flex items-center p-0.5 rounded-xl bg-[#0d1117] border border-[#30363d] text-xs">
+            {/* Work Modes Switcher (FOCO | Expansivo | Custom ⚙️) */}
+            <div className="flex items-center p-0.5 rounded-xl bg-[#0d1117] border border-[#30363d] text-xs">
               <button
                 type="button"
                 onClick={() => handleSetWorkMode('foco')}
@@ -1054,7 +1182,7 @@ export default function App() {
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
                 }`}
-                title="Modo FOCO: Foco total no terminal com barra lateral compacta (Ctrl + B)"
+                title="Modo FOCO: Apenas terminais (Ctrl + B)"
               >
                 <Target className="w-3 h-3 text-cyan-300" />
                 <span>FOCO</span>
@@ -1068,26 +1196,43 @@ export default function App() {
                     ? 'bg-blue-600 text-white shadow-xs'
                     : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
                 }`}
-                title="Modo Expansivo: Barra lateral aberta (280px)"
+                title="Modo Expansivo: Todas as opções à mostra (280px)"
               >
                 <Columns className="w-3 h-3 text-blue-300" />
                 <span>Expansivo</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => handleSetWorkMode('personalizado')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                  workMode === 'personalizado'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
-                }`}
-                title="Modo Personalizado: Arraste a borda da barra lateral para ajustar a largura desejada"
-              >
-                <Sliders className="w-3 h-3 text-amber-300" />
-                <span>Custom</span>
-              </button>
+              <div className="flex items-center">
+                <button
+                  type="button"
+                  onClick={() => handleSetWorkMode('personalizado')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-l-lg font-bold transition-all cursor-pointer ${
+                    workMode === 'personalizado'
+                      ? 'bg-amber-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                  }`}
+                  title="Modo Custom: Configurado pelo menu multiseletor"
+                >
+                  <Sliders className="w-3 h-3 text-amber-300" />
+                  <span>Custom</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCustomModalOpen(true)}
+                  className={`px-1.5 py-1 rounded-r-lg font-bold transition-all cursor-pointer border-l border-[#30363d] ${
+                    workMode === 'personalizado'
+                      ? 'bg-amber-600/80 hover:bg-amber-600 text-white'
+                      : 'text-slate-400 hover:text-amber-300 hover:bg-[#21262d]'
+                  }`}
+                  title="Abrir Menu Multiseletor do Modo Custom"
+                >
+                  <SlidersHorizontal className="w-3 h-3 text-amber-300" />
+                </button>
+              </div>
             </div>
+
+            {shouldShowTopActions && (
+              <>
 
             {/* Skills IA Catalog Button */}
             <button
@@ -1428,54 +1573,56 @@ export default function App() {
                 )}
               </div>
             )}
+          </>
+        )}
 
-            {/* Split Screen Mode Buttons */}
-            {currentView === 'terminals' && (
-              <div className="flex items-center bg-[#0d1117] p-1 rounded-xl border border-[#30363d] gap-1">
-                <button
-                  type="button"
-                  onClick={() => setSplitMode('single')}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
-                    splitMode === 'single'
-                      ? 'bg-[#21262d] text-blue-400 shadow-xs'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                  title="Tela Cheia (1 Terminal)"
-                >
-                  <Square className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (openTabs.length < 2) handleNewTab();
-                    setSplitMode('vertical');
-                  }}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
-                    splitMode === 'vertical'
-                      ? 'bg-[#21262d] text-blue-400 shadow-xs'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                  title="Dividir Verticalmente (Ctrl + Alt + V)"
-                >
-                  <Columns2 className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (openTabs.length < 2) handleNewTab();
-                    setSplitMode('horizontal');
-                  }}
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
-                    splitMode === 'horizontal'
-                      ? 'bg-[#21262d] text-blue-400 shadow-xs'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                  title="Dividir Horizontalmente (Ctrl + Alt + H)"
-                >
-                  <Rows2 className="w-4 h-4" />
-                </button>
-              </div>
-            )}
+        {/* Split Screen Mode Buttons */}
+        {shouldShowSplitControls && currentView === 'terminals' && (
+          <div className="flex items-center bg-[#0d1117] p-1 rounded-xl border border-[#30363d] gap-1">
+            <button
+              type="button"
+              onClick={() => setSplitMode('single')}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+                splitMode === 'single'
+                  ? 'bg-[#21262d] text-blue-400 shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Tela Cheia (1 Terminal)"
+            >
+              <Square className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (openTabs.length < 2) handleNewTab();
+                setSplitMode('vertical');
+              }}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+                splitMode === 'vertical'
+                  ? 'bg-[#21262d] text-blue-400 shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Dividir Verticalmente (Ctrl + Alt + V)"
+            >
+              <Columns2 className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (openTabs.length < 2) handleNewTab();
+                setSplitMode('horizontal');
+              }}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+                splitMode === 'horizontal'
+                  ? 'bg-[#21262d] text-blue-400 shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Dividir Horizontalmente (Ctrl + Alt + H)"
+            >
+              <Rows2 className="w-4 h-4" />
+            </button>
+          </div>
+        )}
           </div>
         </div>
 
@@ -1597,7 +1744,7 @@ export default function App() {
               </div>
 
               {/* Smart Command Bar (Autocomplete Preditivo Contextual) */}
-              {smartBarOpen && (
+              {shouldShowSmartBar && (
                 <ErrorBoundary>
                   <SmartCommandBar
                     cwd={activeCwd}
@@ -1611,7 +1758,7 @@ export default function App() {
             </div>
 
             {/* Live Docked AI Sidecar Panel */}
-            {sidecarOpen && (
+            {shouldShowSidecar && (
               <div className="w-[380px] lg:w-[440px] xl:w-[480px] h-full shrink-0 z-20 flex flex-col">
                 <ErrorBoundary>
                   <AISidecar
@@ -1651,7 +1798,8 @@ export default function App() {
         </div>
 
         {/* Sleek Bottom Status Bar */}
-        <footer className="h-7 bg-[#161b22] border-t border-[#30363d] px-3 flex items-center justify-between text-xs text-slate-400 select-none shrink-0 z-20 gap-3">
+        {shouldShowStatusBar && (
+          <footer className="h-7 bg-[#161b22] border-t border-[#30363d] px-3 flex items-center justify-between text-xs text-slate-400 select-none shrink-0 z-20 gap-3">
           {/* Lado Esquerdo: Host, CWD e Abas */}
           <div className="flex items-center gap-2.5 min-w-0">
             {/* Host Status Indicator */}
@@ -1780,6 +1928,7 @@ export default function App() {
             </button>
           </div>
         </footer>
+      )}
 
         {/* Menu de Contexto da Aba com Botão Direito */}
         {tabContextMenu && (
@@ -1936,6 +2085,19 @@ export default function App() {
           onClose={() => setThemeModalOpen(false)}
           settings={terminalSettings}
           onUpdateSettings={handleUpdateTerminalSettings}
+        />
+
+        {/* Modal Multiseletor do Modo Custom */}
+        <CustomWorkModeModal
+          isOpen={customModalOpen}
+          onClose={() => setCustomModalOpen(false)}
+          config={customConfig}
+          onUpdateConfig={handleUpdateCustomConfig}
+          onResetDefault={handleResetCustomConfig}
+          onSelectAll={handleSelectAllCustomConfig}
+          onSelectMinimal={handleSelectMinimalCustomConfig}
+          onActivateCustomMode={() => handleSetWorkMode('personalizado')}
+          isCustomActive={workMode === 'personalizado'}
         />
       </main>
     </div>
