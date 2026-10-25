@@ -28,11 +28,11 @@ import {
   ChevronRight, 
   MousePointer, 
   ArrowLeftRight, 
-  PanelLeftClose,
-  PanelLeftOpen,
-  Target,
-  Columns,
-  Sliders,
+  PanelLeftClose, 
+  PanelLeftOpen, 
+  Target, 
+  Columns, 
+  Sliders, 
   Zap, 
   PanelRight, 
   BookOpen, 
@@ -42,11 +42,17 @@ import {
   Circle, 
   Radio, 
   CheckSquare, 
-  Layers,
-  SlidersHorizontal,
-  HelpCircle,
-  Palette
+  Layers, 
+  SlidersHorizontal, 
+  HelpCircle, 
+  Palette,
+  Terminal,
+  Server,
+  Folder,
+  Copy,
+  Check
 } from 'lucide-react';
+import { copyToClipboard } from './services/clipboardService';
 import { 
   isNotificationEnabled, 
   setNotificationEnabled, 
@@ -88,6 +94,21 @@ export default function App() {
   const toolsMenuRef = useRef(null);
   const tabsContainerRef = useRef(null);
   const tabScrollThrottleRef = useRef(0);
+
+  const [openTabs, setOpenTabs] = useState([
+    {
+      id: 'tab-default',
+      title: 'Localhost (~)',
+      cwd: '/home/nader',
+      color: '#3fb950',
+      host: null
+    }
+  ]);
+  const [activeTabId, setActiveTabId] = useState('tab-default');
+  const [editingTabId, setEditingTabId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState('');
+  const commandersRef = useRef({});
+
 
   // 3 Modos de Trabalho: 'foco' | 'expansivo' | 'personalizado'
   const [workMode, setWorkMode] = useState(() => {
@@ -165,6 +186,78 @@ export default function App() {
       localStorage.setItem('termius_sidebar_custom_width', newWidth);
     } catch {}
   };
+
+  const TAB_COLORS = [
+    { label: 'Esmeralda', hex: '#3fb950' },
+    { label: 'Azul', hex: '#58a6ff' },
+    { label: 'Ciano', hex: '#39c5cf' },
+    { label: 'Roxo', hex: '#bc8cff' },
+    { label: 'Âmbar', hex: '#d29922' },
+    { label: 'Laranja', hex: '#f0883e' },
+    { label: 'Rosa', hex: '#f778ba' },
+    { label: 'Cinza', hex: '#8b949e' }
+  ];
+
+  const [tabContextMenu, setTabContextMenu] = useState(null); // { x, y, tab }
+  const tabContextMenuRef = useRef(null);
+  const [copiedCwd, setCopiedCwd] = useState(false);
+
+  const handleCopyCwd = async () => {
+    if (activeCwd) {
+      await copyToClipboard(activeCwd);
+      setCopiedCwd(true);
+      setTimeout(() => setCopiedCwd(false), 2000);
+    }
+  };
+
+  const formatDuration = (sec) => {
+    const m = Math.floor(sec / 60).toString().padStart(2, '0');
+    const s = (sec % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
+
+  const handleSetTabColor = (tabId, color) => {
+    setOpenTabs((prev) =>
+      prev.map((t) => (t.id === tabId ? { ...t, color } : t))
+    );
+    setTabContextMenu(null);
+  };
+
+  const handleDuplicateTab = (tab) => {
+    handleNewTab(tab.cwd, `${tab.title} (Cópia)`, tab.host, tab.color, null, tab.isFluid);
+    setTabContextMenu(null);
+  };
+
+  const handleCloseOtherTabs = (targetId) => {
+    setOpenTabs((prev) => prev.filter((t) => t.id === targetId));
+    setActiveTabId(targetId);
+    setTabContextMenu(null);
+  };
+
+  const handleCloseTabsToRight = (targetId) => {
+    const targetIdx = openTabs.findIndex((t) => t.id === targetId);
+    if (targetIdx !== -1) {
+      const kept = openTabs.slice(0, targetIdx + 1);
+      setOpenTabs(kept);
+      if (!kept.some((t) => t.id === activeTabId)) {
+        setActiveTabId(targetId);
+      }
+    }
+    setTabContextMenu(null);
+  };
+
+  // Fecha menu de contexto da aba ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (tabContextMenuRef.current && !tabContextMenuRef.current.contains(e.target)) {
+        setTabContextMenu(null);
+      }
+    };
+    if (tabContextMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [tabContextMenu]);
 
   // Modo de scroll da barra de abas: 'switch' (alternar abas) ou 'scroll' (rolar barra)
   const [tabScrollMode, setTabScrollMode] = useState(() => {
@@ -299,19 +392,6 @@ export default function App() {
     }
   };
 
-  const [openTabs, setOpenTabs] = useState([
-    {
-      id: 'tab-default',
-      title: 'Localhost (~)',
-      cwd: '/home/nader',
-      color: '#3fb950',
-      host: null
-    }
-  ]);
-  const [activeTabId, setActiveTabId] = useState('tab-default');
-  const [editingTabId, setEditingTabId] = useState(null);
-  const [editingTitle, setEditingTitle] = useState('');
-  const commandersRef = useRef({});
 
   // Close tab quick menu on click outside
   useEffect(() => {
@@ -756,7 +836,16 @@ export default function App() {
                     }
                   }}
                   onDoubleClick={(e) => handleStartEditTab(tab.id, tab.title, e)}
-                  title={tab.autoTitle ? `Título: ${tab.title} (${tab.autoTitle})\nDuplo clique para renomear` : `${tab.title}\nDuplo clique para renomear`}
+                  onContextMenu={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setTabContextMenu({
+                      x: Math.min(e.clientX, window.innerWidth - 230),
+                      y: Math.min(e.clientY, window.innerHeight - 300),
+                      tab
+                    });
+                  }}
+                  title={tab.autoTitle ? `Título: ${tab.title} (${tab.autoTitle})\nDuplo clique para renomear | Botão direito para opções` : `${tab.title}\nDuplo clique para renomear | Botão direito para opções`}
                   className={`group min-h-[34px] flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs cursor-pointer transition-all border shrink-0 ${
                     isActive
                       ? 'bg-[#0d1117] text-white border-blue-500/40 shadow-xs font-bold ring-1 ring-blue-500/30'
@@ -1560,6 +1649,258 @@ export default function App() {
             <TelemetryManager />
           )}
         </div>
+
+        {/* Sleek Bottom Status Bar */}
+        <footer className="h-7 bg-[#161b22] border-t border-[#30363d] px-3 flex items-center justify-between text-xs text-slate-400 select-none shrink-0 z-20 gap-3">
+          {/* Lado Esquerdo: Host, CWD e Abas */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            {/* Host Status Indicator */}
+            <div className="flex items-center gap-1.5 font-medium text-slate-300 shrink-0">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-mono text-xs">{activeTab?.host ? activeTab.host.label : 'localhost'}</span>
+            </div>
+
+            <span className="text-[#30363d] hidden sm:inline">|</span>
+
+            {/* CWD com botão para copiar */}
+            <button
+              type="button"
+              onClick={handleCopyCwd}
+              className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-[#21262d] text-slate-300 hover:text-white transition-colors cursor-pointer truncate max-w-[200px] sm:max-w-xs group font-mono text-xs"
+              title={`${activeCwd}\nClique para copiar o caminho`}
+            >
+              {copiedCwd ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span className="text-emerald-300 font-sans font-bold">Copiado!</span>
+                </>
+              ) : (
+                <>
+                  <Folder className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                  <span className="truncate">{activeCwd.replace('/home/nader', '~')}</span>
+                </>
+              )}
+            </button>
+
+            <span className="text-[#30363d] hidden md:inline">|</span>
+
+            {/* Total de Abas Abertas */}
+            <div className="hidden md:flex items-center gap-1 text-slate-400 text-xs shrink-0">
+              <Terminal className="w-3 h-3 text-slate-500" />
+              <span>{openTabs.length} {openTabs.length === 1 ? 'terminal' : 'terminais'}</span>
+            </div>
+          </div>
+
+          {/* Centro: Status do Agente, Gravação REC e Cluster Broadcast */}
+          <div className="hidden sm:flex items-center gap-2 shrink-0">
+            {recordingTabId === activeTabId && (
+              <button
+                type="button"
+                onClick={() => handleToggleRecord(activeTabId)}
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-bold animate-pulse cursor-pointer"
+                title="Sessão gravando. Clique para parar e assistir ao replay."
+              >
+                <Circle className="w-2.5 h-2.5 fill-rose-500 text-rose-500" />
+                <span className="font-mono">REC {formatDuration(recordingDuration)}</span>
+              </button>
+            )}
+
+            {broadcastEnabled && (
+              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold">
+                <Radio className="w-3 h-3 text-cyan-400 animate-pulse" />
+                <span>Cluster Broadcast</span>
+              </span>
+            )}
+
+            {activeTab?.isFluid ? (
+              <span className="flex items-center gap-1 text-amber-300 font-bold text-xs" title="Modo Fluido ativo: Confirmações auto-aprovadas">
+                <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400 animate-pulse" />
+                <span className="hidden lg:inline">Modo Fluido</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-purple-300 font-medium text-xs">
+                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                <span className="hidden lg:inline">Antigravity</span>
+              </span>
+            )}
+          </div>
+
+          {/* Lado Direito: Tema, Som, Sidecar, Modo de Trabalho & Atalhos */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Tema Ativo */}
+            <button
+              type="button"
+              onClick={() => setThemeModalOpen(true)}
+              className="flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-[#21262d] text-slate-300 hover:text-white transition-colors cursor-pointer text-xs"
+              title="Personalizar Tema e Tipografia do Terminal"
+            >
+              <Palette className="w-3.5 h-3.5 text-blue-400" />
+              <span className="hidden md:inline font-medium">{terminalSettings.fontSize || 13}px</span>
+            </button>
+
+            {/* Alternar Notificações / Som */}
+            <button
+              type="button"
+              onClick={() => {
+                const next = !notificationsEnabled;
+                setNotificationsEnabled(next);
+                setNotificationEnabled(next);
+                if (next) {
+                  requestNotificationPermission();
+                  playNotificationSound();
+                }
+              }}
+              className="p-1 rounded-md hover:bg-[#21262d] text-slate-400 hover:text-white transition-colors cursor-pointer"
+              title={notificationsEnabled ? "Notificações e Som ATIVOS (Clique para mutar)" : "Notificações e Som MUTADOS (Clique para ativar)"}
+            >
+              {notificationsEnabled ? <Bell className="w-3.5 h-3.5 text-emerald-400" /> : <BellOff className="w-3.5 h-3.5 text-slate-500" />}
+            </button>
+
+            {/* Alternar Painel Sidecar */}
+            <button
+              type="button"
+              onClick={() => setSidecarOpen((p) => !p)}
+              className={`px-1.5 py-0.5 rounded-md font-mono text-[11px] font-bold transition-colors cursor-pointer ${
+                sidecarOpen ? 'bg-purple-600/30 text-purple-300 border border-purple-500/40' : 'hover:bg-[#21262d] text-slate-400'
+              }`}
+              title="Alternar painel lateral do AI Sidecar (Ctrl + Alt + A)"
+            >
+              AI Sidecar
+            </button>
+
+            {/* Central de Atalhos (F1) */}
+            <button
+              type="button"
+              onClick={() => setShortcutsModalOpen(true)}
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded-md hover:bg-[#21262d] text-slate-400 hover:text-white transition-colors cursor-pointer text-xs"
+              title="Central de Atalhos de Teclado (F1 ou ?)"
+            >
+              <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
+              <span className="font-mono text-[11px] font-bold">F1</span>
+            </button>
+          </div>
+        </footer>
+
+        {/* Menu de Contexto da Aba com Botão Direito */}
+        {tabContextMenu && (
+          <div
+            ref={tabContextMenuRef}
+            style={{ top: `${tabContextMenu.y}px`, left: `${tabContextMenu.x}px` }}
+            className="fixed z-50 w-56 bg-[#161b22]/95 border border-[#30363d] rounded-2xl shadow-2xl backdrop-blur-md py-2 text-xs text-slate-200 animate-fade-in select-none"
+          >
+            {/* Cabeçalho do Menu com Título da Aba */}
+            <div className="px-3 py-1 pb-2 border-b border-[#30363d]/60 flex items-center justify-between">
+              <span className="font-bold text-white text-xs truncate max-w-[150px]">
+                {tabContextMenu.tab.title}
+              </span>
+              <span 
+                className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs" 
+                style={{ backgroundColor: tabContextMenu.tab.color || '#3fb950' }} 
+              />
+            </div>
+
+            {/* Paleta de Cores para a Aba */}
+            <div className="px-3 py-2 border-b border-[#30363d]/60">
+              <div className="text-[10px] uppercase font-bold text-slate-400 mb-1.5 tracking-wider">
+                Cor da Aba
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {TAB_COLORS.map((c) => (
+                  <button
+                    key={c.hex}
+                    type="button"
+                    onClick={() => handleSetTabColor(tabContextMenu.tab.id, c.hex)}
+                    className={`w-5 h-5 rounded-full transition-transform hover:scale-125 cursor-pointer shadow-xs ${
+                      tabContextMenu.tab.color === c.hex ? 'ring-2 ring-white scale-110' : ''
+                    }`}
+                    style={{ backgroundColor: c.hex }}
+                    title={c.label}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Ações */}
+            <div className="py-1">
+              <button
+                type="button"
+                onClick={() => {
+                  handleStartEditTab(tabContextMenu.tab.id, tabContextMenu.tab.title);
+                  setTabContextMenu(null);
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-slate-200 hover:text-white hover:bg-[#21262d] transition-colors cursor-pointer"
+              >
+                <Pencil className="w-3.5 h-3.5 text-slate-400" />
+                <span>Renomear Aba</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDuplicateTab(tabContextMenu.tab)}
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-slate-200 hover:text-white hover:bg-[#21262d] transition-colors cursor-pointer"
+              >
+                <Copy className="w-3.5 h-3.5 text-slate-400" />
+                <span>Duplicar Aba</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  handleToggleFluidMode(tabContextMenu.tab.id);
+                  setTabContextMenu(null);
+                }}
+                className="w-full flex items-center justify-between px-3 py-1.5 text-left text-slate-200 hover:text-white hover:bg-[#21262d] transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-2.5">
+                  <Zap className={`w-3.5 h-3.5 ${tabContextMenu.tab.isFluid ? 'text-amber-400 fill-amber-400' : 'text-slate-400'}`} />
+                  <span>Modo Fluido</span>
+                </span>
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${tabContextMenu.tab.isFluid ? 'bg-amber-500/20 text-amber-300' : 'bg-[#21262d] text-slate-400'}`}>
+                  {tabContextMenu.tab.isFluid ? 'ON' : 'OFF'}
+                </span>
+              </button>
+            </div>
+
+            <div className="my-1 border-t border-[#30363d]/60" />
+
+            {/* Fechar Abas */}
+            <div className="py-1">
+              <button
+                type="button"
+                onClick={() => {
+                  handleCloseTab(tabContextMenu.tab.id);
+                  setTabContextMenu(null);
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-rose-300 hover:text-rose-200 hover:bg-rose-950/30 transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>Fechar Esta Aba</span>
+              </button>
+
+              {openTabs.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => handleCloseOtherTabs(tabContextMenu.tab.id)}
+                    className="w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-slate-300 hover:text-white hover:bg-[#21262d] transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Fechar Outras Abas</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCloseTabsToRight(tabContextMenu.tab.id)}
+                    className="w-full flex items-center gap-2.5 px-3 py-1.5 text-left text-slate-300 hover:text-white hover:bg-[#21262d] transition-colors cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Fechar Abas à Direita</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* AI Copilot Floating Modal (Ctrl + K) */}
         <AICopilotModal

@@ -46,7 +46,8 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
         { keys: ['Ctrl', 'F'], description: 'Buscar texto no buffer do terminal (In-Buffer Find)' },
         { keys: ['Enter'], description: 'Próxima ocorrência na busca do terminal' },
         { keys: ['Shift', 'Enter'], description: 'Ocorrência anterior na busca do terminal' },
-        { keys: ['Duplo-clique'], description: 'Renomear título da aba ativa' }
+        { keys: ['Duplo-clique'], description: 'Renomear título da aba ativa' },
+        { keys: ['Botão Direito na Aba'], description: 'Menu de contexto da aba (mudar cor, duplicar, fechar outras)' }
       ]
     },
     {
