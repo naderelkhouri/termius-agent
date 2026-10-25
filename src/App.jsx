@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Sidebar from './components/Sidebar';
 import TerminalView from './components/TerminalView';
 import HostsManager from './components/HostsManager';
@@ -24,10 +24,15 @@ import {
   Pencil, 
   RotateCcw, 
   ChevronDown, 
-  ChevronLeft,
-  ChevronRight,
-  MousePointer,
-  ArrowLeftRight,
+  ChevronLeft, 
+  ChevronRight, 
+  MousePointer, 
+  ArrowLeftRight, 
+  PanelLeftClose,
+  PanelLeftOpen,
+  Target,
+  Columns,
+  Sliders,
   Zap, 
   PanelRight, 
   BookOpen, 
@@ -83,6 +88,83 @@ export default function App() {
   const toolsMenuRef = useRef(null);
   const tabsContainerRef = useRef(null);
   const tabScrollThrottleRef = useRef(0);
+
+  // 3 Modos de Trabalho: 'foco' | 'expansivo' | 'personalizado'
+  const [workMode, setWorkMode] = useState(() => {
+    try {
+      return localStorage.getItem('termius_work_mode') || 'expansivo';
+    } catch {
+      return 'expansivo';
+    }
+  });
+
+  const [customSidebarWidth, setCustomSidebarWidth] = useState(() => {
+    try {
+      const stored = localStorage.getItem('termius_sidebar_custom_width');
+      return stored ? Number(stored) : 300;
+    } catch {
+      return 300;
+    }
+  });
+
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    try {
+      const saved = localStorage.getItem('termius_work_mode') || 'expansivo';
+      return saved === 'foco';
+    } catch {
+      return false;
+    }
+  });
+
+  const effectiveSidebarWidth = useMemo(() => {
+    if (isCollapsed || workMode === 'foco') return 64;
+    if (workMode === 'expansivo') return 280;
+    if (workMode === 'personalizado') return customSidebarWidth;
+    return 280;
+  }, [isCollapsed, workMode, customSidebarWidth]);
+
+  const handleSetWorkMode = (mode) => {
+    setWorkMode(mode);
+    try {
+      localStorage.setItem('termius_work_mode', mode);
+      if (mode !== 'foco') {
+        localStorage.setItem('termius_work_mode_prev', mode);
+      }
+    } catch {}
+    if (mode === 'foco') {
+      setIsCollapsed(true);
+    } else {
+      setIsCollapsed(false);
+    }
+  };
+
+  const handleToggleSidebarCollapse = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      if (next) {
+        setWorkMode('foco');
+        try {
+          localStorage.setItem('termius_work_mode', 'foco');
+        } catch {}
+      } else {
+        let prevMode = 'expansivo';
+        try {
+          prevMode = localStorage.getItem('termius_work_mode_prev') || 'expansivo';
+          if (prevMode === 'foco') prevMode = 'expansivo';
+          localStorage.setItem('termius_work_mode', prevMode);
+        } catch {}
+        setWorkMode(prevMode);
+      }
+      return next;
+    });
+  };
+
+  const handleSetSidebarWidth = (newWidth) => {
+    setCustomSidebarWidth(newWidth);
+    try {
+      localStorage.setItem('termius_sidebar_custom_width', newWidth);
+    } catch {}
+  };
 
   // Modo de scroll da barra de abas: 'switch' (alternar abas) ou 'scroll' (rolar barra)
   const [tabScrollMode, setTabScrollMode] = useState(() => {
@@ -451,6 +533,11 @@ export default function App() {
         e.preventDefault();
         setBroadcastEnabled((prev) => !prev);
       }
+      // Ctrl+B -> Alternar recuo/expansão da coluna da esquerda (Sidebar)
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        handleToggleSidebarCollapse();
+      }
     };
     window.addEventListener('keydown', handleGlobalKeys);
     return () => window.removeEventListener('keydown', handleGlobalKeys);
@@ -616,12 +703,28 @@ export default function App() {
         onOpenShortcuts={() => setShortcutsModalOpen(true)}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
+        workMode={workMode}
+        setWorkMode={handleSetWorkMode}
+        sidebarWidth={effectiveSidebarWidth}
+        setSidebarWidth={handleSetSidebarWidth}
+        isCollapsed={isCollapsed}
+        onToggleCollapse={handleToggleSidebarCollapse}
       />
 
       {/* Main Workspace */}
       <main className="flex-1 flex flex-col min-w-0 bg-[#0d1117] relative">
         {/* Top Terminal Tabs Bar */}
         <div className="h-12 bg-[#161b22] border-b border-[#30363d] flex items-center px-3 select-none justify-between shrink-0 gap-2 relative">
+          {/* Toggle Sidebar Collapse button on desktop */}
+          <button
+            type="button"
+            onClick={handleToggleSidebarCollapse}
+            className="hidden md:flex w-8 h-8 rounded-xl bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white items-center justify-center shrink-0 active:scale-95 transition-all border border-[#30363d] cursor-pointer"
+            title={isCollapsed ? "Expandir barra lateral (Ctrl + B)" : "Recolher barra lateral (Ctrl + B)"}
+          >
+            {isCollapsed ? <PanelLeftOpen className="w-4 h-4 text-blue-400" /> : <PanelLeftClose className="w-4 h-4 text-slate-400" />}
+          </button>
+
           {/* Tabs list with overflow mask and mouse wheel access */}
           <div 
             ref={tabsContainerRef}
@@ -852,6 +955,51 @@ export default function App() {
 
           {/* Top Actions: AI Tools, Ferramentas Popover & Split Screen Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 pr-1 shrink-0">
+            {/* Work Modes Switcher (FOCO | Expansivo | Personalizado) */}
+            <div className="hidden xl:flex items-center p-0.5 rounded-xl bg-[#0d1117] border border-[#30363d] text-xs">
+              <button
+                type="button"
+                onClick={() => handleSetWorkMode('foco')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  workMode === 'foco'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                }`}
+                title="Modo FOCO: Foco total no terminal com barra lateral compacta (Ctrl + B)"
+              >
+                <Target className="w-3 h-3 text-cyan-300" />
+                <span>FOCO</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSetWorkMode('expansivo')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  workMode === 'expansivo'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                }`}
+                title="Modo Expansivo: Barra lateral aberta (280px)"
+              >
+                <Columns className="w-3 h-3 text-blue-300" />
+                <span>Expansivo</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleSetWorkMode('personalizado')}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                  workMode === 'personalizado'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                }`}
+                title="Modo Personalizado: Arraste a borda da barra lateral para ajustar a largura desejada"
+              >
+                <Sliders className="w-3 h-3 text-amber-300" />
+                <span>Custom</span>
+              </button>
+            </div>
+
             {/* Skills IA Catalog Button */}
             <button
               type="button"

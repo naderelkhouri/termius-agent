@@ -38,6 +38,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
       shortcuts: [
         { keys: ['Ctrl', 'Shift', 'T'], description: 'Abrir nova aba de terminal local' },
         { keys: ['Ctrl', 'Shift', 'W'], description: 'Fechar a aba de terminal ativa' },
+        { keys: ['Ctrl', 'B'], description: 'Recuar ou expandir a coluna lateral (Sidebar)' },
         { keys: ['Alt', '1...9'], description: 'Alternar diretamente para a aba 1 a 9' },
         { keys: ['Ctrl', 'PgUp', 'ou', 'PgDn'], description: 'Navegar para aba anterior ou próxima' },
         { keys: ['Scroll do Mouse'], description: 'Navegar/Alternar entre as abas na barra superior' },

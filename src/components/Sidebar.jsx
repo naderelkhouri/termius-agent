@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Server, 
   Terminal, 
   Code2, 
   BotMessageSquare, 
   Plus, 
-  Layers,
-  Sparkles,
-  X,
-  Activity,
-  Zap,
-  HelpCircle
+  Layers, 
+  Sparkles, 
+  X, 
+  Activity, 
+  Zap, 
+  HelpCircle,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Target,
+  Columns,
+  Sliders
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -24,8 +29,19 @@ export default function Sidebar({
   onOpenSkills,
   onOpenShortcuts,
   mobileOpen,
-  onCloseMobile
+  onCloseMobile,
+  workMode = 'expansivo',
+  setWorkMode,
+  sidebarWidth = 280,
+  setSidebarWidth,
+  isCollapsed = false,
+  onToggleCollapse
 }) {
+  const [isResizing, setIsResizing] = useState(false);
+
+  // Consideramos modo compacto quando colapsado ou quando a largura for menor que 90px
+  const isCompact = isCollapsed || workMode === 'foco' || sidebarWidth <= 90;
+
   const navItems = [
     { id: 'terminals', label: 'Terminais', icon: Terminal, count: openTabs.length },
     { id: 'hosts', label: 'Hosts & SSH', icon: Server },
@@ -33,6 +49,29 @@ export default function Sidebar({
     { id: 'conversations', label: 'Histórico IA', icon: BotMessageSquare, highlight: true },
     { id: 'telemetry', label: 'Telemetria & Bugs', icon: Activity },
   ];
+
+  const handleMouseDown = (e) => {
+    if (workMode !== 'personalizado') return;
+    e.preventDefault();
+    setIsResizing(true);
+
+    const handleMouseMove = (moveEvent) => {
+      // Limites de largura: mínimo 64px, máximo 550px
+      const newWidth = Math.min(550, Math.max(64, moveEvent.clientX));
+      if (setSidebarWidth) {
+        setSidebarWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
 
   return (
     <>
@@ -44,54 +83,174 @@ export default function Sidebar({
         />
       )}
 
-      <aside className={`
-        fixed md:static inset-y-0 left-0 z-50
-        w-72 bg-[#161b22] border-r border-[#30363d] 
-        flex flex-col justify-between shrink-0 select-none
-        transition-transform duration-300 ease-in-out
-        ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-      `}>
+      <aside 
+        style={{ width: isCompact ? '64px' : `${sidebarWidth}px` }}
+        className={`
+          fixed md:static inset-y-0 left-0 z-50
+          bg-[#161b22] border-r border-[#30363d] 
+          flex flex-col justify-between shrink-0 select-none relative
+          ${isResizing ? 'select-none transition-none' : 'transition-all duration-200 ease-out'}
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
         {/* Top Header */}
-        <div>
-          <div className="h-16 px-4 flex items-center justify-between border-b border-[#30363d]">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-500/30 shrink-0">
+        <div className="flex flex-col min-w-0">
+          <div className={`h-16 flex items-center justify-between border-b border-[#30363d] ${isCompact ? 'px-2 flex-col justify-center gap-1.5' : 'px-3.5'}`}>
+            {!isCompact ? (
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-500/30 shrink-0">
+                  <img src="/icon.png" alt="Termius Agent Logo" className="w-full h-full object-cover" />
+                </div>
+                <div className="min-w-0 truncate">
+                  <span className="font-bold text-xs tracking-wide text-white block leading-tight truncate">TERMIUS</span>
+                  <span className="text-[10px] text-cyan-400 font-semibold tracking-wider uppercase block truncate">Agent Suite</span>
+                </div>
+              </div>
+            ) : (
+              <div className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-500/30 shrink-0" title="Termius Agent Suite">
                 <img src="/icon.png" alt="Termius Agent Logo" className="w-full h-full object-cover" />
               </div>
-              <div>
-                <span className="font-bold text-sm tracking-wide text-white block leading-tight">TERMIUS</span>
-                <span className="text-xs text-cyan-400 font-semibold tracking-wider uppercase block">Agent Suite</span>
-              </div>
-            </div>
+            )}
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1 shrink-0">
               <button 
                 onClick={onNewTab}
-                title="Novo Terminal Local"
-                className="w-9 h-9 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white flex items-center justify-center transition-colors active:scale-95"
+                title="Novo Terminal Local (Ctrl+Shift+T)"
+                className="w-7 h-7 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Toggle Collapse/Expand button */}
+              <button 
+                onClick={onToggleCollapse}
+                title={isCompact ? "Expandir coluna lateral (Ctrl + B)" : "Recuar coluna lateral (Ctrl + B)"}
+                className="w-7 h-7 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-white hidden md:flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
+              >
+                {isCompact ? <PanelLeftOpen className="w-3.5 h-3.5 text-blue-400" /> : <PanelLeftClose className="w-3.5 h-3.5" />}
               </button>
 
               {/* Close button on mobile */}
               <button 
                 onClick={onCloseMobile}
                 title="Fechar Menu"
-                className="md:hidden w-9 h-9 rounded-lg bg-[#21262d] text-slate-400 hover:text-white flex items-center justify-center"
+                className="md:hidden w-7 h-7 rounded-lg bg-[#21262d] text-slate-400 hover:text-white flex items-center justify-center cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          {/* Navigation Sections */}
-          <div className="p-3 space-y-1.5">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 px-3 py-1.5">
-              Navegação
+          {/* 3 Modos de Trabalho: FOCO | Expansivo | Personalizado */}
+          {!isCompact ? (
+            <div className="px-3 pt-2.5 pb-1">
+              <div className="p-1 bg-[#0d1117] rounded-xl border border-[#30363d]/80 flex items-center text-xs">
+                <button
+                  type="button"
+                  onClick={() => setWorkMode && setWorkMode('foco')}
+                  className={`flex-1 py-1 px-1 rounded-lg font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                    workMode === 'foco'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                  }`}
+                  title="Modo FOCO: Barra lateral ultra-compacta (apenas ícones), maximizando a tela do terminal"
+                >
+                  <Target className="w-3 h-3 text-cyan-300 shrink-0" />
+                  <span className="text-[11px] truncate">FOCO</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setWorkMode && setWorkMode('expansivo')}
+                  className={`flex-1 py-1 px-1 rounded-lg font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                    workMode === 'expansivo'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                  }`}
+                  title="Modo Expansivo: Barra lateral aberta (280px) com todos os rótulos e ferramentas"
+                >
+                  <Columns className="w-3 h-3 text-blue-300 shrink-0" />
+                  <span className="text-[11px] truncate">Expansivo</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setWorkMode && setWorkMode('personalizado')}
+                  className={`flex-1 py-1 px-1 rounded-lg font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                    workMode === 'personalizado'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                  }`}
+                  title="Modo Personalizado: Arraste a borda direita para definir a largura ideal"
+                >
+                  <Sliders className="w-3 h-3 text-amber-300 shrink-0" />
+                  <span className="text-[11px] truncate">Custom</span>
+                </button>
+              </div>
             </div>
+          ) : (
+            <div className="flex flex-col items-center gap-1 py-2 border-b border-[#30363d]/60">
+              <button
+                type="button"
+                onClick={() => setWorkMode && setWorkMode('expansivo')}
+                className="w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-[#21262d] flex items-center justify-center transition-all cursor-pointer"
+                title="Modo Expansivo: Expandir barra lateral (280px)"
+              >
+                <Columns className="w-4 h-4 text-blue-400" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setWorkMode && setWorkMode('personalizado')}
+                className="w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-[#21262d] flex items-center justify-center transition-all cursor-pointer"
+                title="Modo Personalizado: Largura livre arrastável"
+              >
+                <Sliders className="w-4 h-4 text-amber-400" />
+              </button>
+            </div>
+          )}
+
+          {/* Navigation Sections */}
+          <div className={`${isCompact ? 'p-1.5 space-y-2' : 'p-3 space-y-1.5'}`}>
+            {!isCompact && (
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-400 px-3 py-1">
+                Navegação
+              </div>
+            )}
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentView === item.id;
+
+              if (isCompact) {
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setCurrentView(item.id);
+                      if (onCloseMobile) onCloseMobile();
+                    }}
+                    className={`relative w-10 h-10 mx-auto flex items-center justify-center rounded-xl transition-all cursor-pointer ${
+                      isActive 
+                        ? 'bg-blue-600/20 text-blue-400 border border-blue-500/40 shadow-xs' 
+                        : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                    }`}
+                    title={`${item.label}${item.count !== undefined ? ` (${item.count})` : ''}`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
+                    {item.count !== undefined && item.count > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-bold flex items-center justify-center">
+                        {item.count}
+                      </span>
+                    )}
+                    {item.highlight && (
+                      <span className="absolute top-1 right-1 flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                      </span>
+                    )}
+                  </button>
+                );
+              }
+
               return (
                 <button
                   key={item.id}
@@ -99,15 +258,15 @@ export default function Sidebar({
                     setCurrentView(item.id);
                     if (onCloseMobile) onCloseMobile();
                   }}
-                  className={`w-full min-h-[42px] flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                  className={`w-full min-h-[40px] flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                     isActive 
                       ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30 shadow-xs' 
                       : 'text-slate-300 hover:text-white hover:bg-[#21262d]'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
-                    <span className="whitespace-nowrap">{item.label}</span>
+                    <span className="whitespace-nowrap truncate">{item.label}</span>
                   </div>
                   {item.count !== undefined && (
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
@@ -129,16 +288,42 @@ export default function Sidebar({
 
           {/* Active Terminal Tabs Quick List */}
           {openTabs.length > 0 && (
-            <div className="px-3 pt-3 border-t border-[#30363d]">
-              <div className="flex items-center justify-between px-3 py-1.5">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Sessões Ativas
-                </span>
-                <Layers className="w-3.5 h-3.5 text-slate-400" />
-              </div>
-              <div className="space-y-1 max-h-56 overflow-y-auto pr-1">
+            <div className={`pt-2.5 border-t border-[#30363d] ${isCompact ? 'px-1' : 'px-3'}`}>
+              {!isCompact && (
+                <div className="flex items-center justify-between px-3 py-1">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                    Sessões ({openTabs.length})
+                  </span>
+                  <Layers className="w-3.5 h-3.5 text-slate-400" />
+                </div>
+              )}
+              <div className={`space-y-1 max-h-48 overflow-y-auto ${isCompact ? 'flex flex-col items-center py-1' : 'pr-1'}`}>
                 {openTabs.map((tab) => {
                   const isSelected = activeTabId === tab.id && currentView === 'terminals';
+                  if (isCompact) {
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => {
+                          onSelectTab(tab.id);
+                          setCurrentView('terminals');
+                          if (onCloseMobile) onCloseMobile();
+                        }}
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all cursor-pointer ${
+                          isSelected 
+                            ? 'bg-[#21262d] border border-cyan-500/50 scale-105' 
+                            : 'hover:bg-[#21262d]/50'
+                        }`}
+                        title={`Sessão: ${tab.title}`}
+                      >
+                        <span 
+                          className="w-2.5 h-2.5 rounded-full shadow-xs" 
+                          style={{ backgroundColor: tab.color || '#3fb950' }} 
+                        />
+                      </button>
+                    );
+                  }
+
                   return (
                     <button
                       key={tab.id}
@@ -147,7 +332,7 @@ export default function Sidebar({
                         setCurrentView('terminals');
                         if (onCloseMobile) onCloseMobile();
                       }}
-                      className={`w-full min-h-[38px] text-left flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs truncate transition-all ${
+                      className={`w-full min-h-[36px] text-left flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs truncate transition-all cursor-pointer ${
                         isSelected
                           ? 'bg-[#21262d] text-cyan-400 font-bold border border-cyan-500/30'
                           : 'text-slate-300 hover:text-white hover:bg-[#21262d]/50 font-medium'
@@ -166,77 +351,139 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* Quick Resume Antigravity Banner & Skills IA */}
-        <div className="p-3 border-t border-[#30363d]/60 space-y-2">
-          {onOpenSkills && (
-            <button
-              onClick={() => {
-                onOpenSkills();
-                if (onCloseMobile) onCloseMobile();
-              }}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group"
-              title="Catálogo de 340 Skills & Especialistas em Português BR"
-            >
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform animate-pulse" />
-                <span>Skills IA (340)</span>
+        {/* Bottom Actions: Quick Resume Antigravity Banner & Skills IA */}
+        <div className="flex flex-col">
+          <div className={`border-t border-[#30363d]/60 ${isCompact ? 'p-2 space-y-2 flex flex-col items-center' : 'p-3 space-y-2'}`}>
+            {onOpenSkills && (
+              isCompact ? (
+                <button
+                  onClick={() => {
+                    onOpenSkills();
+                    if (onCloseMobile) onCloseMobile();
+                  }}
+                  className="w-10 h-10 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer"
+                  title="Catálogo de 340 Skills & Especialistas IA"
+                >
+                  <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    onOpenSkills();
+                    if (onCloseMobile) onCloseMobile();
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group cursor-pointer"
+                  title="Catálogo de 340 Skills & Especialistas em Português BR"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform animate-pulse shrink-0" />
+                    <span className="truncate">Skills IA (340)</span>
+                  </div>
+                  <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
+                    PT-BR
+                  </span>
+                </button>
+              )
+            )}
+
+            {isCompact ? (
+              <button
+                onClick={() => {
+                  if (onResumeLastSession) onResumeLastSession();
+                  if (onCloseMobile) onCloseMobile();
+                }}
+                className="w-10 h-10 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-500/40 text-purple-200 flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer"
+                title="Retomar a conversa mais recente do Antigravity CLI com 1 clique (agy --continue)"
+              >
+                <Zap className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  if (onResumeLastSession) onResumeLastSession();
+                  if (onCloseMobile) onCloseMobile();
+                }}
+                className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group cursor-pointer"
+                title="Retomar a conversa mais recente do Antigravity CLI com 1 clique (agy --continue)"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <Zap className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 group-hover:scale-110 transition-transform shrink-0" />
+                  <span className="truncate">Retomar Última IA</span>
+                </div>
+                <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
+                  agy -c
+                </span>
+              </button>
+            )}
+          </div>
+
+          {/* Footer / Agent Status & Shortcuts */}
+          <div className={`border-t border-[#30363d] bg-[#0d1117]/60 safe-area-bottom ${isCompact ? 'p-2 space-y-2 flex flex-col items-center' : 'p-3 space-y-2'}`}>
+            {onOpenShortcuts && (
+              isCompact ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenShortcuts();
+                    if (onCloseMobile) onCloseMobile();
+                  }}
+                  className="w-10 h-10 rounded-xl bg-[#21262d]/60 hover:bg-[#21262d] border border-[#30363d] text-slate-300 hover:text-white flex items-center justify-center transition-all active:scale-95 cursor-pointer"
+                  title="Central de Atalhos de Teclado (F1 ou ?)"
+                >
+                  <HelpCircle className="w-4 h-4 text-blue-400" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onOpenShortcuts();
+                    if (onCloseMobile) onCloseMobile();
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#21262d]/60 hover:bg-[#21262d] border border-[#30363d] text-slate-300 hover:text-white text-xs font-semibold transition-all active:scale-95 group cursor-pointer"
+                  title="Central de Atalhos de Teclado (F1 ou ?)"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <HelpCircle className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform shrink-0" />
+                    <span className="truncate">Atalhos de Teclado</span>
+                  </div>
+                  <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-[#161b22] text-slate-400 border border-[#30363d]">
+                    F1
+                  </span>
+                </button>
+              )
+            )}
+
+            {isCompact ? (
+              <div 
+                className="w-10 h-10 rounded-xl bg-[#21262d]/70 border border-[#30363d] flex items-center justify-center cursor-help"
+                title="Agente Ativo: Antigravity"
+              >
+                <Sparkles className="w-4 h-4 text-purple-400" />
               </div>
-              <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
-                PT-BR
-              </span>
-            </button>
-          )}
-
-          <button
-            onClick={() => {
-              if (onResumeLastSession) onResumeLastSession();
-              if (onCloseMobile) onCloseMobile();
-            }}
-            className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-purple-600/20 hover:bg-purple-600/35 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group"
-            title="Retomar a conversa mais recente do Antigravity CLI com 1 clique (agy --continue)"
-          >
-            <div className="flex items-center gap-2">
-              <Zap className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 group-hover:scale-110 transition-transform" />
-              <span>Retomar Última IA</span>
-            </div>
-            <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
-              agy -c
-            </span>
-          </button>
-        </div>
-
-        {/* Footer / Agent Status & Shortcuts */}
-        <div className="p-3 border-t border-[#30363d] bg-[#0d1117]/60 safe-area-bottom space-y-2">
-          {onOpenShortcuts && (
-            <button
-              type="button"
-              onClick={() => {
-                onOpenShortcuts();
-                if (onCloseMobile) onCloseMobile();
-              }}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-[#21262d]/60 hover:bg-[#21262d] border border-[#30363d] text-slate-300 hover:text-white text-xs font-semibold transition-all active:scale-95 group cursor-pointer"
-              title="Central de Atalhos de Teclado (F1 ou ?)"
-            >
-              <div className="flex items-center gap-2">
-                <HelpCircle className="w-3.5 h-3.5 text-blue-400 group-hover:scale-110 transition-transform" />
-                <span>Atalhos de Teclado</span>
+            ) : (
+              <div className="flex items-center justify-between text-xs px-3 py-2 rounded-xl bg-[#21262d]/70 border border-[#30363d]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Sparkles className="w-4 h-4 text-purple-400 shrink-0" />
+                  <span className="text-slate-200 font-semibold text-xs whitespace-nowrap truncate">Agente Ativo</span>
+                </div>
+                <span className="text-xs bg-purple-500/20 text-purple-300 font-bold px-2 py-0.5 rounded-md font-mono whitespace-nowrap">
+                  Antigravity
+                </span>
               </div>
-              <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-[#161b22] text-slate-400 border border-[#30363d]">
-                F1
-              </span>
-            </button>
-          )}
-
-          <div className="flex items-center justify-between text-xs px-3 py-2 rounded-xl bg-[#21262d]/70 border border-[#30363d]">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              <span className="text-slate-200 font-semibold text-xs whitespace-nowrap">Agente Ativo</span>
-            </div>
-            <span className="text-xs bg-purple-500/20 text-purple-300 font-bold px-2 py-0.5 rounded-md font-mono whitespace-nowrap">
-              Antigravity
-            </span>
+            )}
           </div>
         </div>
+
+        {/* Drag Resizer Handle for Modo Personalizado */}
+        {workMode === 'personalizado' && !isCompact && (
+          <div
+            onMouseDown={handleMouseDown}
+            className={`absolute top-0 right-0 w-2 h-full cursor-col-resize hover:bg-blue-500/70 transition-colors z-50 ${
+              isResizing ? 'bg-blue-500 w-2.5 shadow-lg shadow-blue-500/50' : 'bg-transparent'
+            }`}
+            title="Arraste para redimensionar a largura da coluna esquerda (Personalizado)"
+          />
+        )}
       </aside>
     </>
   );
