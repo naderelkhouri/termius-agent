@@ -40,6 +40,8 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
         { keys: ['Ctrl', 'Shift', 'W'], description: 'Fechar a aba de terminal ativa' },
         { keys: ['Alt', '1...9'], description: 'Alternar diretamente para a aba 1 a 9' },
         { keys: ['Ctrl', 'PgUp', 'ou', 'PgDn'], description: 'Navegar para aba anterior ou próxima' },
+        { keys: ['Scroll do Mouse'], description: 'Navegar/Alternar entre as abas na barra superior' },
+        { keys: ['Shift', 'Scroll'], description: 'Rolar a barra de abas horizontalmente' },
         { keys: ['Ctrl', 'F'], description: 'Buscar texto no buffer do terminal (In-Buffer Find)' },
         { keys: ['Enter'], description: 'Próxima ocorrência na busca do terminal' },
         { keys: ['Shift', 'Enter'], description: 'Ocorrência anterior na busca do terminal' },
@@ -82,7 +84,8 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
       shortcuts: [
         { keys: ['Ctrl', 'K'], description: 'Abrir AI Copilot flutuante com sugestões de comando' },
         { keys: ['Ctrl', 'Alt', 'A'], description: 'Alternar painel acoplado do AI Sidecar ao vivo' },
-        { keys: ['Ctrl', 'Shift', 'S'], description: 'Abrir catálogo com 340 Skills IA em Português BR' }
+        { keys: ['Ctrl', 'Shift', 'S'], description: 'Abrir catálogo com 340 Skills IA em Português BR' },
+        { keys: ['Botão ↓'], description: 'Rolar instantaneamente até as mensagens mais recentes do chat IA' }
       ]
     },
     {

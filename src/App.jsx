@@ -24,6 +24,10 @@ import {
   Pencil, 
   RotateCcw, 
   ChevronDown, 
+  ChevronLeft,
+  ChevronRight,
+  MousePointer,
+  ArrowLeftRight,
   Zap, 
   PanelRight, 
   BookOpen, 
@@ -77,6 +81,77 @@ export default function App() {
   const tabMenuRef = useRef(null);
   const broadcastMenuRef = useRef(null);
   const toolsMenuRef = useRef(null);
+  const tabsContainerRef = useRef(null);
+  const tabScrollThrottleRef = useRef(0);
+
+  // Modo de scroll da barra de abas: 'switch' (alternar abas) ou 'scroll' (rolar barra)
+  const [tabScrollMode, setTabScrollMode] = useState(() => {
+    try {
+      return localStorage.getItem('termius_tab_scroll_mode') || 'switch';
+    } catch {
+      return 'switch';
+    }
+  });
+
+  const toggleTabScrollMode = () => {
+    const nextMode = tabScrollMode === 'switch' ? 'scroll' : 'switch';
+    setTabScrollMode(nextMode);
+    try {
+      localStorage.setItem('termius_tab_scroll_mode', nextMode);
+    } catch {}
+  };
+
+  const handleTabsWheel = (e) => {
+    if (!tabsContainerRef.current) return;
+
+    // 1. Shift pressionado: rola horizontalmente a barra
+    if (e.shiftKey) {
+      e.preventDefault();
+      tabsContainerRef.current.scrollLeft += e.deltaY;
+      return;
+    }
+
+    // 2. Modo 'switch' (Alternar Abas ao Rolar o Mouse):
+    if (tabScrollMode === 'switch') {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        const now = Date.now();
+        if (now - tabScrollThrottleRef.current > 110) {
+          tabScrollThrottleRef.current = now;
+          const direction = e.deltaY > 0 ? 1 : -1;
+          const currentIndex = openTabs.findIndex((t) => t.id === activeTabId);
+          if (currentIndex !== -1 && openTabs.length > 1) {
+            const nextIndex = (currentIndex + direction + openTabs.length) % openTabs.length;
+            setActiveTabId(openTabs[nextIndex].id);
+            setCurrentView('terminals');
+          }
+        }
+      }
+      return;
+    }
+
+    // 3. Modo 'scroll' (Rolar Barra Horizontalmente com o Mouse):
+    if (e.deltaY !== 0) {
+      e.preventDefault();
+      tabsContainerRef.current.scrollLeft += e.deltaY * 0.9;
+    }
+  };
+
+  const scrollTabs = (offset) => {
+    if (tabsContainerRef.current) {
+      tabsContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    }
+  };
+
+  // Mantém a aba ativa sempre visível ao trocar ou criar abas
+  useEffect(() => {
+    if (activeTabId && tabsContainerRef.current) {
+      const activeEl = tabsContainerRef.current.querySelector(`[data-tab-id="${activeTabId}"]`);
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      }
+    }
+  }, [activeTabId, openTabs.length]);
 
   const handleUpdateTerminalSettings = (newSettings) => {
     setTerminalSettings(newSettings);
@@ -547,8 +622,12 @@ export default function App() {
       <main className="flex-1 flex flex-col min-w-0 bg-[#0d1117] relative">
         {/* Top Terminal Tabs Bar */}
         <div className="h-12 bg-[#161b22] border-b border-[#30363d] flex items-center px-3 select-none justify-between shrink-0 gap-2 relative">
-          {/* Tabs list with overflow mask */}
-          <div className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto py-1 scrollbar-none [mask-image:linear-gradient(to_right,white_calc(100%-16px),transparent)]">
+          {/* Tabs list with overflow mask and mouse wheel access */}
+          <div 
+            ref={tabsContainerRef}
+            onWheel={handleTabsWheel}
+            className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto py-1 scrollbar-none [mask-image:linear-gradient(to_right,white_calc(100%-16px),transparent)] scroll-smooth"
+          >
             {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -566,6 +645,7 @@ export default function App() {
               return (
                 <div
                   key={tab.id}
+                  data-tab-id={tab.id}
                   onClick={() => {
                     if (!isEditing) {
                       setActiveTabId(tab.id);
@@ -654,16 +734,59 @@ export default function App() {
             </button>
           </div>
 
-          {/* Quick Tab Selector Dropdown */}
-          <div className="relative shrink-0" ref={tabMenuRef}>
+          {/* Quick Tab Selector & Scroll Mode Toggle */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {/* Scroll Navigation Chevrons */}
+            <div className="hidden lg:flex items-center gap-0.5">
+              <button
+                type="button"
+                onClick={() => scrollTabs(-180)}
+                className="w-6 h-6 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-white flex items-center justify-center transition-colors border border-[#30363d] cursor-pointer"
+                title="Rolar abas para a esquerda"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollTabs(180)}
+                className="w-6 h-6 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-white flex items-center justify-center transition-colors border border-[#30363d] cursor-pointer"
+                title="Rolar abas para a direita"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Toggle Scroll Mode: Alternar Abas x Rolar Barra */}
             <button
-              onClick={() => setTabMenuOpen((prev) => !prev)}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white text-xs font-semibold transition-all border border-[#30363d] active:scale-95"
-              title="Lista rápida de abas abertas"
+              type="button"
+              onClick={toggleTabScrollMode}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all active:scale-95 cursor-pointer ${
+                tabScrollMode === 'switch'
+                  ? 'bg-blue-600/20 hover:bg-blue-600/30 border-blue-500/40 text-blue-300 shadow-xs'
+                  : 'bg-[#21262d] hover:bg-[#30363d] border-[#30363d] text-slate-300 hover:text-white'
+              }`}
+              title={
+                tabScrollMode === 'switch'
+                  ? 'Modo Scroll: Alternar Abas ao rolar o scroll do mouse (Clique para mudar para Rolar Barra)'
+                  : 'Modo Scroll: Rolar Barra horizontalmente ao rolar o scroll do mouse (Clique para mudar para Alternar Abas)'
+              }
             >
-              <span>{openTabs.length}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${tabMenuOpen ? 'rotate-180' : ''}`} />
+              <MousePointer className={`w-3.5 h-3.5 ${tabScrollMode === 'switch' ? 'text-blue-400' : 'text-slate-400'}`} />
+              <span className="hidden xl:inline text-xs font-medium">
+                {tabScrollMode === 'switch' ? 'Scroll: Abas' : 'Scroll: Barra'}
+              </span>
             </button>
+
+            {/* Quick Tab Selector Dropdown */}
+            <div className="relative" ref={tabMenuRef}>
+              <button
+                onClick={() => setTabMenuOpen((prev) => !prev)}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#21262d] hover:bg-[#30363d] text-slate-300 hover:text-white text-xs font-semibold transition-all border border-[#30363d] active:scale-95 cursor-pointer"
+                title="Lista rápida de abas abertas"
+              >
+                <span>{openTabs.length}</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${tabMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
 
             {tabMenuOpen && (
               <div className="absolute right-0 top-11 w-64 bg-[#161b22] border border-[#30363d] rounded-2xl shadow-2xl z-50 py-2 divide-y divide-[#30363d]/60">
@@ -725,6 +848,7 @@ export default function App() {
               </div>
             )}
           </div>
+        </div>
 
           {/* Top Actions: AI Tools, Ferramentas Popover & Split Screen Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 pr-1 shrink-0">

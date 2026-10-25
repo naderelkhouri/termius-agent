@@ -24,6 +24,7 @@ import {
   Folder, 
   ChevronDown, 
   ChevronRight,
+  ArrowDown,
   Sparkles,
   Search,
   Calendar,
@@ -94,7 +95,29 @@ export default function AISidecar({
   const [convDropdownOpen, setConvDropdownOpen] = useState(false);
   const [convSearch, setConvSearch] = useState('');
   const [autoScroll, setAutoScroll] = useState(true);
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
   const scrollRef = useRef(null);
+  const messagesEndRef = useRef(null);
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    // Se a distância até o fim for maior que 80px, exibe o botão
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    setShowScrollBottom(distanceFromBottom > 80);
+  };
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+    setShowScrollBottom(false);
+  };
 
   // Carrega lista de conversas e modo fluido
   useEffect(() => {
@@ -544,11 +567,13 @@ export default function AISidecar({
         </div>
       </div>
 
-      {/* Main Sidecar Content */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto p-3 space-y-3.5 select-text"
-      >
+      {/* Main Sidecar Content with Floating Scroll-to-Bottom Button */}
+      <div className="flex-1 min-h-0 relative flex flex-col">
+        <div 
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex-1 overflow-y-auto p-3 space-y-3.5 select-text scroll-smooth"
+        >
         {transcriptLoading ? (
           <div className="flex flex-col items-center justify-center h-48 text-slate-400 text-xs font-semibold gap-2">
             <RotateCcw className="w-5 h-5 animate-spin text-purple-400" />
@@ -1075,6 +1100,20 @@ export default function AISidecar({
               </div>
             );
           })
+        )}
+          <div ref={messagesEndRef} className="h-px shrink-0" />
+        </div>
+
+        {/* Botão simples na parte inferior à direita com setinha para baixo */}
+        {showScrollBottom && (
+          <button
+            type="button"
+            onClick={scrollToBottom}
+            className="absolute bottom-3 right-4 z-30 w-8 h-8 rounded-full bg-[#21262d]/95 hover:bg-purple-600 border border-[#30363d] hover:border-purple-400 text-slate-300 hover:text-white flex items-center justify-center shadow-2xl backdrop-blur-md transition-all active:scale-90 cursor-pointer animate-fade-in group"
+            title="Ir para o final do chat"
+          >
+            <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5 text-slate-200 group-hover:text-white" />
+          </button>
         )}
       </div>
 

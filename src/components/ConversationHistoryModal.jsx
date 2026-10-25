@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   fetchConversations, 
   fetchTranscript,
@@ -110,6 +110,28 @@ export default function ConversationHistoryModal({
   // Ordenação
   const [sortField, setSortField] = useState('last_modified_time'); // 'favorite' | 'fluid' | 'title' | 'workspace' | 'step_count' | 'last_modified_time'
   const [sortDirection, setSortDirection] = useState('desc'); // 'asc' | 'desc'
+
+  const modalScrollRef = useRef(null);
+  const modalEndRef = useRef(null);
+  const [showModalScrollBottom, setShowModalScrollBottom] = useState(false);
+
+  const handleModalScroll = () => {
+    if (!modalScrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = modalScrollRef.current;
+    setShowModalScrollBottom(scrollHeight - scrollTop - clientHeight > 80);
+  };
+
+  const scrollToModalBottom = () => {
+    if (modalEndRef.current) {
+      modalEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    } else if (modalScrollRef.current) {
+      modalScrollRef.current.scrollTo({
+        top: modalScrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+    setShowModalScrollBottom(false);
+  };
 
   const detectedCwd = useMemo(() => {
     if (!transcript) return '/home/nader';
@@ -474,7 +496,11 @@ export default function ConversationHistoryModal({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+      <div 
+        ref={modalScrollRef}
+        onScroll={handleModalScroll}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 relative scroll-smooth"
+      >
         {!selectedConversation ? (
           loading ? (
             <div className="flex items-center justify-center h-64 text-slate-400 text-xs font-semibold">
@@ -976,8 +1002,21 @@ export default function ConversationHistoryModal({
                   Nenhum evento detalhado encontrado no transcript.
                 </div>
               )}
+              <div ref={modalEndRef} className="h-px shrink-0" />
             </div>
           )
+        )}
+
+        {/* Botão simples na parte inferior à direita com setinha para baixo */}
+        {selectedConversation && showModalScrollBottom && (
+          <button
+            type="button"
+            onClick={scrollToModalBottom}
+            className="fixed sm:absolute bottom-6 right-8 z-40 w-9 h-9 rounded-full bg-[#21262d]/95 hover:bg-purple-600 border border-[#30363d] hover:border-purple-400 text-slate-300 hover:text-white flex items-center justify-center shadow-2xl backdrop-blur-md transition-all active:scale-90 cursor-pointer animate-fade-in group"
+            title="Ir para o final do chat"
+          >
+            <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5 text-slate-200 group-hover:text-white" />
+          </button>
         )}
       </div>
 
