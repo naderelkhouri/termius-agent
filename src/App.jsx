@@ -25,8 +25,6 @@ import {
   Pencil, 
   RotateCcw, 
   ChevronDown, 
-  ChevronLeft, 
-  ChevronRight, 
   MousePointer, 
   ArrowLeftRight, 
   PanelLeftClose, 
@@ -433,12 +431,6 @@ export default function App() {
     if (e.deltaY !== 0) {
       e.preventDefault();
       tabsContainerRef.current.scrollLeft += e.deltaY * 0.9;
-    }
-  };
-
-  const scrollTabs = (offset) => {
-    if (tabsContainerRef.current) {
-      tabsContainerRef.current.scrollBy({ left: offset, behavior: 'smooth' });
     }
   };
 
@@ -1054,49 +1046,8 @@ export default function App() {
             </button>
           </div>
 
-          {/* Quick Tab Selector & Scroll Mode Toggle */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Scroll Navigation Chevrons */}
-            <div className="hidden lg:flex items-center gap-0.5">
-              <button
-                type="button"
-                onClick={() => scrollTabs(-180)}
-                className="w-6 h-6 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-white flex items-center justify-center transition-colors border border-[#30363d] cursor-pointer"
-                title="Rolar abas para a esquerda"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => scrollTabs(180)}
-                className="w-6 h-6 rounded-lg bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-white flex items-center justify-center transition-colors border border-[#30363d] cursor-pointer"
-                title="Rolar abas para a direita"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            {/* Toggle Scroll Mode: Alternar Abas x Rolar Barra */}
-            <button
-              type="button"
-              onClick={toggleTabScrollMode}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all active:scale-95 cursor-pointer ${
-                tabScrollMode === 'switch'
-                  ? 'bg-blue-600/20 hover:bg-blue-600/30 border-blue-500/40 text-blue-300 shadow-xs'
-                  : 'bg-[#21262d] hover:bg-[#30363d] border-[#30363d] text-slate-300 hover:text-white'
-              }`}
-              title={
-                tabScrollMode === 'switch'
-                  ? 'Modo Scroll: Alternar Abas ao rolar o scroll do mouse (Clique para mudar para Rolar Barra)'
-                  : 'Modo Scroll: Rolar Barra horizontalmente ao rolar o scroll do mouse (Clique para mudar para Alternar Abas)'
-              }
-            >
-              <MousePointer className={`w-3.5 h-3.5 ${tabScrollMode === 'switch' ? 'text-blue-400' : 'text-slate-400'}`} />
-              <span className="hidden xl:inline text-xs font-medium">
-                {tabScrollMode === 'switch' ? 'Scroll: Abas' : 'Scroll: Barra'}
-              </span>
-            </button>
-
+          {/* Quick Tab Selector */}
+          <div className="flex items-center shrink-0">
             {/* Quick Tab Selector Dropdown */}
             <div className="relative" ref={tabMenuRef}>
               <button
@@ -1146,7 +1097,7 @@ export default function App() {
                           <span className="truncate">{t.title}</span>
                           {isTabActive && (
                             <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0 whitespace-nowrap">
-                              Foco
+                              Ativa
                             </span>
                           )}
                         </div>
@@ -1172,65 +1123,6 @@ export default function App() {
 
           {/* Top Actions: AI Tools, Ferramentas Popover & Split Screen Controls */}
           <div className="flex items-center gap-1.5 sm:gap-2 pr-1 shrink-0">
-            {/* Work Modes Switcher (FOCO | Expansivo | Custom ⚙️) */}
-            <div className="flex items-center p-0.5 rounded-xl bg-[#0d1117] border border-[#30363d] text-xs">
-              <button
-                type="button"
-                onClick={() => handleSetWorkMode('foco')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                  workMode === 'foco'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
-                }`}
-                title="Modo FOCO: Apenas terminais (Ctrl + B)"
-              >
-                <Target className="w-3 h-3 text-cyan-300" />
-                <span>FOCO</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSetWorkMode('expansivo')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
-                  workMode === 'expansivo'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
-                }`}
-                title="Modo Expansivo: Todas as opções à mostra (280px)"
-              >
-                <Columns className="w-3 h-3 text-blue-300" />
-                <span>Expansivo</span>
-              </button>
-
-              <div className="flex items-center">
-                <button
-                  type="button"
-                  onClick={() => handleSetWorkMode('personalizado')}
-                  className={`flex items-center gap-1 px-2 py-1 rounded-l-lg font-bold transition-all cursor-pointer ${
-                    workMode === 'personalizado'
-                      ? 'bg-amber-600 text-white shadow-xs'
-                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
-                  }`}
-                  title="Modo Custom: Configurado pelo menu multiseletor"
-                >
-                  <Sliders className="w-3 h-3 text-amber-300" />
-                  <span>Custom</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setCustomModalOpen(true)}
-                  className={`px-1.5 py-1 rounded-r-lg font-bold transition-all cursor-pointer border-l border-[#30363d] ${
-                    workMode === 'personalizado'
-                      ? 'bg-amber-600/80 hover:bg-amber-600 text-white'
-                      : 'text-slate-400 hover:text-amber-300 hover:bg-[#21262d]'
-                  }`}
-                  title="Abrir Menu Multiseletor do Modo Custom"
-                >
-                  <SlidersHorizontal className="w-3 h-3 text-amber-300" />
-                </button>
-              </div>
-            </div>
-
             {shouldShowTopActions && (
               <>
 
@@ -1272,22 +1164,6 @@ export default function App() {
               >
                 <PanelRight className={`w-3.5 h-3.5 ${sidecarOpen ? 'text-purple-400' : 'text-slate-400'}`} />
                 <span className="hidden sm:inline">AI Sidecar</span>
-              </button>
-            )}
-
-            {/* Indicador direto de Gravação Ativa (1-click para parar se estiver gravando) */}
-            {recordingTabId === activeTabId && (
-              <button
-                type="button"
-                onClick={() => handleToggleRecord(activeTabId)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-rose-600/30 text-rose-300 border border-rose-500/50 shadow-rose-500/10 text-xs font-bold animate-pulse cursor-pointer"
-                title="Sessão gravando. Clique para parar e assistir ao replay."
-              >
-                <Circle className="w-3 h-3 fill-rose-500 text-rose-500" />
-                <span className="font-mono">
-                  {`${Math.floor(recordingDuration / 60).toString().padStart(2, '0')}:${(recordingDuration % 60).toString().padStart(2, '0')}`}
-                </span>
-                <span className="text-xs uppercase bg-rose-500/30 px-1 py-0.2 rounded font-mono">REC</span>
               </button>
             )}
 
@@ -1333,6 +1209,59 @@ export default function App() {
                       <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-[#21262d] text-slate-400 border border-[#30363d]">
                         Controles
                       </span>
+                    </div>
+
+                    {/* Seleção Rápida de Modos de Trabalho */}
+                    <div className="py-2 space-y-1.5">
+                      <div className="flex items-center justify-between text-xs text-slate-400 font-semibold px-0.5">
+                        <span>Modo de Trabalho</span>
+                        <span className="text-[11px] font-mono text-cyan-400 uppercase font-bold">{workMode}</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleSetWorkMode('foco')}
+                          className={`py-1.5 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                            workMode === 'foco'
+                              ? 'bg-blue-600 text-white shadow-xs'
+                              : 'bg-[#0d1117] text-slate-400 hover:text-white border border-[#30363d]/70 hover:border-[#30363d]'
+                          }`}
+                          title="Modo FOCO: Apenas terminais (Ctrl + B)"
+                        >
+                          <Target className="w-3.5 h-3.5 text-cyan-300 shrink-0" />
+                          <span>FOCO</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSetWorkMode('expansivo')}
+                          className={`py-1.5 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                            workMode === 'expansivo'
+                              ? 'bg-blue-600 text-white shadow-xs'
+                              : 'bg-[#0d1117] text-slate-400 hover:text-white border border-[#30363d]/70 hover:border-[#30363d]'
+                          }`}
+                          title="Modo Expansivo: Todas as opções visíveis"
+                        >
+                          <Columns className="w-3.5 h-3.5 text-blue-300 shrink-0" />
+                          <span>Expansivo</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleSetWorkMode('personalizado');
+                            setToolsMenuOpen(false);
+                            setCustomModalOpen(true);
+                          }}
+                          className={`py-1.5 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                            workMode === 'personalizado'
+                              ? 'bg-amber-600 text-white shadow-xs'
+                              : 'bg-[#0d1117] text-slate-400 hover:text-white border border-[#30363d]/70 hover:border-[#30363d]'
+                          }`}
+                          title="Modo Custom: Configurar multiseletor"
+                        >
+                          <Sliders className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                          <span>Custom</span>
+                        </button>
+                      </div>
                     </div>
 
                     {/* Quick Toggles List */}
@@ -1548,6 +1477,28 @@ export default function App() {
                           Ajustar
                         </span>
                       </div>
+
+                      {/* Modo de Scroll das Abas */}
+                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors">
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${tabScrollMode === 'switch' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' : 'bg-[#21262d] text-slate-400'}`}>
+                            <MousePointer className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-bold text-xs text-white block leading-tight truncate">Roda do Mouse nas Abas</span>
+                            <span className="text-xs text-slate-400 block truncate">
+                              {tabScrollMode === 'switch' ? 'Alterna abas ativas' : 'Rola a barra horizontalmente'}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={toggleTabScrollMode}
+                          className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer bg-[#21262d] text-slate-300 border-[#30363d] hover:text-white"
+                        >
+                          {tabScrollMode === 'switch' ? 'Alternar' : 'Rolar'}
+                        </button>
+                      </div>
                     </div>
 
                     {/* Central de Atalhos Link */}
@@ -1688,7 +1639,7 @@ export default function App() {
                             )}
                             {isPrimary && (
                               <span className="text-xs bg-blue-500/20 text-blue-300 font-bold px-2 py-0.5 rounded border border-blue-500/30 shrink-0 whitespace-nowrap">
-                                Foco
+                                Principal
                               </span>
                             )}
                             {broadcastEnabled && (
@@ -1904,18 +1855,6 @@ export default function App() {
               {notificationsEnabled ? <Bell className="w-3.5 h-3.5 text-emerald-400" /> : <BellOff className="w-3.5 h-3.5 text-slate-500" />}
             </button>
 
-            {/* Alternar Painel Sidecar */}
-            <button
-              type="button"
-              onClick={() => setSidecarOpen((p) => !p)}
-              className={`px-1.5 py-0.5 rounded-md font-mono text-[11px] font-bold transition-colors cursor-pointer ${
-                sidecarOpen ? 'bg-purple-600/30 text-purple-300 border border-purple-500/40' : 'hover:bg-[#21262d] text-slate-400'
-              }`}
-              title="Alternar painel lateral do AI Sidecar (Ctrl + Alt + A)"
-            >
-              AI Sidecar
-            </button>
-
             {/* Central de Atalhos (F1) */}
             <button
               type="button"
@@ -2006,6 +1945,23 @@ export default function App() {
                 </span>
                 <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${tabContextMenu.tab.isFluid ? 'bg-amber-500/20 text-amber-300' : 'bg-[#21262d] text-slate-400'}`}>
                   {tabContextMenu.tab.isFluid ? 'ON' : 'OFF'}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  toggleTabScrollMode();
+                  setTabContextMenu(null);
+                }}
+                className="w-full flex items-center justify-between px-3 py-1.5 text-left text-slate-200 hover:text-white hover:bg-[#21262d] transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-2.5">
+                  <MousePointer className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Roda do Mouse</span>
+                </span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#21262d] text-slate-300 border border-[#30363d]">
+                  {tabScrollMode === 'switch' ? 'Alternar' : 'Rolar'}
                 </span>
               </button>
             </div>
