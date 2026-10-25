@@ -6,6 +6,7 @@ import { SearchAddon } from '@xterm/addon-search';
 import { Zap, Search, ChevronUp, ChevronDown, X as XIcon } from 'lucide-react';
 import { sendNotification } from '../services/notificationService';
 import { recordOutput } from '../services/sessionRecorder';
+import { getThemeDefinition, DEFAULT_TERMINAL_SETTINGS } from '../services/terminalThemes';
 
 export default function TerminalView({ 
   tab, 
@@ -15,7 +16,8 @@ export default function TerminalView({
   onBroadcastInput,
   isBroadcastActive,
   isBroadcastOrigin,
-  isBroadcastTarget
+  isBroadcastTarget,
+  terminalSettings
 }) {
   const containerRef = useRef(null);
   const termRef = useRef(null);
@@ -56,35 +58,19 @@ export default function TerminalView({
   useEffect(() => {
     if (!containerRef.current) return;
 
+    const activeTheme = getThemeDefinition(terminalSettings?.themeId);
+    const fontSize = terminalSettings?.fontSize || 13;
+    const cursorStyle = terminalSettings?.cursorStyle || 'block';
+    const cursorBlink = terminalSettings?.cursorBlink !== false;
+
     // Initialize Xterm
     const term = new Terminal({
-      cursorBlink: true,
+      cursorBlink,
+      cursorStyle,
       fontFamily: '"Fira Code", "JetBrains Mono", Menlo, Monaco, Consolas, monospace',
-      fontSize: 13,
+      fontSize,
       lineHeight: 1.25,
-      theme: {
-        background: '#0d1117',
-        foreground: '#c9d1d9',
-        cursor: '#58a6ff',
-        cursorAccent: '#0d1117',
-        selectionBackground: '#264f78',
-        black: '#161b22',
-        red: '#ff7b72',
-        green: '#3fb950',
-        yellow: '#d29922',
-        blue: '#58a6ff',
-        magenta: '#bc8cff',
-        cyan: '#39c5cf',
-        white: '#b1bac4',
-        brightBlack: '#6e7681',
-        brightRed: '#ffa198',
-        brightGreen: '#56d364',
-        brightYellow: '#e3b341',
-        brightBlue: '#79c0ff',
-        brightMagenta: '#d2a8ff',
-        brightCyan: '#56d4dd',
-        brightWhite: '#f0f6fc',
-      },
+      theme: activeTheme,
       allowTransparency: true,
       allowProposedApi: true,
       convertEol: false
@@ -300,6 +286,27 @@ export default function TerminalView({
       term.dispose();
     };
   }, [tab.id]);
+
+  // Atualização dinâmica em tempo real do tema, tamanho de fonte e cursor sem reiniciar PTY
+  useEffect(() => {
+    if (!termRef.current) return;
+    const activeTheme = getThemeDefinition(terminalSettings?.themeId);
+    termRef.current.options.theme = activeTheme;
+    termRef.current.options.fontSize = terminalSettings?.fontSize || 13;
+    termRef.current.options.cursorStyle = terminalSettings?.cursorStyle || 'block';
+    termRef.current.options.cursorBlink = terminalSettings?.cursorBlink !== false;
+
+    if (fitAddonRef.current) {
+      fitAddonRef.current.fit();
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
+        socketRef.current.send(JSON.stringify({
+          type: 'resize',
+          cols: termRef.current.cols,
+          rows: termRef.current.rows
+        }));
+      }
+    }
+  }, [terminalSettings]);
 
   useEffect(() => {
     if (isActive && fitAddonRef.current && termRef.current) {

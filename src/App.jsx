@@ -11,6 +11,7 @@ import SkillsDropdownModal from './components/SkillsDropdownModal';
 import TelemetryManager from './components/TelemetryManager';
 import SessionReplayModal from './components/SessionReplayModal';
 import KeyboardShortcutsModal from './components/KeyboardShortcutsModal';
+import TerminalThemeModal from './components/TerminalThemeModal';
 import ErrorBoundary from './components/ErrorBoundary';
 import { 
   Plus, 
@@ -34,7 +35,8 @@ import {
   CheckSquare, 
   Layers,
   SlidersHorizontal,
-  HelpCircle
+  HelpCircle,
+  Palette
 } from 'lucide-react';
 import { 
   isNotificationEnabled, 
@@ -43,6 +45,12 @@ import {
   playNotificationSound 
 } from './services/notificationService';
 import { startRecording, stopRecording, isRecording } from './services/sessionRecorder';
+import { 
+  loadTerminalSettings, 
+  saveTerminalSettings, 
+  DEFAULT_TERMINAL_SETTINGS, 
+  TERMINAL_THEMES 
+} from './services/terminalThemes';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('terminals');
@@ -64,9 +72,16 @@ export default function App() {
   const [broadcastMenuOpen, setBroadcastMenuOpen] = useState(false);
   const [shortcutsModalOpen, setShortcutsModalOpen] = useState(false);
   const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
+  const [terminalSettings, setTerminalSettings] = useState(loadTerminalSettings);
+  const [themeModalOpen, setThemeModalOpen] = useState(false);
   const tabMenuRef = useRef(null);
   const broadcastMenuRef = useRef(null);
   const toolsMenuRef = useRef(null);
+
+  const handleUpdateTerminalSettings = (newSettings) => {
+    setTerminalSettings(newSettings);
+    saveTerminalSettings(newSettings);
+  };
 
   useEffect(() => {
     requestNotificationPermission();
@@ -1003,6 +1018,30 @@ export default function App() {
                           {notificationsEnabled ? 'ATIVO' : 'DESL'}
                         </button>
                       </div>
+
+                      {/* Aparência & Temas do Terminal */}
+                      <div 
+                        onClick={() => {
+                          setToolsMenuOpen(false);
+                          setThemeModalOpen(true);
+                        }}
+                        className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-purple-500/50 hover:bg-[#161b22] transition-colors cursor-pointer group"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-purple-500/20 text-purple-300 border border-purple-500/40 group-hover:scale-105 transition-transform">
+                            <Palette className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="font-bold text-xs text-white block leading-tight truncate">Temas & Tipografia</span>
+                            <span className="text-xs text-slate-400 block truncate">
+                              {TERMINAL_THEMES.find(t => t.id === terminalSettings.themeId)?.name || 'Padrão'} • {terminalSettings.fontSize}px
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30 shrink-0">
+                          Ajustar
+                        </span>
+                      </div>
                     </div>
 
                     {/* Central de Atalhos Link */}
@@ -1187,6 +1226,7 @@ export default function App() {
                             isBroadcastActive={broadcastEnabled}
                             isBroadcastOrigin={broadcastEnabled && isPrimary}
                             isBroadcastTarget={broadcastEnabled && !isPrimary && (broadcastTargetIds.length === 0 || broadcastTargetIds.includes(tab.id))}
+                            terminalSettings={terminalSettings}
                           />
                         </ErrorBoundary>
                       </div>
@@ -1275,6 +1315,14 @@ export default function App() {
         <KeyboardShortcutsModal
           isOpen={shortcutsModalOpen}
           onClose={() => setShortcutsModalOpen(false)}
+        />
+
+        {/* Modal de Aparência & Temas do Terminal */}
+        <TerminalThemeModal
+          isOpen={themeModalOpen}
+          onClose={() => setThemeModalOpen(false)}
+          settings={terminalSettings}
+          onUpdateSettings={handleUpdateTerminalSettings}
         />
       </main>
     </div>
