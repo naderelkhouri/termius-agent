@@ -871,6 +871,32 @@ export default function App() {
     setTimeout(() => tryExecute(), 50);
   };
 
+  const handleExecuteCommandInBroadcast = (cmd, execute = true) => {
+    if (!cmd) return;
+    setCurrentView('terminals');
+    setMobileMenuOpen(false);
+
+    if (openTabs.length === 0) {
+      handleNewTab();
+    }
+
+    const targetTabs = openTabs.filter(
+      (tab) => broadcastTargetIds.length === 0 || broadcastTargetIds.includes(tab.id)
+    );
+
+    targetTabs.forEach((tab) => {
+      const cmdFn = commandersRef.current[tab.id];
+      if (cmdFn) {
+        cmdFn(cmd, execute);
+      }
+    });
+
+    sendNotification({
+      title: '📡 Cluster Broadcast',
+      body: `Comando executado em ${targetTabs.length} ${targetTabs.length === 1 ? 'terminal' : 'terminais'} simultaneamente!`
+    });
+  };
+
   const handleConnectHost = (host) => {
     handleNewTab(host.defaultCwd, host.label, host, host.color);
   };
@@ -1762,7 +1788,11 @@ export default function App() {
 
           {/* Snippets View */}
           {currentView === 'snippets' && (
-            <SnippetsManager onExecuteSnippet={handleExecuteCommandInActiveTerminal} />
+            <SnippetsManager 
+              onExecuteSnippet={handleExecuteCommandInActiveTerminal} 
+              onExecuteSnippetBroadcast={handleExecuteCommandInBroadcast}
+              openTabsCount={openTabs.length}
+            />
           )}
 
           {/* Conversations IA View */}
