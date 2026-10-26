@@ -665,7 +665,7 @@ export default function TerminalView({
               <Copy className="w-3.5 h-3.5" />
               <span>Copiar</span>
             </span>
-            <kbd className="text-[10px] text-slate-400 font-mono">Ctrl+C</kbd>
+            <kbd className="text-xs text-slate-300 font-mono px-1.5 py-0.5 rounded bg-[#0d1117] border border-[#30363d]/70">Ctrl+C</kbd>
           </button>
 
           <button
@@ -677,7 +677,7 @@ export default function TerminalView({
               <CornerDownLeft className="w-3.5 h-3.5" />
               <span>Colar</span>
             </span>
-            <kbd className="text-[10px] text-slate-400 font-mono">Ctrl+V</kbd>
+            <kbd className="text-xs text-slate-300 font-mono px-1.5 py-0.5 rounded bg-[#0d1117] border border-[#30363d]/70">Ctrl+V</kbd>
           </button>
 
           <div className="my-1 border-t border-[#30363d]/70" />
@@ -691,7 +691,7 @@ export default function TerminalView({
               <CheckSquare className="w-3.5 h-3.5" />
               <span>Selecionar Tudo</span>
             </span>
-            <kbd className="text-[10px] text-slate-400 font-mono">Ctrl+Shift+A</kbd>
+            <kbd className="text-xs text-slate-300 font-mono px-1.5 py-0.5 rounded bg-[#0d1117] border border-[#30363d]/70">Ctrl+Shift+A</kbd>
           </button>
 
           <button
@@ -703,7 +703,7 @@ export default function TerminalView({
               <Search className="w-3.5 h-3.5" />
               <span>Buscar no Buffer</span>
             </span>
-            <kbd className="text-[10px] text-slate-400 font-mono">Ctrl+F</kbd>
+            <kbd className="text-xs text-slate-300 font-mono px-1.5 py-0.5 rounded bg-[#0d1117] border border-[#30363d]/70">Ctrl+F</kbd>
           </button>
 
           <div className="my-1 border-t border-[#30363d]/70" />
@@ -717,7 +717,7 @@ export default function TerminalView({
               <Trash2 className="w-3.5 h-3.5" />
               <span>Limpar Tela</span>
             </span>
-            <kbd className="text-[10px] text-slate-500 font-mono">clear</kbd>
+            <kbd className="text-xs text-slate-400 font-mono px-1.5 py-0.5 rounded bg-[#0d1117] border border-[#30363d]/70">clear</kbd>
           </button>
         </div>
       )}

@@ -8,6 +8,41 @@ html, body {
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Professional Native Selection Theme */
+::selection {
+  background-color: rgba(56, 139, 253, 0.35);
+  color: #ffffff;
+}
+
+/* Keyboard Focus Ring Harmony */
+:focus-visible {
+  outline: 2px solid rgba(88, 166, 255, 0.6);
+  outline-offset: 2px;
+}
+
+/* Underline Offsets for Interactive Text */
+a, button {
+  text-underline-offset: 3px;
+}
+
+/* Kbd Badges Typography Contract */
+kbd {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* Smooth Fade-in Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.985); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 120ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Safe Area Paddings for Modern Phones */

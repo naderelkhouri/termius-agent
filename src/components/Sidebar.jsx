@@ -111,7 +111,7 @@ export default function Sidebar({
                 </div>
                 <div className="min-w-0 truncate">
                   <span className="font-bold text-xs tracking-wide text-white block leading-tight truncate">TERMIUS</span>
-                  <span className="text-[10px] text-cyan-400 font-semibold tracking-wider uppercase block truncate">Agent Suite</span>
+                  <span className="text-xs text-cyan-400 font-bold tracking-wider uppercase block truncate">Agent Suite</span>
                 </div>
               </div>
             ) : (
@@ -164,7 +164,7 @@ export default function Sidebar({
                   title="Modo FOCO: Apenas terminais (oculta barras e menus para foco total)"
                 >
                   <Target className="w-3 h-3 text-cyan-300 shrink-0" />
-                  <span className="text-[11px] truncate">FOCO</span>
+                  <span className="text-xs font-semibold truncate">FOCO</span>
                 </button>
 
                 <button
@@ -178,7 +178,7 @@ export default function Sidebar({
                   title="Modo Expansivo: Todas as opções, barras e ferramentas à mostra"
                 >
                   <Columns className="w-3 h-3 text-blue-300 shrink-0" />
-                  <span className="text-[11px] truncate">Expansivo</span>
+                  <span className="text-xs font-semibold truncate">Expansivo</span>
                 </button>
 
                 <div className="flex-1 flex items-center">
@@ -193,7 +193,7 @@ export default function Sidebar({
                     title="Modo Custom: Configurado pelo menu multiseletor"
                   >
                     <Sliders className="w-3 h-3 text-amber-300 shrink-0" />
-                    <span className="text-[11px] truncate">Custom</span>
+                    <span className="text-xs font-semibold truncate">Custom</span>
                   </button>
                   <button
                     type="button"
@@ -276,7 +276,7 @@ export default function Sidebar({
                   >
                     <Icon className={`w-4 h-4 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
                     {item.count !== undefined && item.count > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-bold flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-blue-600 text-white text-xs font-mono font-bold flex items-center justify-center leading-none shadow-xs">
                         {item.count}
                       </span>
                     )}

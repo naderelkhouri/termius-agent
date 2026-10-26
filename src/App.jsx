@@ -1137,7 +1137,7 @@ export default function App() {
               >
                 <Sparkles className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
                 <span className="hidden sm:inline">Copilot</span>
-                <span className="text-[10px] font-mono opacity-70 hidden md:inline">Ctrl+K</span>
+                <span className="text-xs font-mono opacity-80 hidden md:inline">Ctrl+K</span>
               </button>
 
               {/* AI Sidecar Toggle */}
@@ -1166,7 +1166,7 @@ export default function App() {
               >
                 <BookOpen className="w-3.5 h-3.5 text-purple-400" />
                 <span className="hidden md:inline">Skills</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-purple-500/25 text-purple-300 border border-purple-500/30">340</span>
+                <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-purple-500/25 text-purple-300 border border-purple-500/30">340</span>
               </button>
             </div>
 
@@ -1218,7 +1218,7 @@ export default function App() {
                     <div className="py-2 space-y-1.5">
                       <div className="flex items-center justify-between text-xs text-slate-400 font-semibold px-0.5">
                         <span>Modo de Trabalho</span>
-                        <span className="text-[11px] font-mono text-cyan-400 uppercase font-bold">{workMode}</span>
+                        <span className="text-xs font-mono text-cyan-400 uppercase font-bold">{workMode}</span>
                       </div>
                       <div className="grid grid-cols-3 gap-1.5">
                         <button
@@ -1530,6 +1530,20 @@ export default function App() {
           </>
         )}
 
+        {/* Indicador & Botão de Saída do Modo FOCO */}
+        {isFoco && (
+          <button
+            type="button"
+            onClick={() => handleSetWorkMode('expansivo')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 hover:bg-blue-600/35 text-blue-300 border border-blue-500/40 text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
+            title="Modo FOCO ativo (100% Terminais). Clique para voltar ao Modo Expansivo (ou pressione Ctrl + B)"
+          >
+            <Target className="w-3.5 h-3.5 text-cyan-300 animate-pulse" />
+            <span>Modo FOCO</span>
+            <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-blue-500/30 text-blue-200">Sair (Ctrl+B)</span>
+          </button>
+        )}
+
         {/* Split Screen Mode Buttons */}
         {shouldShowSplitControls && currentView === 'terminals' && (
           <div className="flex items-center bg-[#0d1117] p-1 rounded-xl border border-[#30363d] gap-1">
@@ -1799,7 +1813,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => handleToggleRecord(activeTabId)}
-                className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-bold animate-pulse cursor-pointer"
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs font-bold animate-pulse cursor-pointer"
                 title="Sessão gravando. Clique para parar e assistir ao replay."
               >
                 <Circle className="w-2.5 h-2.5 fill-rose-500 text-rose-500" />
@@ -1808,7 +1822,7 @@ export default function App() {
             )}
 
             {broadcastEnabled && (
-              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold">
+              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-bold">
                 <Radio className="w-3 h-3 text-cyan-400 animate-pulse" />
                 <span>Cluster Broadcast</span>
               </span>
@@ -1827,8 +1841,24 @@ export default function App() {
             )}
           </div>
 
-          {/* Lado Direito: Tema, Som, Sidecar, Modo de Trabalho & Atalhos */}
+          {/* Lado Direito: Tema, Som, Modo de Trabalho & Atalhos */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Modo de Trabalho Ativo */}
+            <button
+              type="button"
+              onClick={() => {
+                if (workMode === 'personalizado') setCustomModalOpen(true);
+                else setToolsMenuOpen(true);
+              }}
+              className="hidden lg:flex items-center gap-1.5 px-2 py-0.5 rounded-md hover:bg-[#21262d] text-slate-300 hover:text-white transition-colors cursor-pointer text-xs"
+              title={`Modo de Trabalho Ativo: ${workMode === 'foco' ? 'FOCO (Terminais Puros)' : workMode === 'expansivo' ? 'Expansivo (Completo)' : 'Custom (Personalizado)'}\nClique para configurar`}
+            >
+              {workMode === 'foco' && <Target className="w-3.5 h-3.5 text-cyan-400" />}
+              {workMode === 'expansivo' && <Columns className="w-3.5 h-3.5 text-blue-400" />}
+              {workMode === 'personalizado' && <Sliders className="w-3.5 h-3.5 text-amber-400" />}
+              <span className="font-semibold capitalize">{workMode === 'personalizado' ? 'Custom' : workMode}</span>
+            </button>
+
             {/* Tema Ativo */}
             <button
               type="button"
@@ -1866,7 +1896,7 @@ export default function App() {
               title="Central de Atalhos de Teclado (F1 ou ?)"
             >
               <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
-              <span className="font-mono text-[11px] font-bold">F1</span>
+              <span className="font-mono text-xs font-bold px-1.5 py-0.2 rounded bg-[#0d1117] text-slate-300 border border-[#30363d]">F1</span>
             </button>
           </div>
         </footer>
@@ -1892,7 +1922,7 @@ export default function App() {
 
             {/* Paleta de Cores para a Aba */}
             <div className="px-3 py-2 border-b border-[#30363d]/60">
-              <div className="text-[10px] uppercase font-bold text-slate-400 mb-1.5 tracking-wider">
+              <div className="text-xs uppercase font-bold text-slate-400 mb-1.5 tracking-wider">
                 Cor da Aba
               </div>
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -1946,7 +1976,7 @@ export default function App() {
                   <Zap className={`w-3.5 h-3.5 ${tabContextMenu.tab.isFluid ? 'text-amber-400 fill-amber-400' : 'text-slate-400'}`} />
                   <span>Modo Fluido</span>
                 </span>
-                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${tabContextMenu.tab.isFluid ? 'bg-amber-500/20 text-amber-300' : 'bg-[#21262d] text-slate-400'}`}>
+                <span className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${tabContextMenu.tab.isFluid ? 'bg-amber-500/20 text-amber-300' : 'bg-[#21262d] text-slate-400'}`}>
                   {tabContextMenu.tab.isFluid ? 'ON' : 'OFF'}
                 </span>
               </button>
@@ -1963,7 +1993,7 @@ export default function App() {
                   <MousePointer className="w-3.5 h-3.5 text-blue-400" />
                   <span>Roda do Mouse</span>
                 </span>
-                <span className="text-[10px] font-mono font-bold px-1.5 py-0.2 rounded bg-[#21262d] text-slate-300 border border-[#30363d]">
+                <span className="text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-[#21262d] text-slate-300 border border-[#30363d]">
                   {tabScrollMode === 'switch' ? 'Alternar' : 'Rolar'}
                 </span>
               </button>
