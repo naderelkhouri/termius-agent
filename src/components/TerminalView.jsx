@@ -8,6 +8,7 @@ import {
   Search, 
   ChevronUp, 
   ChevronDown, 
+  ArrowDown,
   X as XIcon,
   Copy,
   Check,
@@ -45,8 +46,16 @@ export default function TerminalView({
   // Estados de Área de Transferência & Menu de Contexto
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [contextMenu, setContextMenu] = useState(null); // { x, y, hasSelection }
+  const [isScrolledUp, setIsScrolledUp] = useState(false);
   const contextMenuRef = useRef(null);
   const copyFeedbackTimerRef = useRef(null);
+
+  const handleScrollToBottom = () => {
+    if (termRef.current) {
+      termRef.current.scrollToBottom();
+      setIsScrolledUp(false);
+    }
+  };
 
   const triggerCopyToast = () => {
     if (copyFeedbackTimerRef.current) clearTimeout(copyFeedbackTimerRef.current);
@@ -199,6 +208,14 @@ export default function TerminalView({
     term.onTitleChange((newTitle) => {
       if (onTitleChange && typeof onTitleChange === 'function' && newTitle) {
         onTitleChange(tab.id, newTitle.trim());
+      }
+    });
+
+    // Listen to terminal scroll position for scroll-to-bottom floating button
+    term.onScroll(() => {
+      if (term.buffer && term.buffer.active) {
+        const isUp = term.buffer.active.viewportY < term.buffer.active.baseY;
+        setIsScrolledUp(isUp);
       }
     });
 
@@ -642,6 +659,19 @@ export default function TerminalView({
           <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
           <span>Copiado para a área de transferência!</span>
         </div>
+      )}
+
+      {/* Botão flutuante para rolar para o final do terminal quando scrollado para cima */}
+      {isScrolledUp && (
+        <button
+          type="button"
+          onClick={handleScrollToBottom}
+          className="absolute bottom-4 right-6 z-30 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#161b22]/95 hover:bg-blue-600 border border-[#30363d] hover:border-blue-400 text-slate-200 hover:text-white shadow-2xl backdrop-blur-md text-xs font-semibold transition-all active:scale-95 cursor-pointer animate-fade-in group"
+          title="Rolar para o final do terminal"
+        >
+          <ArrowDown className="w-3.5 h-3.5 transition-transform group-hover:translate-y-0.5 text-blue-400 group-hover:text-white" />
+          <span>Final</span>
+        </button>
       )}
 
       {/* Menu de contexto flutuante com botão direito */}
