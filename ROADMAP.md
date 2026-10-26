@@ -57,7 +57,23 @@ _Asciicast/asciinema session recorder, broadcast multi-host e notificações des
 - [x] Visual Session Recorder & Replay (Asciicast v2 com timeline, velocidade e download .cast)
 - [x] Cluster Execution em múltiplos servidores (Broadcast multi-host com digitação e comandos espelhados em paralelo)
 
+### ✅ Modos de Trabalho, UX/UI Impeccable & Gravação Avançada (v1.1.0) (100%)
+_3 Modos de Trabalho (FOCO, Expansivo, Custom), Design System Impeccable com fontes >=12px, histórico de gravações com importação drag-and-drop de arquivos .cast, execução em cluster de snippets e botão de rolagem rápida._
+
+**Checklist de Tarefas:**
+- [x] 3 Modos de Trabalho: FOCO (apenas terminais 100%), Expansivo (todas as opções visíveis), Custom (modal multiseletor com 9 opções)
+- [x] Badge de escape e status interativo do Modo FOCO no topo e rodapé (`Ctrl + B`)
+- [x] Design System Impeccable: Erradicação total de micro-fontes (<12px), anéis `:focus-visible` acessíveis, seleção nativa azul suave e badges `<kbd>`
+- [x] Botão flutuante de rolagem rápida (`ArrowDown`) no terminal, chat do AI Sidecar e histórico
+- [x] Histórico local persistente de gravações Asciicast v2 com drawer lateral de replay
+- [x] Importação de arquivos `.cast` com seletor de arquivo e Drag & Drop
+- [x] Controles ergonômicos de teclado no player (<kbd>Espaço</kbd>, <kbd>← / →</kbd>, <kbd>R</kbd>, <kbd>Esc</kbd>)
+- [x] Execução de Snippets em lote com 1 clique (`[ 📡 Cluster (N) ]`)
+- [x] Backup e restauração da Biblioteca de Snippets via importação/exportação JSON
+- [x] Suíte de testes automatizados com 44 validações passando com 100% de sucesso
+
 ## 🚀 Próximos Passos Recomendados
-- Utilizar o Cluster Broadcast (Ctrl+Shift+B) para orquestrar frotas de servidores e abas paralelas.
-- Gravar sessões críticas de terminal para documentação e auditoria em padrão Asciicast v2.
-- Aproveitar o Catálogo de Skills IA em Português BR para orquestrar agentes e personas especializadas.
+- Utilizar o Cluster Broadcast (`Ctrl+Shift+B` ou botão `📡 Cluster` nos Snippets) para orquestrar frotas de servidores e abas paralelas.
+- Gravar sessões críticas de terminal para documentação e auditoria em padrão Asciicast v2 com histórico persistente.
+- Alternar facilmente entre Modo FOCO (`Ctrl+B`) para imersão total em comandos e Modo Expansivo para navegação rica.
+- Explorar os outros projetos do ecossistema ADMX (`mercado-app`, `barber-app`, `admx-gestao-fiscal`).
