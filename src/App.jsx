@@ -1369,36 +1369,51 @@ export default function App() {
                         )}
                       </div>
 
-                      {/* Gravador de Sessão (Asciicast v2) */}
-                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors">
-                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${recordingTabId === activeTabId ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-[#21262d] text-slate-400'}`}>
-                            {recordingTabId === activeTabId ? (
-                              <Circle className="w-3.5 h-3.5 fill-rose-500 text-rose-500 animate-pulse" />
-                            ) : (
-                              <Film className="w-3.5 h-3.5" />
-                            )}
+                      {/* Gravador de Sessão & Player (Asciicast v2) */}
+                      <div className="p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${recordingTabId === activeTabId ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-[#21262d] text-slate-400'}`}>
+                              {recordingTabId === activeTabId ? (
+                                <Circle className="w-3.5 h-3.5 fill-rose-500 text-rose-500 animate-pulse" />
+                              ) : (
+                                <Film className="w-3.5 h-3.5" />
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <span className="font-bold text-xs text-white block leading-tight truncate">Gravador de Sessão</span>
+                              <span className="text-xs text-slate-400 block truncate">
+                                {recordingTabId === activeTabId
+                                  ? `Gravando (${Math.floor(recordingDuration / 60).toString().padStart(2, '0')}:${(recordingDuration % 60).toString().padStart(2, '0')})`
+                                  : 'Exporta em Asciicast v2'}
+                              </span>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <span className="font-bold text-xs text-white block leading-tight truncate">Gravador de Sessão</span>
-                            <span className="text-xs text-slate-400 block truncate">
-                              {recordingTabId === activeTabId
-                                ? `Gravando (${Math.floor(recordingDuration / 60).toString().padStart(2, '0')}:${(recordingDuration % 60).toString().padStart(2, '0')})`
-                                : 'Exporta em Asciicast v2'}
-                            </span>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setToolsMenuOpen(false);
+                                setReplayModalOpen(true);
+                              }}
+                              className="px-2 py-1 rounded-lg text-xs font-semibold bg-[#21262d] text-purple-300 border border-[#30363d] hover:bg-[#30363d] transition-colors cursor-pointer"
+                              title="Abrir Player de Sessões / Histórico .cast"
+                            >
+                              Player
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleToggleRecord(activeTabId)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer ${
+                                recordingTabId === activeTabId
+                                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 animate-pulse shadow-xs'
+                                  : 'bg-[#21262d] text-slate-300 border-[#30363d] hover:text-white'
+                              }`}
+                            >
+                              {recordingTabId === activeTabId ? 'PARAR' : 'REC'}
+                            </button>
                           </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => handleToggleRecord(activeTabId)}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer ${
-                            recordingTabId === activeTabId
-                              ? 'bg-rose-500/20 text-rose-300 border-rose-500/50 animate-pulse shadow-xs'
-                              : 'bg-[#21262d] text-slate-300 border-[#30363d] hover:text-white'
-                          }`}
-                        >
-                          {recordingTabId === activeTabId ? 'PARAR' : 'REC'}
-                        </button>
                       </div>
 
                       {/* Smart Command Bar Toggle */}
