@@ -13,5 +13,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   clipboard: {
     readText: () => ipcRenderer.invoke('clipboard:readText'),
     writeText: (text) => ipcRenderer.send('clipboard:writeText', text)
-  }
+  },
+  openFile: (filePath, line) => ipcRenderer.invoke('system:openFile', { filePath, line }),
+  openExternal: (url) => ipcRenderer.invoke('system:openExternal', url)
 });

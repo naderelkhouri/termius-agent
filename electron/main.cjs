@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain, Notification, clipboard } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain, Notification, clipboard, shell } = require('electron');
 const path = require('node:path');
 const http = require('node:http');
 const { spawn } = require('node:child_process');
@@ -138,6 +138,23 @@ async function createWindow() {
 
   mainWindow.loadURL(SERVER_URL);
 
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    }
+    if (url.startsWith('file://')) {
+      try {
+        const parsed = new URL(url);
+        shell.openPath(decodeURIComponent(parsed.pathname));
+      } catch {
+        shell.openPath(url.replace(/^file:\/\//, ''));
+      }
+      return { action: 'deny' };
+    }
+    return { action: 'allow' };
+  });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
@@ -221,6 +238,48 @@ ipcMain.on('clipboard:writeText', (event, text) => {
     }
   } catch (err) {
     console.warn('[Electron] Falha ao gravar clipboard:', err);
+  }
+});
+
+// Handlers para abertura de arquivos e URLs locais/externas
+ipcMain.handle('system:openFile', async (event, { filePath, line }) => {
+  if (!filePath || typeof filePath !== 'string') {
+    return { success: false, error: 'Caminho inválido' };
+  }
+
+  try {
+    if (line) {
+      const codeProc = spawn('code', ['--goto', `${filePath}:${line}`], { detached: true, stdio: 'ignore' });
+      codeProc.unref();
+      return { success: true, method: 'code' };
+    }
+
+    const errMsg = await shell.openPath(filePath);
+    if (errMsg) {
+      if (process.platform === 'linux') {
+        const xdg = spawn('xdg-open', [filePath], { detached: true, stdio: 'ignore' });
+        xdg.unref();
+        return { success: true, method: 'xdg-open' };
+      }
+      return { success: false, error: errMsg };
+    }
+    return { success: true, method: 'shell.openPath' };
+  } catch (err) {
+    console.error('[Electron] system:openFile error:', err);
+    return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('system:openExternal', async (event, url) => {
+  if (!url || typeof url !== 'string') {
+    return { success: false, error: 'URL inválida' };
+  }
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (err) {
+    console.error('[Electron] system:openExternal error:', err);
+    return { success: false, error: err.message };
   }
 });
 

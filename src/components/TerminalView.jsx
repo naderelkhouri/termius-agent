@@ -127,7 +127,110 @@ export default function TerminalView({
     const fitAddon = new FitAddon();
     const searchAddon = new SearchAddon();
     term.loadAddon(fitAddon);
-    term.loadAddon(new WebLinksAddon());
+
+    // Manipulador Universal de Links (Web + Arquivos Locais)
+    const handleTerminalLink = async (event, uri) => {
+      event?.preventDefault?.();
+      if (!uri) return;
+
+      // 1. Links Web HTTP / HTTPS
+      if (uri.startsWith('http://') || uri.startsWith('https://')) {
+        if (window.electronAPI?.openExternal) {
+          try {
+            await window.electronAPI.openExternal(uri);
+            return;
+          } catch (err) {
+            console.warn('[TerminalView] electronAPI.openExternal error:', err);
+          }
+        }
+        window.open(uri, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
+      // 2. Links de Arquivo Local (file:/// ou caminhos absolutos /home/...)
+      if (uri.startsWith('file://') || uri.startsWith('/')) {
+        let cleanPath = uri;
+        let line = null;
+
+        if (uri.startsWith('file://')) {
+          try {
+            const parsed = new URL(uri);
+            cleanPath = decodeURIComponent(parsed.pathname);
+            if (parsed.hash) {
+              const hashMatch = parsed.hash.match(/#L(\d+)/i);
+              if (hashMatch) line = parseInt(hashMatch[1], 10);
+            }
+          } catch {
+            cleanPath = uri.replace(/^file:\/\//, '');
+          }
+        }
+
+        const colonMatch = cleanPath.match(/^(.+?):(\d+)(?::\d+)?$/);
+        if (colonMatch) {
+          cleanPath = colonMatch[1];
+          line = parseInt(colonMatch[2], 10);
+        }
+
+        // Tenta abrir via Electron desktop shell / VS Code
+        if (window.electronAPI?.openFile) {
+          try {
+            const res = await window.electronAPI.openFile(cleanPath, line);
+            if (res?.success) return;
+          } catch (err) {
+            console.warn('[TerminalView] electronAPI.openFile error:', err);
+          }
+        }
+
+        // Fallback: endpoint do servidor backend
+        try {
+          await fetch('/api/system/open-file', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filePath: cleanPath, line })
+          });
+        } catch (err) {
+          console.warn('[TerminalView] Fallback open-file failed:', err);
+        }
+      }
+    };
+
+    // Suporte a URLs web e esquemas file:/// com âncoras #L...
+    const linkRegex = /(https?|HTTPS?|file|FILE):[/]{2,3}[^\s"'!*(){}|\\^<>`]*[^\s"':,.!?{}|\\^~\[\]`()<>]/;
+    term.loadAddon(new WebLinksAddon(handleTerminalLink, { urlRegex: linkRegex }));
+
+    // Link Provider para caminhos absolutos (/home/...)
+    const rawFilePathRegex = /(?:\/home\/|\/etc\/|\/var\/|\/tmp\/|\/usr\/)[a-zA-Z0-9_\-./]+(?:\.[a-zA-Z0-9_\-]+)?(?::\d+(?::\d+)?)?/g;
+    term.registerLinkProvider({
+      provideLinks(bufferLineNumber, callback) {
+        const line = term.buffer.active.getLine(bufferLineNumber - 1);
+        if (!line) return callback(undefined);
+        const lineStr = line.translateToString(true);
+        if (!lineStr) return callback(undefined);
+
+        const links = [];
+        let match;
+        rawFilePathRegex.lastIndex = 0;
+        while ((match = rawFilePathRegex.exec(lineStr)) !== null) {
+          const text = match[0];
+          const startIdx = match.index;
+          if (startIdx >= 7 && lineStr.substring(startIdx - 7, startIdx) === 'file://') {
+            continue;
+          }
+          const endIdx = startIdx + text.length;
+
+          links.push({
+            range: {
+              start: { x: startIdx + 1, y: bufferLineNumber },
+              end: { x: endIdx, y: bufferLineNumber }
+            },
+            text,
+            activate: (e, textUri) => handleTerminalLink(e, textUri)
+          });
+        }
+        callback(links.length > 0 ? links : undefined);
+      }
+    });
+
     term.loadAddon(searchAddon);
 
     term.open(containerRef.current);

@@ -470,6 +470,54 @@ app.post('/api/telemetry/improvements/analyze', async (req, res) => {
   }
 });
 
+// Abertura nativa de arquivos e URLs locais a partir do terminal
+app.post('/api/system/open-file', (req, res) => {
+  const { filePath, line } = req.body || {};
+  if (!filePath || typeof filePath !== 'string') {
+    return res.status(400).json({ error: 'filePath obrigatório' });
+  }
+
+  const cleanPath = path.resolve(filePath);
+  if (!fs.existsSync(cleanPath)) {
+    return res.status(404).json({ error: 'Arquivo não encontrado no sistema de arquivos' });
+  }
+
+  try {
+    if (line) {
+      const codeProc = spawn('code', ['--goto', `${cleanPath}:${line}`], { detached: true, stdio: 'ignore' });
+      codeProc.unref();
+      return res.json({ success: true, method: 'code', path: cleanPath, line });
+    }
+
+    if (process.platform === 'linux') {
+      const xdg = spawn('xdg-open', [cleanPath], { detached: true, stdio: 'ignore' });
+      xdg.unref();
+      return res.json({ success: true, method: 'xdg-open', path: cleanPath });
+    }
+
+    res.json({ success: true, path: cleanPath });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/system/open-external', (req, res) => {
+  const { url } = req.body || {};
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({ error: 'url obrigatória' });
+  }
+  try {
+    if (process.platform === 'linux') {
+      const xdg = spawn('xdg-open', [url], { detached: true, stdio: 'ignore' });
+      xdg.unref();
+      return res.json({ success: true, method: 'xdg-open', url });
+    }
+    res.json({ success: true, url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Rastreamento global de PTYs para evitar processos órfãos/zumbis
 const activePtyProcesses = new Set();
 
