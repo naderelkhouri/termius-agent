@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "server": "node server/index.js",
     "desktop": "electron . --no-sandbox",
-    "start": "concurrently \"node server/index.js\" \"vite\""
+    "start": "concurrently \"node server/index.js\" \"vite\"",
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",

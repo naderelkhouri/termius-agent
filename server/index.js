@@ -22,6 +22,16 @@ import {
   getTelemetryMetrics, 
   runAutomatedImprovementAnalysis 
 } from './telemetry.js';
+import {
+  listDirectory,
+  readFileContent,
+  writeFileContent,
+  createDirectory,
+  createFile,
+  deletePath,
+  renamePath,
+  listRemoteDirectory
+} from './fileService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -513,6 +523,123 @@ app.post('/api/system/open-external', (req, res) => {
       return res.json({ success: true, method: 'xdg-open', url });
     }
     res.json({ success: true, url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
+// File Manager & SFTP Remote File API Routes
+// ==========================================
+
+// Listar arquivos de diretório local
+app.get('/api/fs/list', async (req, res) => {
+  try {
+    const { path: dirPath, showHidden } = req.query;
+    const data = await listDirectory(dirPath, showHidden === 'true');
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Ler conteúdo de arquivo local
+app.get('/api/fs/read', async (req, res) => {
+  try {
+    const { path: filePath } = req.query;
+    if (!filePath) {
+      return res.status(400).json({ error: 'Parâmetro path obrigatório' });
+    }
+    const data = await readFileContent(filePath);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Salvar conteúdo em arquivo local
+app.post('/api/fs/write', async (req, res) => {
+  try {
+    const { path: filePath, content } = req.body || {};
+    if (!filePath || content === undefined) {
+      return res.status(400).json({ error: 'Parâmetros path e content são obrigatórios' });
+    }
+    const data = await writeFileContent(filePath, content);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Criar novo diretório local
+app.post('/api/fs/mkdir', async (req, res) => {
+  try {
+    const { path: dirPath } = req.body || {};
+    if (!dirPath) {
+      return res.status(400).json({ error: 'Parâmetro path obrigatório' });
+    }
+    const data = await createDirectory(dirPath);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Criar novo arquivo local
+app.post('/api/fs/touch', async (req, res) => {
+  try {
+    const { path: filePath, content } = req.body || {};
+    if (!filePath) {
+      return res.status(400).json({ error: 'Parâmetro path obrigatório' });
+    }
+    const data = await createFile(filePath, content || '');
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Deletar arquivo ou diretório local
+app.delete('/api/fs/delete', async (req, res) => {
+  try {
+    const { path: targetPath } = req.body || {};
+    if (!targetPath) {
+      return res.status(400).json({ error: 'Parâmetro path obrigatório' });
+    }
+    const data = await deletePath(targetPath);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Renomear arquivo ou diretório local
+app.post('/api/fs/rename', async (req, res) => {
+  try {
+    const { oldPath, newPath } = req.body || {};
+    if (!oldPath || !newPath) {
+      return res.status(400).json({ error: 'Parâmetros oldPath e newPath obrigatórios' });
+    }
+    const data = await renamePath(oldPath, newPath);
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Listar arquivos em host remoto (SSH) ou local
+app.post('/api/fs/remote/list', async (req, res) => {
+  try {
+    const { hostId, remotePath, showHidden } = req.body || {};
+    const storage = loadStorage();
+    const host = (storage.hosts || []).find(h => h.id === hostId);
+
+    if (!host) {
+      return res.status(404).json({ error: `Host com id '${hostId}' não encontrado` });
+    }
+
+    const data = await listRemoteDirectory(host, remotePath, showHidden);
+    res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

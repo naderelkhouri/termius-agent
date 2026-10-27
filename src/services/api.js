@@ -272,3 +272,108 @@ export async function fetchSystemStatus() {
     return null;
   }
 }
+
+// ==========================================
+// File Manager & SFTP Remote File API Client
+// ==========================================
+
+export async function fetchFsList(dirPath = '', showHidden = false) {
+  const params = new URLSearchParams();
+  if (dirPath) params.append('path', dirPath);
+  if (showHidden) params.append('showHidden', 'true');
+
+  const res = await fetch(`${BASE_URL}/fs/list?${params}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function fetchFsReadFile(filePath) {
+  const params = new URLSearchParams({ path: filePath });
+  const res = await fetch(`${BASE_URL}/fs/read?${params}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function saveFsFile(filePath, content) {
+  const res = await fetch(`${BASE_URL}/fs/write`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path: filePath, content })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function createFsDirectory(dirPath) {
+  const res = await fetch(`${BASE_URL}/fs/mkdir`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path: dirPath })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function createFsFile(filePath, content = '') {
+  const res = await fetch(`${BASE_URL}/fs/touch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path: filePath, content })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function deleteFsPath(targetPath) {
+  const res = await fetch(`${BASE_URL}/fs/delete`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path: targetPath })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function renameFsPath(oldPath, newPath) {
+  const res = await fetch(`${BASE_URL}/fs/rename`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ oldPath, newPath })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function fetchRemoteFsList(hostId, remotePath = '', showHidden = false) {
+  const res = await fetch(`${BASE_URL}/fs/remote/list`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hostId, remotePath, showHidden })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}

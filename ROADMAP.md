@@ -72,8 +72,23 @@ _3 Modos de Trabalho (FOCO, Expansivo, Custom), Design System Impeccable com fon
 - [x] Backup e restauração da Biblioteca de Snippets via importação/exportação JSON
 - [x] Suíte de testes automatizados com 44 validações passando com 100% de sucesso
 
+### ✅ Links Clicáveis Universais, SFTP & File Explorer (v1.2.0) (100%)
+_Links clicáveis com targeting de linha no VS Code, explorador de arquivos local e remoto SFTP, editor de código inline com atalhos de teclado e suíte de testes de sistema de arquivos._
+
+**Checklist de Tarefas:**
+- [x] Links de arquivos universais no terminal (`file:///...` e caminhos absolutos crus)
+- [x] Targeting de linha exata (`code --goto <path>:<line>`) ao clicar em links com `#L10` ou `:10`
+- [x] Fallback automático para abertura no sistema operacional via `xdg-open`
+- [x] Módulo `fileService.js` com suporte completo a metadados, permissões unix (`rwxr-xr-x`), formatação de tamanho e breadcrumbs
+- [x] Endpoints REST `/api/fs/*` (list, read, write, mkdir, touch, rename, delete) com proteção contra caminhos do sistema
+- [x] Suporte a listagem de arquivos remotos via SSH para hosts configurados
+- [x] Componente `FileManager.jsx` com bookmarks rápidos (`~`, `Applications`, `Downloads`, `/`), visualização em tabela e busca em tempo real
+- [x] Modal de Edição de Código Inline com salvamento rápido (<kbd>Ctrl+S</kbd>), contagem de linhas e indicador dirty
+- [x] Integração na Sidebar com novo ícone `Arquivos & SFTP` e atalho global <kbd>Ctrl+Shift+E</kbd>
+- [x] Suíte de testes unitários automatizados com `node --test` e 100% de sucesso
+
 ## 🚀 Próximos Passos Recomendados
+- Utilizar o Gerenciador de Arquivos & SFTP (<kbd>Ctrl+Shift+E</kbd>) para navegar e editar arquivos sem sair do Termius Agent.
+- Clicar em qualquer caminho ou log de arquivo no terminal para abri-lo instantaneamente na linha correspondente no VS Code.
 - Utilizar o Cluster Broadcast (`Ctrl+Shift+B` ou botão `📡 Cluster` nos Snippets) para orquestrar frotas de servidores e abas paralelas.
 - Gravar sessões críticas de terminal para documentação e auditoria em padrão Asciicast v2 com histórico persistente.
-- Alternar facilmente entre Modo FOCO (`Ctrl+B`) para imersão total em comandos e Modo Expansivo para navegação rica.
-- Explorar os outros projetos do ecossistema ADMX (`mercado-app`, `barber-app`, `admx-gestao-fiscal`).

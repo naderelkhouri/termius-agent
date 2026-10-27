@@ -13,6 +13,7 @@ import SessionReplayModal from './components/SessionReplayModal';
 import KeyboardShortcutsModal from './components/KeyboardShortcutsModal';
 import TerminalThemeModal from './components/TerminalThemeModal';
 import CustomWorkModeModal from './components/CustomWorkModeModal';
+import FileManager from './components/FileManager';
 import ErrorBoundary from './components/ErrorBoundary';
 import { 
   Plus, 
@@ -723,6 +724,11 @@ export default function App() {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
         e.preventDefault();
         setSkillsModalOpen((prev) => !prev);
+      }
+      // Ctrl+Shift+E -> Toggle Arquivos & SFTP View
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'e') {
+        e.preventDefault();
+        setCurrentView((prev) => prev === 'files' ? 'terminals' : 'files');
       }
       // Ctrl+Shift+B -> Toggle Cluster Broadcast Mode
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'b') {
@@ -1784,6 +1790,14 @@ export default function App() {
           {/* Hosts View */}
           {currentView === 'hosts' && (
             <HostsManager onConnectHost={handleConnectHost} />
+          )}
+
+          {/* Files & SFTP View */}
+          {currentView === 'files' && (
+            <FileManager 
+              onOpenTerminalAt={(path) => handleNewTab(path, path.split('/').pop() || 'Terminal')}
+              onCdActiveTerminal={(path) => handleExecuteCommandInActiveTerminal(`cd "${path}"`)}
+            />
           )}
 
           {/* Snippets View */}

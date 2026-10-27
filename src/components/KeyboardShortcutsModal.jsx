@@ -37,6 +37,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
       borderColor: 'border-blue-500/30',
       shortcuts: [
         { keys: ['Ctrl', 'Shift', 'T'], description: 'Abrir nova aba de terminal local' },
+        { keys: ['Ctrl', 'Shift', 'E'], description: 'Alternar Explorador de Arquivos & SFTP' },
         { keys: ['Ctrl', 'Shift', 'W'], description: 'Fechar a aba de terminal ativa' },
         { keys: ['Ctrl', 'B'], description: 'Alternar entre Modo FOCO (apenas terminais) e Modo Expansivo' },
         { keys: ['Modos'], description: 'Alternar entre FOCO (100% terminais), Expansivo (tudo à mostra) e Custom' },

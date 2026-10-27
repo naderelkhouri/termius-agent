@@ -16,7 +16,8 @@ import {
   Target,
   Columns,
   Sliders,
-  SlidersHorizontal
+  SlidersHorizontal,
+  FolderTree
 } from 'lucide-react';
 
 export default function Sidebar({ 
@@ -53,6 +54,7 @@ export default function Sidebar({
   const navItems = [
     { id: 'terminals', label: 'Terminais', icon: Terminal, count: openTabs.length },
     { id: 'hosts', label: 'Hosts & SSH', icon: Server },
+    { id: 'files', label: 'Arquivos & SFTP', icon: FolderTree },
     { id: 'snippets', label: 'Snippets', icon: Code2 },
     { id: 'conversations', label: 'Histórico IA', icon: BotMessageSquare, highlight: true },
     { id: 'telemetry', label: 'Telemetria & Bugs', icon: Activity },
