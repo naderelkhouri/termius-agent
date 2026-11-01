@@ -1,16 +1,16 @@
 # Graph Report - termius-agent  (2026-11-01)
 
 ## Corpus Check
-- 48 files · ~107,541 words
+- 49 files · ~108,159 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 311 nodes · 506 edges · 19 communities (17 shown, 2 thin omitted)
+- 320 nodes · 514 edges · 21 communities (19 shown, 2 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b6e9abbd`
+- Built from commit: `4c89eb32`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -31,6 +31,8 @@
 - [[_COMMUNITY_Community 13|Community 13]]
 - [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `✨ Principais Funcionalidades` - 12 edges
@@ -59,15 +61,15 @@
 ## Import Cycles
 - None detected.
 
-## Communities (19 total, 2 thin omitted)
+## Communities (21 total, 2 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.06
-Nodes (44): AICopilotModal(), AISidecar(), ConversationHistoryModal(), HostsManager(), SkillsDropdownModal(), resolveCommand(), SnippetsManager(), SpecRoadmapModal() (+36 more)
+Cohesion: 0.07
+Nodes (36): AICopilotModal(), FileManager(), HostsManager(), SkillsDropdownModal(), SmartCommandBar(), resolveCommand(), SnippetsManager(), TelemetryManager() (+28 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.09
-Nodes (34): CustomWorkModeModal(), FileManager(), KeyboardShortcutsModal(), SessionReplayModal(), Sidebar(), SmartCommandBar(), TerminalThemeModal(), TerminalView() (+26 more)
+Cohesion: 0.11
+Nodes (22): CustomWorkModeModal(), ErrorBoundary, KeyboardShortcutsModal(), Sidebar(), TerminalThemeModal(), TerminalView(), copyToClipboard(), readFromClipboard() (+14 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.09
@@ -86,8 +88,8 @@ Cohesion: 0.18
 Nodes (16): generateCopilotCommand(), KNOWLEDGE_PATTERNS, BRAIN_PATH, CLI_BASE_PATH, DB_PATH, getConversationTranscript(), getDbConnection(), getRecentHistoryPrompts() (+8 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.21
-Nodes (6): ErrorBoundary, recordTelemetryEvent(), initGlobalTelemetry(), logBug(), submitManualImprovement(), App()
+Cohesion: 0.15
+Nodes (14): AISidecar(), ConversationHistoryModal(), SpecRoadmapModal(), addFavorite(), addFluidConversation(), exportSpecAndRoadmap(), fetchConversations(), fetchFavorites() (+6 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.18
@@ -117,25 +119,33 @@ Nodes (8): 1. 📋 Resumo Executivo da Verificação, 2. 🏗️ Arquitetura e E
 Cohesion: 0.15
 Nodes (13): dependencies, clsx, cors, express, lucide-react, react, react-dom, tailwind-merge (+5 more)
 
+### Community 19 - "Community 19"
+Cohesion: 0.21
+Nodes (12): SessionReplayModal(), activeRecordings, deleteRecordingFromHistory(), downloadCastFile(), formatAsAsciicast(), getRecordingHistory(), isRecording(), parseAsciicast() (+4 more)
+
+### Community 20 - "Community 20"
+Cohesion: 0.22
+Nodes (8): 1. 📊 Status Geral de Saúde & Versão Ativa, 2. 🛡️ Métricas do Smart Gate e Testes Automatizados, 3.1. Melhorias Recentes de UX/UI & Redundâncias, 3.2. Suíte de Arquivos e SFTP Integrado (Commits `1e39988` e `9d9c3b8`), 3. 📦 Entregas Recentes e Arquivos Modificados, 4. 🌐 Status dos Ambientes e Deploys, 5. 🗺️ Próximos Passos do Roadmap, Relatório de Atualização de Status: Termius Agent Suite
+
 ## Knowledge Gaps
-- **111 isolated node(s):** `name`, `version`, `description`, `private`, `type` (+106 more)
+- **117 isolated node(s):** `name`, `version`, `description`, `private`, `type` (+112 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ErrorBoundary` connect `Community 6` to `Community 1`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `Community 18` to `Community 2`?**
   _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **What connects `name`, `version`, `description` to the rest of the system?**
-  _111 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _117 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.061016949152542375 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0700354609929078 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.08599290780141844 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10510510510510511 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.08695652173913043 - nodes in this community are weakly interconnected._
 - **Should `Community 3` be split into smaller, more focused modules?**
   _Cohesion score 0.09191583610188261 - nodes in this community are weakly interconnected._
+- **Should `Community 4` be split into smaller, more focused modules?**
+  _Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected._

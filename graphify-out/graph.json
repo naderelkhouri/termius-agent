@@ -1210,7 +1210,7 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_app_app",
-      "community": 6,
+      "community": 1,
       "norm_label": "app()"
     },
     {
@@ -1240,7 +1240,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_aisidecar",
-      "community": 0,
+      "community": 6,
       "norm_label": "aisidecar.jsx"
     },
     {
@@ -1250,7 +1250,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "components_aisidecar_extractcommandline",
-      "community": 0,
+      "community": 6,
       "norm_label": "extractcommandline()"
     },
     {
@@ -1260,7 +1260,7 @@
       "source_location": "L71",
       "_origin": "ast",
       "id": "components_aisidecar_extractfilepath",
-      "community": 0,
+      "community": 6,
       "norm_label": "extractfilepath()"
     },
     {
@@ -1270,7 +1270,7 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "components_aisidecar_aisidecar",
-      "community": 0,
+      "community": 6,
       "norm_label": "aisidecar()"
     },
     {
@@ -1280,7 +1280,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_conversationhistorymodal",
-      "community": 0,
+      "community": 6,
       "norm_label": "conversationhistorymodal.jsx"
     },
     {
@@ -1290,7 +1290,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "components_conversationhistorymodal_extractcommandline",
-      "community": 0,
+      "community": 6,
       "norm_label": "extractcommandline()"
     },
     {
@@ -1300,7 +1300,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "components_conversationhistorymodal_conversationhistorymodal",
-      "community": 0,
+      "community": 6,
       "norm_label": "conversationhistorymodal()"
     },
     {
@@ -1330,7 +1330,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_errorboundary",
-      "community": 6,
+      "community": 1,
       "norm_label": "errorboundary.jsx"
     },
     {
@@ -1340,7 +1340,7 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "components_errorboundary_errorboundary",
-      "community": 6,
+      "community": 1,
       "norm_label": "errorboundary"
     },
     {
@@ -1350,7 +1350,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "components_errorboundary_errorboundary_constructor",
-      "community": 6,
+      "community": 1,
       "norm_label": ".constructor()"
     },
     {
@@ -1360,7 +1360,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "components_errorboundary_errorboundary_getderivedstatefromerror",
-      "community": 6,
+      "community": 1,
       "norm_label": ".getderivedstatefromerror()"
     },
     {
@@ -1370,7 +1370,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "components_errorboundary_errorboundary_componentdidcatch",
-      "community": 6,
+      "community": 1,
       "norm_label": ".componentdidcatch()"
     },
     {
@@ -1380,7 +1380,7 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "components_errorboundary_errorboundary_render",
-      "community": 6,
+      "community": 1,
       "norm_label": ".render()"
     },
     {
@@ -1410,7 +1410,7 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "components_filemanager_filemanager",
-      "community": 1,
+      "community": 0,
       "norm_label": "filemanager()"
     },
     {
@@ -1460,7 +1460,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_sessionreplaymodal",
-      "community": 1,
+      "community": 19,
       "norm_label": "sessionreplaymodal.jsx"
     },
     {
@@ -1470,7 +1470,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "components_sessionreplaymodal_sessionreplaymodal",
-      "community": 1,
+      "community": 19,
       "norm_label": "sessionreplaymodal()"
     },
     {
@@ -1520,7 +1520,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_smartcommandbar",
-      "community": 1,
+      "community": 0,
       "norm_label": "smartcommandbar.jsx"
     },
     {
@@ -1530,7 +1530,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "components_smartcommandbar_smartcommandbar",
-      "community": 1,
+      "community": 0,
       "norm_label": "smartcommandbar()"
     },
     {
@@ -1580,7 +1580,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_specroadmapmodal",
-      "community": 0,
+      "community": 6,
       "norm_label": "specroadmapmodal.jsx"
     },
     {
@@ -1590,7 +1590,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "components_specroadmapmodal_specroadmapmodal",
-      "community": 0,
+      "community": 6,
       "norm_label": "specroadmapmodal()"
     },
     {
@@ -1660,7 +1660,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_main",
-      "community": 6,
+      "community": 1,
       "norm_label": "main.jsx"
     },
     {
@@ -1680,7 +1680,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "services_api_fetchfavorites",
-      "community": 0,
+      "community": 6,
       "norm_label": "fetchfavorites()"
     },
     {
@@ -1690,7 +1690,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "services_api_addfavorite",
-      "community": 0,
+      "community": 6,
       "norm_label": "addfavorite()"
     },
     {
@@ -1700,7 +1700,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "services_api_removefavorite",
-      "community": 0,
+      "community": 6,
       "norm_label": "removefavorite()"
     },
     {
@@ -1710,7 +1710,7 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "services_api_fetchfluidconversations",
-      "community": 0,
+      "community": 6,
       "norm_label": "fetchfluidconversations()"
     },
     {
@@ -1720,7 +1720,7 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "services_api_addfluidconversation",
-      "community": 0,
+      "community": 6,
       "norm_label": "addfluidconversation()"
     },
     {
@@ -1730,7 +1730,7 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "services_api_removefluidconversation",
-      "community": 0,
+      "community": 6,
       "norm_label": "removefluidconversation()"
     },
     {
@@ -1740,7 +1740,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "services_api_fetchconversations",
-      "community": 0,
+      "community": 6,
       "norm_label": "fetchconversations()"
     },
     {
@@ -1750,7 +1750,7 @@
       "source_location": "L66",
       "_origin": "ast",
       "id": "services_api_fetchtranscript",
-      "community": 0,
+      "community": 6,
       "norm_label": "fetchtranscript()"
     },
     {
@@ -1860,7 +1860,7 @@
       "source_location": "L150",
       "_origin": "ast",
       "id": "services_api_recordtelemetryevent",
-      "community": 6,
+      "community": 0,
       "norm_label": "recordtelemetryevent()"
     },
     {
@@ -1900,7 +1900,7 @@
       "source_location": "L186",
       "_origin": "ast",
       "id": "services_api_fetchcommandsuggestions",
-      "community": 1,
+      "community": 0,
       "norm_label": "fetchcommandsuggestions()"
     },
     {
@@ -1930,7 +1930,7 @@
       "source_location": "L221",
       "_origin": "ast",
       "id": "services_api_fetchspecandroadmap",
-      "community": 0,
+      "community": 6,
       "norm_label": "fetchspecandroadmap()"
     },
     {
@@ -1940,7 +1940,7 @@
       "source_location": "L227",
       "_origin": "ast",
       "id": "services_api_savespecandroadmap",
-      "community": 0,
+      "community": 6,
       "norm_label": "savespecandroadmap()"
     },
     {
@@ -1950,7 +1950,7 @@
       "source_location": "L237",
       "_origin": "ast",
       "id": "services_api_exportspecandroadmap",
-      "community": 0,
+      "community": 6,
       "norm_label": "exportspecandroadmap()"
     },
     {
@@ -2150,7 +2150,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "services_sessionrecorder",
-      "community": 1,
+      "community": 19,
       "norm_label": "sessionrecorder.js"
     },
     {
@@ -2160,7 +2160,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "services_sessionrecorder_activerecordings",
-      "community": 1,
+      "community": 19,
       "norm_label": "activerecordings"
     },
     {
@@ -2170,7 +2170,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "services_sessionrecorder_isrecording",
-      "community": 1,
+      "community": 19,
       "norm_label": "isrecording()"
     },
     {
@@ -2180,7 +2180,7 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "services_sessionrecorder_getactiverecording",
-      "community": 1,
+      "community": 19,
       "norm_label": "getactiverecording()"
     },
     {
@@ -2190,7 +2190,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "services_sessionrecorder_startrecording",
-      "community": 1,
+      "community": 19,
       "norm_label": "startrecording()"
     },
     {
@@ -2200,7 +2200,7 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "services_sessionrecorder_recordoutput",
-      "community": 1,
+      "community": 19,
       "norm_label": "recordoutput()"
     },
     {
@@ -2210,7 +2210,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "services_sessionrecorder_stoprecording",
-      "community": 1,
+      "community": 19,
       "norm_label": "stoprecording()"
     },
     {
@@ -2220,7 +2220,7 @@
       "source_location": "L82",
       "_origin": "ast",
       "id": "services_sessionrecorder_saverecordingtohistory",
-      "community": 1,
+      "community": 19,
       "norm_label": "saverecordingtohistory()"
     },
     {
@@ -2230,7 +2230,7 @@
       "source_location": "L114",
       "_origin": "ast",
       "id": "services_sessionrecorder_getrecordinghistory",
-      "community": 1,
+      "community": 19,
       "norm_label": "getrecordinghistory()"
     },
     {
@@ -2240,7 +2240,7 @@
       "source_location": "L128",
       "_origin": "ast",
       "id": "services_sessionrecorder_deleterecordingfromhistory",
-      "community": 1,
+      "community": 19,
       "norm_label": "deleterecordingfromhistory()"
     },
     {
@@ -2250,7 +2250,7 @@
       "source_location": "L142",
       "_origin": "ast",
       "id": "services_sessionrecorder_clearrecordinghistory",
-      "community": 1,
+      "community": 19,
       "norm_label": "clearrecordinghistory()"
     },
     {
@@ -2260,7 +2260,7 @@
       "source_location": "L154",
       "_origin": "ast",
       "id": "services_sessionrecorder_parseasciicast",
-      "community": 1,
+      "community": 19,
       "norm_label": "parseasciicast()"
     },
     {
@@ -2270,7 +2270,7 @@
       "source_location": "L199",
       "_origin": "ast",
       "id": "services_sessionrecorder_formatasasciicast",
-      "community": 1,
+      "community": 19,
       "norm_label": "formatasasciicast()"
     },
     {
@@ -2280,7 +2280,7 @@
       "source_location": "L209",
       "_origin": "ast",
       "id": "services_sessionrecorder_downloadcastfile",
-      "community": 1,
+      "community": 19,
       "norm_label": "downloadcastfile()"
     },
     {
@@ -2290,7 +2290,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "services_telemetrytracker",
-      "community": 6,
+      "community": 0,
       "norm_label": "telemetrytracker.js"
     },
     {
@@ -2300,7 +2300,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "services_telemetrytracker_initglobaltelemetry",
-      "community": 6,
+      "community": 1,
       "norm_label": "initglobaltelemetry()"
     },
     {
@@ -2310,7 +2310,7 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "services_telemetrytracker_logbug",
-      "community": 6,
+      "community": 0,
       "norm_label": "logbug()"
     },
     {
@@ -2320,7 +2320,7 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "services_telemetrytracker_submitmanualimprovement",
-      "community": 6,
+      "community": 0,
       "norm_label": "submitmanualimprovement()"
     },
     {
@@ -3120,6 +3120,96 @@
       "id": "reports_relatorio_verificacao_2026_11_01_6_corre\u00e7\u00f5es_realizadas_durante_a_verifica\u00e7\u00e3o",
       "community": 17,
       "norm_label": "6. \ud83d\udd27 correcoes realizadas durante a verificacao"
+    },
+    {
+      "label": "RELATORIO-STATUS-2026-11-01.md",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01",
+      "community": 20,
+      "norm_label": "relatorio-status-2026-11-01.md"
+    },
+    {
+      "label": "Relat\u00f3rio de Atualiza\u00e7\u00e3o de Status: Termius Agent Suite",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01_relat\u00f3rio_de_atualiza\u00e7\u00e3o_de_status_termius_agent_suite",
+      "community": 20,
+      "norm_label": "relatorio de atualizacao de status: termius agent suite"
+    },
+    {
+      "label": "1. \ud83d\udcca Status Geral de Sa\u00fade & Vers\u00e3o Ativa",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01_1_status_geral_de_sa\u00fade_vers\u00e3o_ativa",
+      "community": 20,
+      "norm_label": "1. \ud83d\udcca status geral de saude & versao ativa"
+    },
+    {
+      "label": "2. \ud83d\udee1\ufe0f M\u00e9tricas do Smart Gate e Testes Automatizados",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01_2_m\u00e9tricas_do_smart_gate_e_testes_automatizados",
+      "community": 20,
+      "norm_label": "2. \ud83d\udee1\ufe0f metricas do smart gate e testes automatizados"
+    },
+    {
+      "label": "3. \ud83d\udce6 Entregas Recentes e Arquivos Modificados",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01_3_entregas_recentes_e_arquivos_modificados",
+      "community": 20,
+      "norm_label": "3. \ud83d\udce6 entregas recentes e arquivos modificados"
+    },
+    {
+      "label": "3.1. Melhorias Recentes de UX/UI & Redund\u00e2ncias",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01_3_1_melhorias_recentes_de_ux_ui_redund\u00e2ncias",
+      "community": 20,
+      "norm_label": "3.1. melhorias recentes de ux/ui & redundancias"
+    },
+    {
+      "label": "3.2. Su\u00edte de Arquivos e SFTP Integrado (Commits `1e39988` e `9d9c3b8`)",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01_3_2_su\u00edte_de_arquivos_e_sftp_integrado_commits_1e39988_e_9d9c3b8",
+      "community": 20,
+      "norm_label": "3.2. suite de arquivos e sftp integrado (commits `1e39988` e `9d9c3b8`)"
+    },
+    {
+      "label": "4. \ud83c\udf10 Status dos Ambientes e Deploys",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01_4_status_dos_ambientes_e_deploys",
+      "community": 20,
+      "norm_label": "4. \ud83c\udf10 status dos ambientes e deploys"
+    },
+    {
+      "label": "5. \ud83d\uddfa\ufe0f Pr\u00f3ximos Passos do Roadmap",
+      "file_type": "document",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "status_updates_relatorio_status_2026_11_01_5_pr\u00f3ximos_passos_do_roadmap",
+      "community": 20,
+      "norm_label": "5. \ud83d\uddfa\ufe0f proximos passos do roadmap"
     }
   ],
   "links": [
@@ -3279,9 +3369,9 @@
       "source_file": "package.json",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "package_scripts",
-      "target": "package_scripts_test",
-      "confidence_score": 1.0
+      "target": "package_scripts_test"
     },
     {
       "relation": "contains",
@@ -3911,9 +4001,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_binary_extensions",
-      "confidence_score": 1.0
+      "target": "server_fileservice_binary_extensions"
     },
     {
       "relation": "contains",
@@ -3921,9 +4011,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L258",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_createdirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_createdirectory"
     },
     {
       "relation": "contains",
@@ -3931,9 +4021,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L265",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_createfile",
-      "confidence_score": 1.0
+      "target": "server_fileservice_createfile"
     },
     {
       "relation": "contains",
@@ -3941,9 +4031,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L279",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_deletepath",
-      "confidence_score": 1.0
+      "target": "server_fileservice_deletepath"
     },
     {
       "relation": "contains",
@@ -3951,9 +4041,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_formatbytes",
-      "confidence_score": 1.0
+      "target": "server_fileservice_formatbytes"
     },
     {
       "relation": "contains",
@@ -3961,9 +4051,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_formatpermissions",
-      "confidence_score": 1.0
+      "target": "server_fileservice_formatpermissions"
     },
     {
       "relation": "contains",
@@ -3971,9 +4061,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L50",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_getbreadcrumbs",
-      "confidence_score": 1.0
+      "target": "server_fileservice_getbreadcrumbs"
     },
     {
       "relation": "contains",
@@ -3981,9 +4071,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L71",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_listdirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_listdirectory"
     },
     {
       "relation": "contains",
@@ -3991,9 +4081,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L309",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_listremotedirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_listremotedirectory"
     },
     {
       "relation": "contains",
@@ -4001,9 +4091,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L274",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_protected_paths",
-      "confidence_score": 1.0
+      "target": "server_fileservice_protected_paths"
     },
     {
       "relation": "contains",
@@ -4011,9 +4101,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L185",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_readfilecontent",
-      "confidence_score": 1.0
+      "target": "server_fileservice_readfilecontent"
     },
     {
       "relation": "contains",
@@ -4021,9 +4111,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L296",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_renamepath",
-      "confidence_score": 1.0
+      "target": "server_fileservice_renamepath"
     },
     {
       "relation": "contains",
@@ -4031,9 +4121,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L237",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice",
-      "target": "server_fileservice_writefilecontent",
-      "confidence_score": 1.0
+      "target": "server_fileservice_writefilecontent"
     },
     {
       "relation": "imports_from",
@@ -4042,9 +4132,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice",
-      "confidence_score": 1.0
+      "target": "server_fileservice"
     },
     {
       "relation": "imports_from",
@@ -4053,9 +4143,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice",
-      "confidence_score": 1.0
+      "target": "server_fileservice"
     },
     {
       "relation": "calls",
@@ -4064,9 +4154,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L146",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice_listdirectory",
-      "target": "server_fileservice_formatpermissions",
-      "confidence_score": 1.0
+      "target": "server_fileservice_formatpermissions"
     },
     {
       "relation": "imports",
@@ -4075,9 +4165,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_formatpermissions",
-      "confidence_score": 1.0
+      "target": "server_fileservice_formatpermissions"
     },
     {
       "relation": "calls",
@@ -4086,9 +4176,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L155",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice_listdirectory",
-      "target": "server_fileservice_formatbytes",
-      "confidence_score": 1.0
+      "target": "server_fileservice_formatbytes"
     },
     {
       "relation": "calls",
@@ -4097,9 +4187,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L199",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice_readfilecontent",
-      "target": "server_fileservice_formatbytes",
-      "confidence_score": 1.0
+      "target": "server_fileservice_formatbytes"
     },
     {
       "relation": "calls",
@@ -4108,9 +4198,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L252",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice_writefilecontent",
-      "target": "server_fileservice_formatbytes",
-      "confidence_score": 1.0
+      "target": "server_fileservice_formatbytes"
     },
     {
       "relation": "imports",
@@ -4119,9 +4209,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_formatbytes",
-      "confidence_score": 1.0
+      "target": "server_fileservice_formatbytes"
     },
     {
       "relation": "calls",
@@ -4130,9 +4220,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L176",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice_listdirectory",
-      "target": "server_fileservice_getbreadcrumbs",
-      "confidence_score": 1.0
+      "target": "server_fileservice_getbreadcrumbs"
     },
     {
       "relation": "imports",
@@ -4141,9 +4231,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_getbreadcrumbs",
-      "confidence_score": 1.0
+      "target": "server_fileservice_getbreadcrumbs"
     },
     {
       "relation": "calls",
@@ -4152,9 +4242,9 @@
       "source_file": "server/fileService.js",
       "source_location": "L311",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_fileservice_listremotedirectory",
-      "target": "server_fileservice_listdirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_listdirectory"
     },
     {
       "relation": "imports",
@@ -4163,9 +4253,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice_listdirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_listdirectory"
     },
     {
       "relation": "imports",
@@ -4174,9 +4264,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_listdirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_listdirectory"
     },
     {
       "relation": "imports",
@@ -4185,9 +4275,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice_readfilecontent",
-      "confidence_score": 1.0
+      "target": "server_fileservice_readfilecontent"
     },
     {
       "relation": "imports",
@@ -4196,9 +4286,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_readfilecontent",
-      "confidence_score": 1.0
+      "target": "server_fileservice_readfilecontent"
     },
     {
       "relation": "imports",
@@ -4207,9 +4297,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice_writefilecontent",
-      "confidence_score": 1.0
+      "target": "server_fileservice_writefilecontent"
     },
     {
       "relation": "imports",
@@ -4218,9 +4308,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_writefilecontent",
-      "confidence_score": 1.0
+      "target": "server_fileservice_writefilecontent"
     },
     {
       "relation": "imports",
@@ -4229,9 +4319,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice_createdirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_createdirectory"
     },
     {
       "relation": "imports",
@@ -4240,9 +4330,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_createdirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_createdirectory"
     },
     {
       "relation": "imports",
@@ -4251,9 +4341,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice_createfile",
-      "confidence_score": 1.0
+      "target": "server_fileservice_createfile"
     },
     {
       "relation": "imports",
@@ -4262,9 +4352,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_createfile",
-      "confidence_score": 1.0
+      "target": "server_fileservice_createfile"
     },
     {
       "relation": "imports",
@@ -4273,9 +4363,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice_deletepath",
-      "confidence_score": 1.0
+      "target": "server_fileservice_deletepath"
     },
     {
       "relation": "imports",
@@ -4284,9 +4374,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_deletepath",
-      "confidence_score": 1.0
+      "target": "server_fileservice_deletepath"
     },
     {
       "relation": "imports",
@@ -4295,9 +4385,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice_renamepath",
-      "confidence_score": 1.0
+      "target": "server_fileservice_renamepath"
     },
     {
       "relation": "imports",
@@ -4306,9 +4396,9 @@
       "source_file": "test/fileService.test.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "test_fileservice_test",
-      "target": "server_fileservice_renamepath",
-      "confidence_score": 1.0
+      "target": "server_fileservice_renamepath"
     },
     {
       "relation": "imports",
@@ -4317,9 +4407,9 @@
       "source_file": "server/index.js",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_index",
-      "target": "server_fileservice_listremotedirectory",
-      "confidence_score": 1.0
+      "target": "server_fileservice_listremotedirectory"
     },
     {
       "relation": "contains",
@@ -5244,9 +5334,9 @@
       "source_file": "src/App.jsx",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app",
-      "target": "components_filemanager",
-      "confidence_score": 1.0
+      "target": "components_filemanager"
     },
     {
       "relation": "imports",
@@ -5255,9 +5345,9 @@
       "source_file": "src/App.jsx",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app",
-      "target": "components_filemanager_filemanager",
-      "confidence_score": 1.0
+      "target": "components_filemanager_filemanager"
     },
     {
       "relation": "imports_from",
@@ -6121,9 +6211,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L105",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "components_filemanager_filemanager",
-      "confidence_score": 1.0
+      "target": "components_filemanager_filemanager"
     },
     {
       "relation": "contains",
@@ -6131,9 +6221,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L51",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "components_filemanager_getfileicon",
-      "confidence_score": 1.0
+      "target": "components_filemanager_getfileicon"
     },
     {
       "relation": "imports_from",
@@ -6142,9 +6232,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api",
-      "confidence_score": 1.0
+      "target": "services_api"
     },
     {
       "relation": "imports",
@@ -6153,9 +6243,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_createfsdirectory",
-      "confidence_score": 1.0
+      "target": "services_api_createfsdirectory"
     },
     {
       "relation": "imports",
@@ -6164,9 +6254,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_createfsfile",
-      "confidence_score": 1.0
+      "target": "services_api_createfsfile"
     },
     {
       "relation": "imports",
@@ -6175,9 +6265,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_deletefspath",
-      "confidence_score": 1.0
+      "target": "services_api_deletefspath"
     },
     {
       "relation": "imports",
@@ -6186,9 +6276,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_fetchfslist",
-      "confidence_score": 1.0
+      "target": "services_api_fetchfslist"
     },
     {
       "relation": "imports",
@@ -6197,9 +6287,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_fetchfsreadfile",
-      "confidence_score": 1.0
+      "target": "services_api_fetchfsreadfile"
     },
     {
       "relation": "imports",
@@ -6208,9 +6298,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_fetchhosts",
-      "confidence_score": 1.0
+      "target": "services_api_fetchhosts"
     },
     {
       "relation": "imports",
@@ -6219,9 +6309,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_fetchremotefslist",
-      "confidence_score": 1.0
+      "target": "services_api_fetchremotefslist"
     },
     {
       "relation": "imports",
@@ -6230,9 +6320,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_renamefspath",
-      "confidence_score": 1.0
+      "target": "services_api_renamefspath"
     },
     {
       "relation": "imports",
@@ -6241,9 +6331,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_api_savefsfile",
-      "confidence_score": 1.0
+      "target": "services_api_savefsfile"
     },
     {
       "relation": "imports_from",
@@ -6252,9 +6342,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_clipboardservice",
-      "confidence_score": 1.0
+      "target": "services_clipboardservice"
     },
     {
       "relation": "imports",
@@ -6263,9 +6353,9 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L13",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_filemanager",
-      "target": "services_clipboardservice_copytoclipboard",
-      "confidence_score": 1.0
+      "target": "services_clipboardservice_copytoclipboard"
     },
     {
       "relation": "contains",
@@ -6403,9 +6493,9 @@
       "source_file": "src/components/SessionReplayModal.jsx",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sessionreplaymodal",
-      "target": "services_sessionrecorder_deleterecordingfromhistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_deleterecordingfromhistory"
     },
     {
       "relation": "imports",
@@ -6436,9 +6526,9 @@
       "source_file": "src/components/SessionReplayModal.jsx",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sessionreplaymodal",
-      "target": "services_sessionrecorder_getrecordinghistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_getrecordinghistory"
     },
     {
       "relation": "imports",
@@ -6447,9 +6537,9 @@
       "source_file": "src/components/SessionReplayModal.jsx",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sessionreplaymodal",
-      "target": "services_sessionrecorder_parseasciicast",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_parseasciicast"
     },
     {
       "relation": "imports",
@@ -6458,9 +6548,9 @@
       "source_file": "src/components/SessionReplayModal.jsx",
       "source_location": "L23",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "components_sessionreplaymodal",
-      "target": "services_sessionrecorder_saverecordingtohistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_saverecordingtohistory"
     },
     {
       "relation": "contains",
@@ -7039,9 +7129,9 @@
       "source_file": "src/services/api.js",
       "source_location": "L316",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_api",
-      "target": "services_api_createfsdirectory",
-      "confidence_score": 1.0
+      "target": "services_api_createfsdirectory"
     },
     {
       "relation": "contains",
@@ -7049,9 +7139,9 @@
       "source_file": "src/services/api.js",
       "source_location": "L329",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_api",
-      "target": "services_api_createfsfile",
-      "confidence_score": 1.0
+      "target": "services_api_createfsfile"
     },
     {
       "relation": "contains",
@@ -7079,9 +7169,9 @@
       "source_file": "src/services/api.js",
       "source_location": "L342",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_api",
-      "target": "services_api_deletefspath",
-      "confidence_score": 1.0
+      "target": "services_api_deletefspath"
     },
     {
       "relation": "contains",
@@ -7179,9 +7269,9 @@
       "source_file": "src/services/api.js",
       "source_location": "L280",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_api",
-      "target": "services_api_fetchfslist",
-      "confidence_score": 1.0
+      "target": "services_api_fetchfslist"
     },
     {
       "relation": "contains",
@@ -7189,9 +7279,9 @@
       "source_file": "src/services/api.js",
       "source_location": "L293",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_api",
-      "target": "services_api_fetchfsreadfile",
-      "confidence_score": 1.0
+      "target": "services_api_fetchfsreadfile"
     },
     {
       "relation": "contains",
@@ -7219,9 +7309,9 @@
       "source_file": "src/services/api.js",
       "source_location": "L368",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_api",
-      "target": "services_api_fetchremotefslist",
-      "confidence_score": 1.0
+      "target": "services_api_fetchremotefslist"
     },
     {
       "relation": "contains",
@@ -7349,9 +7439,9 @@
       "source_file": "src/services/api.js",
       "source_location": "L355",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_api",
-      "target": "services_api_renamefspath",
-      "confidence_score": 1.0
+      "target": "services_api_renamefspath"
     },
     {
       "relation": "contains",
@@ -7359,9 +7449,9 @@
       "source_file": "src/services/api.js",
       "source_location": "L303",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_api",
-      "target": "services_api_savefsfile",
-      "confidence_score": 1.0
+      "target": "services_api_savefsfile"
     },
     {
       "relation": "contains",
@@ -7545,9 +7635,9 @@
       "source_file": "src/services/sessionRecorder.js",
       "source_location": "L142",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_sessionrecorder",
-      "target": "services_sessionrecorder_clearrecordinghistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_clearrecordinghistory"
     },
     {
       "relation": "contains",
@@ -7555,9 +7645,9 @@
       "source_file": "src/services/sessionRecorder.js",
       "source_location": "L128",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_sessionrecorder",
-      "target": "services_sessionrecorder_deleterecordingfromhistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_deleterecordingfromhistory"
     },
     {
       "relation": "contains",
@@ -7595,9 +7685,9 @@
       "source_file": "src/services/sessionRecorder.js",
       "source_location": "L114",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_sessionrecorder",
-      "target": "services_sessionrecorder_getrecordinghistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_getrecordinghistory"
     },
     {
       "relation": "contains",
@@ -7615,9 +7705,9 @@
       "source_file": "src/services/sessionRecorder.js",
       "source_location": "L154",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_sessionrecorder",
-      "target": "services_sessionrecorder_parseasciicast",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_parseasciicast"
     },
     {
       "relation": "contains",
@@ -7635,9 +7725,9 @@
       "source_file": "src/services/sessionRecorder.js",
       "source_location": "L82",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_sessionrecorder",
-      "target": "services_sessionrecorder_saverecordingtohistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_saverecordingtohistory"
     },
     {
       "relation": "contains",
@@ -7666,9 +7756,9 @@
       "source_file": "src/services/sessionRecorder.js",
       "source_location": "L71",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_sessionrecorder_stoprecording",
-      "target": "services_sessionrecorder_saverecordingtohistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_saverecordingtohistory"
     },
     {
       "relation": "calls",
@@ -7677,9 +7767,9 @@
       "source_file": "src/services/sessionRecorder.js",
       "source_location": "L85",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_sessionrecorder_saverecordingtohistory",
-      "target": "services_sessionrecorder_getrecordinghistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_getrecordinghistory"
     },
     {
       "relation": "calls",
@@ -7688,9 +7778,9 @@
       "source_file": "src/services/sessionRecorder.js",
       "source_location": "L130",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_sessionrecorder_deleterecordingfromhistory",
-      "target": "services_sessionrecorder_getrecordinghistory",
-      "confidence_score": 1.0
+      "target": "services_sessionrecorder_getrecordinghistory"
     },
     {
       "relation": "calls",
@@ -8189,9 +8279,9 @@
       "source_file": "ROADMAP.md",
       "source_location": "L75",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "roadmap_marcos_de_evolu\u00e7\u00e3o_milestones",
-      "target": "roadmap_links_clic\u00e1veis_universais_sftp_file_explorer_v1_2_0_100",
-      "confidence_score": 1.0
+      "target": "roadmap_links_clic\u00e1veis_universais_sftp_file_explorer_v1_2_0_100"
     },
     {
       "relation": "contains",
@@ -8199,9 +8289,9 @@
       "source_file": "ROADMAP.md",
       "source_location": "L60",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "roadmap_marcos_de_evolu\u00e7\u00e3o_milestones",
-      "target": "roadmap_modos_de_trabalho_ux_ui_impeccable_grava\u00e7\u00e3o_avan\u00e7ada_v1_1_0_100",
-      "confidence_score": 1.0
+      "target": "roadmap_modos_de_trabalho_ux_ui_impeccable_grava\u00e7\u00e3o_avan\u00e7ada_v1_1_0_100"
     },
     {
       "relation": "contains",
@@ -8229,9 +8319,9 @@
       "source_file": "SPEC.md",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec",
-      "target": "spec_especifica\u00e7\u00e3o_t\u00e9cnica_termius_agent_suite_v1_2_0",
-      "confidence_score": 1.0
+      "target": "spec_especifica\u00e7\u00e3o_t\u00e9cnica_termius_agent_suite_v1_2_0"
     },
     {
       "relation": "contains",
@@ -8239,9 +8329,9 @@
       "source_file": "SPEC.md",
       "source_location": "L10",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_especifica\u00e7\u00e3o_t\u00e9cnica_termius_agent_suite_v1_2_0",
-      "target": "spec_1_objetivo_central_escopo",
-      "confidence_score": 1.0
+      "target": "spec_1_objetivo_central_escopo"
     },
     {
       "relation": "contains",
@@ -8249,9 +8339,9 @@
       "source_file": "SPEC.md",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_especifica\u00e7\u00e3o_t\u00e9cnica_termius_agent_suite_v1_2_0",
-      "target": "spec_2_stack_tecnol\u00f3gica",
-      "confidence_score": 1.0
+      "target": "spec_2_stack_tecnol\u00f3gica"
     },
     {
       "relation": "contains",
@@ -8259,9 +8349,9 @@
       "source_file": "SPEC.md",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_especifica\u00e7\u00e3o_t\u00e9cnica_termius_agent_suite_v1_2_0",
-      "target": "spec_3_requisitos_funcionais_m\u00f3dulos_entregues",
-      "confidence_score": 1.0
+      "target": "spec_3_requisitos_funcionais_m\u00f3dulos_entregues"
     },
     {
       "relation": "contains",
@@ -8269,9 +8359,9 @@
       "source_file": "SPEC.md",
       "source_location": "L67",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_especifica\u00e7\u00e3o_t\u00e9cnica_termius_agent_suite_v1_2_0",
-      "target": "spec_4_decis\u00f5es_de_arquitetura_engenharia",
-      "confidence_score": 1.0
+      "target": "spec_4_decis\u00f5es_de_arquitetura_engenharia"
     },
     {
       "relation": "contains",
@@ -8279,9 +8369,9 @@
       "source_file": "SPEC.md",
       "source_location": "L76",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_especifica\u00e7\u00e3o_t\u00e9cnica_termius_agent_suite_v1_2_0",
-      "target": "spec_5_cobertura_de_testes_automatizados",
-      "confidence_score": 1.0
+      "target": "spec_5_cobertura_de_testes_automatizados"
     },
     {
       "relation": "contains",
@@ -8289,9 +8379,9 @@
       "source_file": "SPEC.md",
       "source_location": "L29",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_3_requisitos_funcionais_m\u00f3dulos_entregues",
-      "target": "spec_3_1_links_clic\u00e1veis_universais_targeting_de_linha",
-      "confidence_score": 1.0
+      "target": "spec_3_1_links_clic\u00e1veis_universais_targeting_de_linha"
     },
     {
       "relation": "contains",
@@ -8299,9 +8389,9 @@
       "source_file": "SPEC.md",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_3_requisitos_funcionais_m\u00f3dulos_entregues",
-      "target": "spec_3_2_gerenciador_de_arquivos_sftp_integrado",
-      "confidence_score": 1.0
+      "target": "spec_3_2_gerenciador_de_arquivos_sftp_integrado"
     },
     {
       "relation": "contains",
@@ -8309,9 +8399,9 @@
       "source_file": "SPEC.md",
       "source_location": "L41",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_3_requisitos_funcionais_m\u00f3dulos_entregues",
-      "target": "spec_3_3_3_modos_de_trabalho_work_modes",
-      "confidence_score": 1.0
+      "target": "spec_3_3_3_modos_de_trabalho_work_modes"
     },
     {
       "relation": "contains",
@@ -8319,9 +8409,9 @@
       "source_file": "SPEC.md",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_3_requisitos_funcionais_m\u00f3dulos_entregues",
-      "target": "spec_3_4_visual_session_recorder_replay_suite",
-      "confidence_score": 1.0
+      "target": "spec_3_4_visual_session_recorder_replay_suite"
     },
     {
       "relation": "contains",
@@ -8329,9 +8419,9 @@
       "source_file": "SPEC.md",
       "source_location": "L53",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_3_requisitos_funcionais_m\u00f3dulos_entregues",
-      "target": "spec_3_5_snippets_param\u00e9tricos_multi_host_cluster_broadcast",
-      "confidence_score": 1.0
+      "target": "spec_3_5_snippets_param\u00e9tricos_multi_host_cluster_broadcast"
     },
     {
       "relation": "contains",
@@ -8339,9 +8429,9 @@
       "source_file": "SPEC.md",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "spec_3_requisitos_funcionais_m\u00f3dulos_entregues",
-      "target": "spec_3_6_design_system_usabilidade_impeccable_ui",
-      "confidence_score": 1.0
+      "target": "spec_3_6_design_system_usabilidade_impeccable_ui"
     },
     {
       "relation": "contains",
@@ -8422,8 +8512,88 @@
       "confidence_score": 1.0,
       "source": "reports_relatorio_verificacao_2026_11_01_1_resumo_executivo_da_verifica\u00e7\u00e3o",
       "target": "reports_relatorio_verificacao_2026_11_01_diagn\u00f3stico_r\u00e1pido"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "status_updates_relatorio_status_2026_11_01",
+      "target": "status_updates_relatorio_status_2026_11_01_relat\u00f3rio_de_atualiza\u00e7\u00e3o_de_status_termius_agent_suite",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "source": "status_updates_relatorio_status_2026_11_01_relat\u00f3rio_de_atualiza\u00e7\u00e3o_de_status_termius_agent_suite",
+      "target": "status_updates_relatorio_status_2026_11_01_1_status_geral_de_sa\u00fade_vers\u00e3o_ativa",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L19",
+      "weight": 1.0,
+      "source": "status_updates_relatorio_status_2026_11_01_relat\u00f3rio_de_atualiza\u00e7\u00e3o_de_status_termius_agent_suite",
+      "target": "status_updates_relatorio_status_2026_11_01_2_m\u00e9tricas_do_smart_gate_e_testes_automatizados",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "status_updates_relatorio_status_2026_11_01_relat\u00f3rio_de_atualiza\u00e7\u00e3o_de_status_termius_agent_suite",
+      "target": "status_updates_relatorio_status_2026_11_01_3_entregas_recentes_e_arquivos_modificados",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L46",
+      "weight": 1.0,
+      "source": "status_updates_relatorio_status_2026_11_01_relat\u00f3rio_de_atualiza\u00e7\u00e3o_de_status_termius_agent_suite",
+      "target": "status_updates_relatorio_status_2026_11_01_4_status_dos_ambientes_e_deploys",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "status_updates_relatorio_status_2026_11_01_relat\u00f3rio_de_atualiza\u00e7\u00e3o_de_status_termius_agent_suite",
+      "target": "status_updates_relatorio_status_2026_11_01_5_pr\u00f3ximos_passos_do_roadmap",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "status_updates_relatorio_status_2026_11_01_3_entregas_recentes_e_arquivos_modificados",
+      "target": "status_updates_relatorio_status_2026_11_01_3_1_melhorias_recentes_de_ux_ui_redund\u00e2ncias",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/reports/status-updates/RELATORIO-STATUS-2026-11-01.md",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "status_updates_relatorio_status_2026_11_01_3_entregas_recentes_e_arquivos_modificados",
+      "target": "status_updates_relatorio_status_2026_11_01_3_2_su\u00edte_de_arquivos_e_sftp_integrado_commits_1e39988_e_9d9c3b8",
+      "confidence_score": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b6e9abbdd472a798642fb612571a8a0e3162fc59"
+  "built_at_commit": "4c89eb32dbbfbc7367efaea0eb9a8306e11d1c69"
 }
