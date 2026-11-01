@@ -1,0 +1,252 @@
+{
+  "bin/termius-agent": {
+    "mtime": 1792880424.1730177,
+    "ast_hash": "b1dd9b78eb0d801134f375c65cd30c37",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1792846740.3101091,
+    "ast_hash": "371651b1fa179232b1db267e1774f2ec",
+    "semantic_hash": ""
+  },
+  "postcss.config.js": {
+    "mtime": 1792414246.8689508,
+    "ast_hash": "ef3ba2a81ba19f8ea5ddf625521e96f0",
+    "semantic_hash": ""
+  },
+  "server/commandSuggestions.js": {
+    "mtime": 1792846740.3101091,
+    "ast_hash": "e8949b179566ddcc825137cbd6a4df7d",
+    "semantic_hash": ""
+  },
+  "server/copilot.js": {
+    "mtime": 1793541449.81894,
+    "ast_hash": "ad5e99213f75dc82595d2d8f916d9623",
+    "semantic_hash": ""
+  },
+  "server/db.js": {
+    "mtime": 1792846740.322109,
+    "ast_hash": "ddac7b42c32376c8332a8da39541478b",
+    "semantic_hash": ""
+  },
+  "server/hostsStorage.json": {
+    "mtime": 1793035999.0124526,
+    "ast_hash": "813a80a6b8699bf9340e7c21fbbe86fc",
+    "semantic_hash": ""
+  },
+  "server/index.js": {
+    "mtime": 1792846740.322109,
+    "ast_hash": "74987b1b2a20e91f2d6ccfad98b384d9",
+    "semantic_hash": ""
+  },
+  "server/ptyBridge.py": {
+    "mtime": 1792846740.322109,
+    "ast_hash": "36594413f7df5ebcec2509b6e0e2a8a4",
+    "semantic_hash": ""
+  },
+  "server/skillsService.js": {
+    "mtime": 1792846740.322109,
+    "ast_hash": "a787347eedb47525fdcf509937a49a7f",
+    "semantic_hash": ""
+  },
+  "server/specRoadmapService.js": {
+    "mtime": 1793541476.9427805,
+    "ast_hash": "710d2530cb5df32df58b9ef928e30cba",
+    "semantic_hash": ""
+  },
+  "server/telemetry.js": {
+    "mtime": 1792846740.323109,
+    "ast_hash": "27bcf2e0af8713f82c5b88790cd53843",
+    "semantic_hash": ""
+  },
+  "server/telemetryStorage.json": {
+    "mtime": 1792964609.92455,
+    "ast_hash": "b031ae10db35675d184239cbcc4df47d",
+    "semantic_hash": ""
+  },
+  "src/App.jsx": {
+    "mtime": 1792968466.4744961,
+    "ast_hash": "4b5f217670c568a31cff28ca5ed52124",
+    "semantic_hash": ""
+  },
+  "src/components/AICopilotModal.jsx": {
+    "mtime": 1792414246.8721864,
+    "ast_hash": "d2ce4749737bc1ed2e3c02a790b59c2e",
+    "semantic_hash": ""
+  },
+  "src/components/AISidecar.jsx": {
+    "mtime": 1792964609.92555,
+    "ast_hash": "fd4b81516ce2dec7583fbf1f37bc4a2f",
+    "semantic_hash": ""
+  },
+  "src/components/ConversationHistoryModal.jsx": {
+    "mtime": 1792964609.92555,
+    "ast_hash": "4f9a074b24dff05501dc373b78fd2fe3",
+    "semantic_hash": ""
+  },
+  "src/components/CustomWorkModeModal.jsx": {
+    "mtime": 1792964609.92555,
+    "ast_hash": "9ae3ed1951045a550e323a751ebe0946",
+    "semantic_hash": ""
+  },
+  "src/components/ErrorBoundary.jsx": {
+    "mtime": 1792846740.3241088,
+    "ast_hash": "ff21cdc742ebc89650f9ff1e2f6fee05",
+    "semantic_hash": ""
+  },
+  "src/components/HostsManager.jsx": {
+    "mtime": 1793541492.0526917,
+    "ast_hash": "a0c543bfb12f0a650a4e6c4f62e12391",
+    "semantic_hash": ""
+  },
+  "src/components/KeyboardShortcutsModal.jsx": {
+    "mtime": 1792964609.92555,
+    "ast_hash": "80859c8f62db118515fb705dfa15acba",
+    "semantic_hash": ""
+  },
+  "src/components/SessionReplayModal.jsx": {
+    "mtime": 1792846740.3461084,
+    "ast_hash": "86c1d3a1a9b4dc6fa0bf5bab933d0712",
+    "semantic_hash": ""
+  },
+  "src/components/Sidebar.jsx": {
+    "mtime": 1792968443.339667,
+    "ast_hash": "aa8c1ea67d586ffecab3eb08a0ac46b0",
+    "semantic_hash": ""
+  },
+  "src/components/SkillsDropdownModal.jsx": {
+    "mtime": 1792846740.3461084,
+    "ast_hash": "986b0e26f8701fe90b681a0416269b91",
+    "semantic_hash": ""
+  },
+  "src/components/SmartCommandBar.jsx": {
+    "mtime": 1792846740.3461084,
+    "ast_hash": "e8db1f07468b8b960d34f331d2b7d2cc",
+    "semantic_hash": ""
+  },
+  "src/components/SnippetsManager.jsx": {
+    "mtime": 1792846740.3471086,
+    "ast_hash": "f38c469e732089b00077b1b4d55d2529",
+    "semantic_hash": ""
+  },
+  "src/components/SpecRoadmapModal.jsx": {
+    "mtime": 1792846740.3471086,
+    "ast_hash": "71fd1ace7710fb8d28da2cfc8c02e948",
+    "semantic_hash": ""
+  },
+  "src/components/TelemetryManager.jsx": {
+    "mtime": 1792846740.3471086,
+    "ast_hash": "e7e5a6cf42fb4b3f516de7468ea35181",
+    "semantic_hash": ""
+  },
+  "src/components/TerminalThemeModal.jsx": {
+    "mtime": 1793541505.316614,
+    "ast_hash": "d7f20db49a1e3521c53c0f3b59affa27",
+    "semantic_hash": ""
+  },
+  "src/components/TerminalView.jsx": {
+    "mtime": 1792964609.92655,
+    "ast_hash": "ac1df99a0320b244d6731b87e0b1aba1",
+    "semantic_hash": ""
+  },
+  "src/main.jsx": {
+    "mtime": 1792846740.3471086,
+    "ast_hash": "deb30f9da9c7244ae518cbe6e2d1a1ea",
+    "semantic_hash": ""
+  },
+  "src/services/api.js": {
+    "mtime": 1792846740.3481085,
+    "ast_hash": "f60ea134e2c069e7b2af156d11157fd4",
+    "semantic_hash": ""
+  },
+  "src/services/clipboardService.js": {
+    "mtime": 1792964609.92655,
+    "ast_hash": "24d47776fb0926eaf5189e0956a21604",
+    "semantic_hash": ""
+  },
+  "src/services/notificationService.js": {
+    "mtime": 1792846740.3481085,
+    "ast_hash": "ecbd88e11bdb822215800a24d835c054",
+    "semantic_hash": ""
+  },
+  "src/services/sessionRecorder.js": {
+    "mtime": 1792846740.3481085,
+    "ast_hash": "9753d1b846494f24a0cbefb40a397906",
+    "semantic_hash": ""
+  },
+  "src/services/telemetryTracker.js": {
+    "mtime": 1792414246.872999,
+    "ast_hash": "5c46251615a74226c3864b22d786644d",
+    "semantic_hash": ""
+  },
+  "src/services/terminalThemes.js": {
+    "mtime": 1792964609.92655,
+    "ast_hash": "657703deb20222dfe3ecd1eca4ab1990",
+    "semantic_hash": ""
+  },
+  "tailwind.config.js": {
+    "mtime": 1792414246.872999,
+    "ast_hash": "133431a9afa17c465f74b04bb6c8ed5e",
+    "semantic_hash": ""
+  },
+  "termius-agent-app.sh": {
+    "mtime": 1792880424.1730177,
+    "ast_hash": "ca8b9d9bc79e7407d233d1e22775f0b3",
+    "semantic_hash": ""
+  },
+  "vite.config.js": {
+    "mtime": 1792439497.6351254,
+    "ast_hash": "a9b4838145cea273f105c8a12b9d9207",
+    "semantic_hash": ""
+  },
+  ".impeccable/critique/2026-10-19T23-03-09Z__src.md": {
+    "mtime": 1792846740.30644,
+    "ast_hash": "325ccafcb49f255a697d391192d6ab3a",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1792846740.30644,
+    "ast_hash": "2010fd04d93e553a4f8bf72f90af246f",
+    "semantic_hash": ""
+  },
+  "ROADMAP.md": {
+    "mtime": 1792846740.3091092,
+    "ast_hash": "35c6e689398aec32e7f3a337e88d1a9d",
+    "semantic_hash": ""
+  },
+  "SPEC.md": {
+    "mtime": 1793541527.8984811,
+    "ast_hash": "6b83a67550503444a56e21baf19ea5be",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1792414246.8689508,
+    "ast_hash": "d8497efb0dbd7e90e44cafe97b842a24",
+    "semantic_hash": ""
+  },
+  "electron/icon.png": {
+    "mtime": 1792439497.6331253,
+    "ast_hash": "61cea45b4f651e7cce49fe722b3d5b63",
+    "semantic_hash": ""
+  },
+  "public/icon-512.png": {
+    "mtime": 1792414246.8699508,
+    "ast_hash": "61cea45b4f651e7cce49fe722b3d5b63",
+    "semantic_hash": ""
+  },
+  "public/icon.png": {
+    "mtime": 1792414246.8709507,
+    "ast_hash": "61cea45b4f651e7cce49fe722b3d5b63",
+    "semantic_hash": ""
+  },
+  "public/icon.svg": {
+    "mtime": 1792414246.8709507,
+    "ast_hash": "230d404a302b52a27d9cd55448da5501",
+    "semantic_hash": ""
+  },
+  "docs/reports/RELATORIO-VERIFICACAO-2026-11-01.md": {
+    "mtime": 1793541577.627189,
+    "ast_hash": "69f0a5b4172dc336a503950f8f9337d8",
+    "semantic_hash": ""
+  }
+}

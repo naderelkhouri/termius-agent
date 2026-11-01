@@ -286,7 +286,7 @@ export default function HostsManager({ onConnectHost }) {
                   type: 'local',
                   group: 'Projetos',
                   color: '#bc8cff',
-                  defaultCwd: '/home/nader/Applications/termius-agent'
+                  defaultCwd: '/home/nader/Documents/Projects/termius-agent'
                 })}
                 className="p-3.5 rounded-xl bg-[#0d1117] hover:bg-[#21262d] border border-[#30363d] hover:border-blue-500/40 text-left transition-all active:scale-95 group cursor-pointer"
               >
@@ -294,7 +294,7 @@ export default function HostsManager({ onConnectHost }) {
                   <Folder className="w-4 h-4" />
                   <span>Projeto Atual</span>
                 </div>
-                <div className="text-xs text-slate-400 font-medium">~/Applications/termius-agent</div>
+                <div className="text-xs text-slate-400 font-medium">~/Documents/Projects/termius-agent</div>
               </button>
             </div>
           </div>

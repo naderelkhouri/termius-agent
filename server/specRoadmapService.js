@@ -264,8 +264,8 @@ export function exportSpecAndRoadmapToMarkdown(conversationId, options = {}) {
   // Se o diretório contiver aspas ou não existir, sanitiza
   targetDir = targetDir.replace(/^["']|["']$/g, '');
 
-  if (targetDir === '/home/nader' && fs.existsSync('/home/nader/Applications/termius-agent')) {
-    targetDir = '/home/nader/Applications/termius-agent';
+  if (targetDir === '/home/nader' && fs.existsSync('/home/nader/Documents/Projects/termius-agent')) {
+    targetDir = '/home/nader/Documents/Projects/termius-agent';
   }
 
   if (!fs.existsSync(targetDir)) {

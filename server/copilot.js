@@ -48,14 +48,6 @@ const KNOWLEDGE_PATTERNS = [
     explanation: 'Mostra o consumo instantâneo de CPU e os processos que mais demandam recursos.',
     risk: 'safe'
   },
-  {
-    regex: /(matar porta|kill port|derrubar porta)\s*(\d+)/i,
-    generate: (match) => ({
-      command: `fuser -k ${match[2]}/tcp`,
-      explanation: `Envia sinal para encerrar qualquer processo escutando na porta TCP ${match[2]}.`,
-      risk: 'caution'
-    })
-  },
   // Docker
   {
     regex: /(docker ps|containers|containeres|ativos|rodando)/i,

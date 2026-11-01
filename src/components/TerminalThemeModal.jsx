@@ -147,7 +147,7 @@ export default function TerminalThemeModal({
                 <div className="flex items-center gap-2">
                   <span style={{ color: themeColors.green }}>nader@nitro</span>
                   <span style={{ color: themeColors.foreground }}>:</span>
-                  <span style={{ color: themeColors.blue }}>~/Applications/termius-agent</span>
+                  <span style={{ color: themeColors.blue }}>~/Documents/Projects/termius-agent</span>
                   <span style={{ color: themeColors.magenta }}>(main)</span>
                   <span style={{ color: themeColors.foreground }}>$</span>
                   <span style={{ color: themeColors.foreground }}>ls -la --color=auto</span>
