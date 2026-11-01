@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1792846740.3101091,
-    "ast_hash": "371651b1fa179232b1db267e1774f2ec",
+    "mtime": 1793541616.6535547,
+    "ast_hash": "68868d8309d506935565652c3c160eac",
     "semantic_hash": ""
   },
   "postcss.config.js": {
@@ -20,7 +20,7 @@
     "semantic_hash": ""
   },
   "server/copilot.js": {
-    "mtime": 1793541449.81894,
+    "mtime": 1793541616.6619596,
     "ast_hash": "ad5e99213f75dc82595d2d8f916d9623",
     "semantic_hash": ""
   },
@@ -30,13 +30,13 @@
     "semantic_hash": ""
   },
   "server/hostsStorage.json": {
-    "mtime": 1793035999.0124526,
-    "ast_hash": "813a80a6b8699bf9340e7c21fbbe86fc",
+    "mtime": 1793541654.8577292,
+    "ast_hash": "4ddd7b3209f22048e10838123090c5f8",
     "semantic_hash": ""
   },
   "server/index.js": {
-    "mtime": 1792846740.322109,
-    "ast_hash": "74987b1b2a20e91f2d6ccfad98b384d9",
+    "mtime": 1793541616.6539598,
+    "ast_hash": "6722d816f51d45d7c2bc2139f8eb8723",
     "semantic_hash": ""
   },
   "server/ptyBridge.py": {
@@ -50,7 +50,7 @@
     "semantic_hash": ""
   },
   "server/specRoadmapService.js": {
-    "mtime": 1793541476.9427805,
+    "mtime": 1793541616.6619596,
     "ast_hash": "710d2530cb5df32df58b9ef928e30cba",
     "semantic_hash": ""
   },
@@ -65,8 +65,8 @@
     "semantic_hash": ""
   },
   "src/App.jsx": {
-    "mtime": 1792968466.4744961,
-    "ast_hash": "4b5f217670c568a31cff28ca5ed52124",
+    "mtime": 1793541616.6539598,
+    "ast_hash": "716af9e369602703f7c3df866220d108",
     "semantic_hash": ""
   },
   "src/components/AICopilotModal.jsx": {
@@ -95,23 +95,23 @@
     "semantic_hash": ""
   },
   "src/components/HostsManager.jsx": {
-    "mtime": 1793541492.0526917,
+    "mtime": 1793541616.6629596,
     "ast_hash": "a0c543bfb12f0a650a4e6c4f62e12391",
     "semantic_hash": ""
   },
   "src/components/KeyboardShortcutsModal.jsx": {
-    "mtime": 1792964609.92555,
-    "ast_hash": "80859c8f62db118515fb705dfa15acba",
+    "mtime": 1793541616.6549597,
+    "ast_hash": "4335b061f2ee62cc7f687e64fa21a47d",
     "semantic_hash": ""
   },
   "src/components/SessionReplayModal.jsx": {
-    "mtime": 1792846740.3461084,
-    "ast_hash": "86c1d3a1a9b4dc6fa0bf5bab933d0712",
+    "mtime": 1793541616.6549597,
+    "ast_hash": "69653c2e17ce7132f6e2a92079b32810",
     "semantic_hash": ""
   },
   "src/components/Sidebar.jsx": {
-    "mtime": 1792968443.339667,
-    "ast_hash": "aa8c1ea67d586ffecab3eb08a0ac46b0",
+    "mtime": 1793541616.6549597,
+    "ast_hash": "e3726438f4182c189906fcaaccaa7188",
     "semantic_hash": ""
   },
   "src/components/SkillsDropdownModal.jsx": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "src/components/SnippetsManager.jsx": {
-    "mtime": 1792846740.3471086,
-    "ast_hash": "f38c469e732089b00077b1b4d55d2529",
+    "mtime": 1793541616.6549597,
+    "ast_hash": "30a10741fcf1cc03a5e3753a5e454dce",
     "semantic_hash": ""
   },
   "src/components/SpecRoadmapModal.jsx": {
@@ -140,13 +140,13 @@
     "semantic_hash": ""
   },
   "src/components/TerminalThemeModal.jsx": {
-    "mtime": 1793541505.316614,
+    "mtime": 1793541616.6629596,
     "ast_hash": "d7f20db49a1e3521c53c0f3b59affa27",
     "semantic_hash": ""
   },
   "src/components/TerminalView.jsx": {
-    "mtime": 1792964609.92655,
-    "ast_hash": "ac1df99a0320b244d6731b87e0b1aba1",
+    "mtime": 1793541616.6559596,
+    "ast_hash": "a81e7ae63ea3cfa7dacefa7c665e5ebc",
     "semantic_hash": ""
   },
   "src/main.jsx": {
@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "src/services/api.js": {
-    "mtime": 1792846740.3481085,
-    "ast_hash": "f60ea134e2c069e7b2af156d11157fd4",
+    "mtime": 1793541616.6559596,
+    "ast_hash": "5fd6027bdfffc8751b370174313e8ae1",
     "semantic_hash": ""
   },
   "src/services/clipboardService.js": {
@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "src/services/sessionRecorder.js": {
-    "mtime": 1792846740.3481085,
-    "ast_hash": "9753d1b846494f24a0cbefb40a397906",
+    "mtime": 1793541616.6559596,
+    "ast_hash": "b29ad30c98dd564486054211ade53e4e",
     "semantic_hash": ""
   },
   "src/services/telemetryTracker.js": {
@@ -210,13 +210,13 @@
     "semantic_hash": ""
   },
   "ROADMAP.md": {
-    "mtime": 1792846740.3091092,
-    "ast_hash": "35c6e689398aec32e7f3a337e88d1a9d",
+    "mtime": 1793541616.6535547,
+    "ast_hash": "4bf0056869853a29bb0a1038898c7ba7",
     "semantic_hash": ""
   },
   "SPEC.md": {
-    "mtime": 1793541527.8984811,
-    "ast_hash": "6b83a67550503444a56e21baf19ea5be",
+    "mtime": 1793541640.245821,
+    "ast_hash": "0ad3ad84a50542b1d1db9679bdc2b5ef",
     "semantic_hash": ""
   },
   "index.html": {
@@ -245,8 +245,23 @@
     "semantic_hash": ""
   },
   "docs/reports/RELATORIO-VERIFICACAO-2026-11-01.md": {
-    "mtime": 1793541577.627189,
+    "mtime": 1793541616.660691,
     "ast_hash": "69f0a5b4172dc336a503950f8f9337d8",
+    "semantic_hash": ""
+  },
+  "server/fileService.js": {
+    "mtime": 1793541616.6539598,
+    "ast_hash": "fc1ec0ccf011b5ba6b06aa94b5c761a9",
+    "semantic_hash": ""
+  },
+  "src/components/FileManager.jsx": {
+    "mtime": 1793541616.6549597,
+    "ast_hash": "1d9990671ea43e4319a3eaee0a41bba1",
+    "semantic_hash": ""
+  },
+  "test/fileService.test.js": {
+    "mtime": 1793541616.6559596,
+    "ast_hash": "fadfee326f9dfbde5b69b04f39ca33a1",
     "semantic_hash": ""
   }
 }
