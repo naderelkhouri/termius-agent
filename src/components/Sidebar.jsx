@@ -41,7 +41,8 @@ export default function Sidebar({
   visible = true,
   showActiveSessions = true,
   showAiBanners = true,
-  onOpenCustomModal
+  onOpenCustomModal,
+  skillsCount = 0
 }) {
   const [isResizing, setIsResizing] = useState(false);
 
@@ -378,7 +379,7 @@ export default function Sidebar({
                       if (onCloseMobile) onCloseMobile();
                     }}
                     className="w-10 h-10 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 flex items-center justify-center transition-all shadow-xs active:scale-95 cursor-pointer"
-                    title="Catálogo de 340 Skills & Especialistas IA"
+                    title={`Catálogo de ${skillsCount ? `${skillsCount} ` : ''}Skills & Especialistas IA`}
                   >
                     <Sparkles className="w-4 h-4 text-purple-400 animate-pulse" />
                   </button>
@@ -389,11 +390,11 @@ export default function Sidebar({
                       if (onCloseMobile) onCloseMobile();
                     }}
                     className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-purple-600/15 hover:bg-purple-600/30 border border-purple-500/40 text-purple-200 text-xs font-bold transition-all shadow-xs active:scale-95 group cursor-pointer"
-                    title="Catálogo de 340 Skills & Especialistas em Português BR"
+                    title={`Catálogo de ${skillsCount ? `${skillsCount} ` : ''}Skills & Especialistas em Português BR`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <Sparkles className="w-3.5 h-3.5 text-purple-400 group-hover:rotate-12 transition-transform animate-pulse shrink-0" />
-                      <span className="truncate">Skills IA (340)</span>
+                      <span className="truncate">Skills IA {skillsCount ? `(${skillsCount})` : ''}</span>
                     </div>
                     <span className="text-xs bg-purple-500/30 text-purple-300 font-mono font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
                       PT-BR

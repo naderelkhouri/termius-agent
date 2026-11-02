@@ -72,7 +72,7 @@ export default function CustomWorkModeModal({
       color: 'text-purple-400',
       bgColor: 'bg-purple-500/10',
       title: 'Banners de IA (Skills & Retomar Sessão)',
-      description: 'Atalhos rápidos para catálogo de 340 skills e retomar conversa no terminal',
+      description: 'Atalhos rápidos para catálogo de skills e retomar conversa no terminal',
       disabled: !config.showSidebar || config.sidebarCompact
     },
     {

@@ -273,29 +273,43 @@ app.get('/api/commands/suggestions', (req, res) => {
 });
 
 // Skills Endpoints
-app.get('/api/skills', (req, res) => {
+app.get('/api/skills', async (req, res) => {
   try {
     const { search, category, limit } = req.query;
-    const skills = getAllSkills({
+    const { getAllSkills: fetchAll } = await import(`./skillsService.js?t=${Date.now()}`);
+    const skills = fetchAll({
       search: search || '',
       category: category || 'all',
       limit: parseInt(limit, 10) || 400
     });
     res.json(skills);
   } catch (err) {
+    try {
+      const skills = getAllSkills({
+        search: req.query.search || '',
+        category: req.query.category || 'all',
+        limit: parseInt(req.query.limit, 10) || 400
+      });
+      return res.json(skills);
+    } catch {}
     console.error('[Server] Erro ao listar skills:', err);
     res.status(500).json({ error: err.message, skills: [] });
   }
 });
 
-app.get('/api/skills/:name', (req, res) => {
+app.get('/api/skills/:name', async (req, res) => {
   try {
-    const detail = getSkillDetail(req.params.name);
+    const { getSkillDetail: fetchDetail } = await import(`./skillsService.js?t=${Date.now()}`);
+    const detail = fetchDetail(req.params.name);
     if (!detail) {
       return res.status(404).json({ error: 'Skill não encontrada' });
     }
     res.json(detail);
   } catch (err) {
+    try {
+      const detail = getSkillDetail(req.params.name);
+      if (detail) return res.json(detail);
+    } catch {}
     console.error(`[Server] Erro ao obter detalhe da skill ${req.params.name}:`, err);
     res.status(500).json({ error: err.message });
   }

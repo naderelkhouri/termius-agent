@@ -35,8 +35,8 @@
     "semantic_hash": ""
   },
   "server/index.js": {
-    "mtime": 1793541616.6539598,
-    "ast_hash": "6722d816f51d45d7c2bc2139f8eb8723",
+    "mtime": 1793583376.9270563,
+    "ast_hash": "43211805aaefca04ea28443bbc9ce833",
     "semantic_hash": ""
   },
   "server/ptyBridge.py": {
@@ -45,13 +45,13 @@
     "semantic_hash": ""
   },
   "server/skillsService.js": {
-    "mtime": 1792846740.322109,
-    "ast_hash": "a787347eedb47525fdcf509937a49a7f",
+    "mtime": 1793583024.6171699,
+    "ast_hash": "38c5c9b7732fe45af3b8b780891d7b5d",
     "semantic_hash": ""
   },
   "server/specRoadmapService.js": {
-    "mtime": 1793541616.6619596,
-    "ast_hash": "710d2530cb5df32df58b9ef928e30cba",
+    "mtime": 1793583251.9034498,
+    "ast_hash": "3e31805f68647f172a61f9b210fb9dcc",
     "semantic_hash": ""
   },
   "server/telemetry.js": {
@@ -60,13 +60,13 @@
     "semantic_hash": ""
   },
   "server/telemetryStorage.json": {
-    "mtime": 1792964609.92455,
-    "ast_hash": "b031ae10db35675d184239cbcc4df47d",
+    "mtime": 1793583307.716041,
+    "ast_hash": "93415bdf3049818ae87e9bc327363234",
     "semantic_hash": ""
   },
   "src/App.jsx": {
-    "mtime": 1793541616.6539598,
-    "ast_hash": "716af9e369602703f7c3df866220d108",
+    "mtime": 1793583196.802853,
+    "ast_hash": "0325b51fe79dd5fa140e787c6dd25f68",
     "semantic_hash": ""
   },
   "src/components/AICopilotModal.jsx": {
@@ -85,8 +85,8 @@
     "semantic_hash": ""
   },
   "src/components/CustomWorkModeModal.jsx": {
-    "mtime": 1792964609.92555,
-    "ast_hash": "9ae3ed1951045a550e323a751ebe0946",
+    "mtime": 1793583242.4745188,
+    "ast_hash": "71d4b20c39e6602c2b438e0da997aed0",
     "semantic_hash": ""
   },
   "src/components/ErrorBoundary.jsx": {
@@ -100,8 +100,8 @@
     "semantic_hash": ""
   },
   "src/components/KeyboardShortcutsModal.jsx": {
-    "mtime": 1793541616.6549597,
-    "ast_hash": "4335b061f2ee62cc7f687e64fa21a47d",
+    "mtime": 1793583232.74959,
+    "ast_hash": "1172ad50d4931ac0cbf47799e81d9248",
     "semantic_hash": ""
   },
   "src/components/SessionReplayModal.jsx": {
@@ -110,13 +110,13 @@
     "semantic_hash": ""
   },
   "src/components/Sidebar.jsx": {
-    "mtime": 1793541616.6549597,
-    "ast_hash": "e3726438f4182c189906fcaaccaa7188",
+    "mtime": 1793583126.2388844,
+    "ast_hash": "82f9d0f8e534999df5f69b4ae29d20e8",
     "semantic_hash": ""
   },
   "src/components/SkillsDropdownModal.jsx": {
-    "mtime": 1792846740.3461084,
-    "ast_hash": "986b0e26f8701fe90b681a0416269b91",
+    "mtime": 1793583222.1316676,
+    "ast_hash": "dba0d19d2ab56bba6a9d449db0807c20",
     "semantic_hash": ""
   },
   "src/components/SmartCommandBar.jsx": {

@@ -89,7 +89,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
       shortcuts: [
         { keys: ['Ctrl', 'K'], description: 'Abrir AI Copilot flutuante com sugestões de comando' },
         { keys: ['Ctrl', 'Alt', 'A'], description: 'Alternar painel acoplado do AI Sidecar ao vivo' },
-        { keys: ['Ctrl', 'Shift', 'S'], description: 'Abrir catálogo com 340 Skills IA em Português BR' },
+        { keys: ['Ctrl', 'Shift', 'S'], description: 'Abrir catálogo de Skills IA locais em Português BR' },
         { keys: ['Botão ↓'], description: 'Rolar instantaneamente até as mensagens mais recentes do chat IA' }
       ]
     },

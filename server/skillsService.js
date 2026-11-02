@@ -3,10 +3,65 @@ import path from 'node:path';
 import os from 'node:os';
 
 const HOME_DIR = process.env.HOME || os.homedir();
-const SKILL_DIRS = [
+const SKILL_ROOT_DIRS = [
   path.join(HOME_DIR, '.agents/skills'),
-  path.join(HOME_DIR, '.gemini/config/skills')
+  path.join(HOME_DIR, '.gemini/config/skills'),
+  path.join(HOME_DIR, '.gemini/skills'),
+  path.join(HOME_DIR, '.gemini/antigravity-cli/builtin/skills'),
+  path.join(HOME_DIR, '.claude/skills'),
+  path.join(HOME_DIR, 'Documents/skills'),
+  path.join(HOME_DIR, '.hermes/skills'),
+  path.join(HOME_DIR, '.hermes/hermes-agent/skills'),
+  path.join(HOME_DIR, '.hermes/hermes-agent/optional-skills'),
+  path.join(HOME_DIR, 'Documents/Projects/enterprise-agent-hub/core')
 ];
+
+// Mapeamento interno para acesso e cache de arquivos de skills
+const skillPathMap = new Map();
+
+function findSkillDirectories(dirPath, depth = 0, maxDepth = 3) {
+  const results = [];
+  if (depth > maxDepth || !fs.existsSync(dirPath)) return results;
+
+  try {
+    const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+    // Se a pasta possui SKILL.md diretamente, é uma skill
+    if (entries.some((e) => e.isFile() && e.name === 'SKILL.md')) {
+      results.push(dirPath);
+      return results;
+    }
+
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        const n = entry.name;
+        if (
+          n.startsWith('.') ||
+          n === 'node_modules' ||
+          n === '.git' ||
+          n === '.archive' ||
+          n === '__pycache__' ||
+          n === '.venv' ||
+          n === 'venv'
+        ) {
+          continue;
+        }
+        results.push(...findSkillDirectories(path.join(dirPath, n), depth + 1, maxDepth));
+      }
+    }
+  } catch {}
+  return results;
+}
+
+function parseSkillDescription(skillMdPath) {
+  try {
+    const head = fs.readFileSync(skillMdPath, 'utf-8').slice(0, 1500);
+    const match = head.match(/description:\s*(?:>-\s*|\s*\|?\s*)?([^\n\r]+(?:\n(?:\s{2,}|\t)[^\n\r]+)*)/i);
+    if (match) {
+      return match[1].replace(/\n\s+/g, ' ').trim().replace(/^["'\s]+|["'\s]+$/g, '');
+    }
+  } catch {}
+  return '';
+}
 
 // Dicionário de títulos humanos e explicações refinadas em Português BR para skills chave
 const PT_BR_TRANSLATIONS = {
@@ -280,34 +335,20 @@ export function getAllSkills({ search = '', category = 'all', limit = 400 } = {}
   if (!cachedSkills || now - lastCacheTime > CACHE_TTL_MS) {
     const list = [];
     const seen = new Set();
+    skillPathMap.clear();
 
-    for (const dir of SKILL_DIRS) {
-      if (!fs.existsSync(dir)) continue;
-
-      let entries = [];
-      try {
-        entries = fs.readdirSync(dir);
-      } catch {
-        continue;
-      }
-
-      for (const name of entries) {
+    for (const rootDir of SKILL_ROOT_DIRS) {
+      const skillDirs = findSkillDirectories(rootDir);
+      for (const skillDir of skillDirs) {
+        const name = path.basename(skillDir);
         if (seen.has(name) || name.startsWith('.')) continue;
         seen.add(name);
 
-        const skillDir = path.join(dir, name);
         const skillMd = path.join(skillDir, 'SKILL.md');
-        let rawDesc = '';
-        let hasDetails = false;
+        skillPathMap.set(name, skillMd);
 
-        if (fs.existsSync(skillMd)) {
-          hasDetails = true;
-          try {
-            const head = fs.readFileSync(skillMd, 'utf-8').slice(0, 800);
-            const match = head.match(/description:\s*(.+)/i);
-            if (match) rawDesc = match[1].trim();
-          } catch {}
-        }
+        const rawDesc = parseSkillDescription(skillMd);
+        const hasDetails = fs.existsSync(skillMd);
 
         const cat = PT_BR_TRANSLATIONS[name]?.category || inferCategory(name, rawDesc);
         const titlePt = formatPortugueseTitle(name);
@@ -365,20 +406,24 @@ export function getSkillDetail(name) {
   if (!name || typeof name !== 'string') return null;
   const cleanName = name.replace(/[^a-zA-Z0-9_-]/g, '');
 
-  for (const dir of SKILL_DIRS) {
-    const skillMd = path.join(dir, cleanName, 'SKILL.md');
-    if (fs.existsSync(skillMd)) {
-      try {
-        const content = fs.readFileSync(skillMd, 'utf-8');
-        return {
-          name: cleanName,
-          title: formatPortugueseTitle(cleanName),
-          content,
-          category: inferCategory(cleanName, content.slice(0, 300))
-        };
-      } catch (err) {
-        console.error(`[SkillsService] Erro ao ler detalhe de ${name}:`, err);
-      }
+  let skillMd = skillPathMap.get(cleanName);
+  if (!skillMd || !fs.existsSync(skillMd)) {
+    // Garante que o catálogo foi indexado
+    getAllSkills();
+    skillMd = skillPathMap.get(cleanName);
+  }
+
+  if (skillMd && fs.existsSync(skillMd)) {
+    try {
+      const content = fs.readFileSync(skillMd, 'utf-8');
+      return {
+        name: cleanName,
+        title: formatPortugueseTitle(cleanName),
+        content,
+        category: inferCategory(cleanName, content.slice(0, 300))
+      };
+    } catch (err) {
+      console.error(`[SkillsService] Erro ao ler detalhe de ${name}:`, err);
     }
   }
   return null;

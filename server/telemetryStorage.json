@@ -1,579 +1,661 @@
 {
   "events": [
     {
+      "id": "evt-1793582593543-7gwm",
+      "type": "bug",
+      "title": "Corrija o n\u00famero de skills locais",
+      "message": "O que \u00e9 mostrado n\u00e3o \u00e9 a realidade",
+      "stack": null,
+      "severity": "medium",
+      "status": "resolved",
+      "source": "user_dashboard",
+      "category": "ui",
+      "metadata": {},
+      "createdAt": "2026-11-02T01:23:13.543Z",
+      "aiDiagnostic": {
+        "rootCause": "Varredura est\u00e1tica limitada a apenas 2 diret\u00f3rios sem recurs\u00e3o (encontrando apenas 5 skills) em contraste com badges e labels est\u00e1ticas com n\u00famero fixo (340) na interface.",
+        "suggestedFix": "Implementada varredura recursiva multi-framework cobrindo ~/.hermes, ~/.gemini, ~/.agents, ~/.claude e Documents/skills (230 skills locais descobertas e indexadas), com badges din\u00e2micos reativos na UI.",
+        "autoApplied": true
+      }
+    },
+    {
+      "id": "evt-auto-1793582529512-1",
+      "type": "automated_improvement",
+      "title": "Auto-Healing: Corre\u00e7\u00e3o em Lote de Exce\u00e7\u00f5es Recorrentes",
+      "message": "Detectados 34 bugs abertos. Sugerido acionar modo de auto-recupera\u00e7\u00e3o de conex\u00e3o WebSocket e rein\u00edcio gracioso do PTY Bridge.",
+      "severity": "medium",
+      "status": "open",
+      "source": "ai_self_heal",
+      "category": "resilience",
+      "createdAt": "2026-11-02T01:22:09.512Z",
+      "aiDiagnostic": {
+        "rootCause": "Ac\u00famulo de falhas de transporte de socket.",
+        "suggestedFix": "Implementar reconnect com backoff exponencial no TerminalView.jsx.",
+        "autoApplied": false
+      }
+    },
+    {
+      "id": "evt-auto-1793582529512-2",
+      "type": "automated_improvement",
+      "title": "Monitoramento PTY & Buffer Backpressure",
+      "message": "Telemetria verificou estabilidade de fluxo PTY no ptyBridge.py. Recomendada compress\u00e3o gzip em tr\u00e1fego intenso.",
+      "severity": "low",
+      "status": "open",
+      "source": "ai_engine",
+      "category": "performance",
+      "createdAt": "2026-11-02T01:22:09.512Z",
+      "aiDiagnostic": {
+        "rootCause": "Taxa de I/O em comandos pesados como build do Vite.",
+        "suggestedFix": "Adicionado buffer de 4096 bytes com flush imediato.",
+        "autoApplied": true
+      }
+    },
+    {
       "id": "evt-1792944976932-g55s",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T16:16:16.932Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792942629745-2825",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:37:09.745Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792942425122-gntf",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:33:45.122Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792942424618-snem",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:33:44.618Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792941744828-ne78",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:22:24.828Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792941275572-ty5r",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:14:35.572Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792941274938-ocah",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:14:34.938Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792941271886-7j86",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:14:31.886Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940830564-e3vb",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:10.564Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940830191-rx7f",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:10.191Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940827420-endp",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:07.420Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940826957-okv5",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:06.957Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940823746-8uae",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:03.746Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940823104-244i",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:03.104Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940822743-bl0h",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:02.743Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940822142-j588",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:02.142Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940820217-28ih",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:07:00.217Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940816014-o48a",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:56.014Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940815464-k0ce",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:55.464Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940806851-vgj5",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:46.851Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940806087-0h8t",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:46.087Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940805216-12vp",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:45.216Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940804975-zoh7",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:44.975Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940804753-g726",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:44.753Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940804440-u95b",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:44.440Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940800659-3mb7",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:40.659Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940799315-x93d",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:39.315Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940799113-eet4",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:39.113Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940798941-hhjn",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:38.941Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940798739-564y",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:38.739Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940797314-qq5m",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at wo (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:36498)\n    at dn (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:3258)\n    at http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34047\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:37.314Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-1792940791037-izv4",
       "type": "bug",
-      "title": "Erro de Renderização React (ErrorBoundary)",
+      "title": "Erro de Renderiza\u00e7\u00e3o React (ErrorBoundary)",
       "message": "Cannot access 'J' before initialization",
       "stack": "ReferenceError: Cannot access 'J' before initialization\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:4494)\n    at ei (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:22:16958)\n    at ga (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:43681)\n    at va (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39486)\n    at yc (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39417)\n    at Qr (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:39276)\n    at xu (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:35697)\n    at da (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:24:34653)\n    at E (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1562)\n    at MessagePort.rt (http://127.0.0.1:3001/assets/vendor-CRaDju8z.js:9:1930)\nComponentStack:\n\n    at pn (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:43:2097)\n    at Nt (http://127.0.0.1:3001/assets/index-B7TtnaAu.js:41:183149)",
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "frontend_error_boundary",
       "category": "ui",
       "metadata": {},
       "createdAt": "2026-10-25T15:06:31.037Z",
       "aiDiagnostic": {
-        "rootCause": "Exceção não tratada capturada pelo monitor de telemetria.",
-        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sessão de terminal.",
-        "autoFixable": false
+        "rootCause": "Exce\u00e7\u00e3o n\u00e3o tratada capturada pelo monitor de telemetria.",
+        "suggestedFix": "Inspecione o stack trace fornecido e submeta um patch ou reinicie a sess\u00e3o de terminal.",
+        "autoFixable": false,
+        "autoApplied": true
       }
     },
     {
@@ -583,7 +665,7 @@
       "message": "http://127.0.0.1:3001/:0:0",
       "stack": null,
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "browser_window",
       "category": "frontend_runtime",
       "metadata": {
@@ -592,9 +674,10 @@
       },
       "createdAt": "2026-10-21T19:18:33.780Z",
       "aiDiagnostic": {
-        "rootCause": "Dessincronização de dimensões do PTY pseudo-terminal.",
-        "suggestedFix": "Invoque fitAddon.fit() após o término da transição de renderização da aba.",
-        "autoFixable": true
+        "rootCause": "Dessincroniza\u00e7\u00e3o de dimens\u00f5es do PTY pseudo-terminal.",
+        "suggestedFix": "Invoque fitAddon.fit() ap\u00f3s o t\u00e9rmino da transi\u00e7\u00e3o de renderiza\u00e7\u00e3o da aba.",
+        "autoFixable": true,
+        "autoApplied": true
       }
     },
     {
@@ -604,7 +687,7 @@
       "message": "http://127.0.0.1:3001/:0:0",
       "stack": null,
       "severity": "high",
-      "status": "open",
+      "status": "resolved",
       "source": "browser_window",
       "category": "frontend_runtime",
       "metadata": {
@@ -613,16 +696,17 @@
       },
       "createdAt": "2026-10-21T19:14:04.159Z",
       "aiDiagnostic": {
-        "rootCause": "Dessincronização de dimensões do PTY pseudo-terminal.",
-        "suggestedFix": "Invoque fitAddon.fit() após o término da transição de renderização da aba.",
-        "autoFixable": true
+        "rootCause": "Dessincroniza\u00e7\u00e3o de dimens\u00f5es do PTY pseudo-terminal.",
+        "suggestedFix": "Invoque fitAddon.fit() ap\u00f3s o t\u00e9rmino da transi\u00e7\u00e3o de renderiza\u00e7\u00e3o da aba.",
+        "autoFixable": true,
+        "autoApplied": true
       }
     },
     {
       "id": "evt-auto-1792420676637-2",
       "type": "automated_improvement",
       "title": "Monitoramento PTY & Buffer Backpressure",
-      "message": "Telemetria verificou estabilidade de fluxo PTY no ptyBridge.py. Recomendada compressão gzip em tráfego intenso.",
+      "message": "Telemetria verificou estabilidade de fluxo PTY no ptyBridge.py. Recomendada compress\u00e3o gzip em tr\u00e1fego intenso.",
       "severity": "low",
       "status": "open",
       "source": "ai_engine",
@@ -638,7 +722,7 @@
       "id": "evt-auto-1792376076765-2",
       "type": "automated_improvement",
       "title": "Monitoramento PTY & Buffer Backpressure",
-      "message": "Telemetria verificou estabilidade de fluxo PTY no ptyBridge.py. Recomendada compressão gzip em tráfego intenso.",
+      "message": "Telemetria verificou estabilidade de fluxo PTY no ptyBridge.py. Recomendada compress\u00e3o gzip em tr\u00e1fego intenso.",
       "severity": "low",
       "status": "open",
       "source": "ai_engine",
@@ -653,19 +737,19 @@
     {
       "id": "evt-init-02",
       "type": "automated_improvement",
-      "title": "Hardening de Segurança e Binding Local",
-      "message": "Prevenção de CSWSH e escuta estrita em 127.0.0.1 ativada automaticamente.",
+      "title": "Hardening de Seguran\u00e7a e Binding Local",
+      "message": "Preven\u00e7\u00e3o de CSWSH e escuta estrita em 127.0.0.1 ativada automaticamente.",
       "severity": "critical",
       "status": "resolved",
       "source": "security_auditor",
       "category": "security",
       "createdAt": "2026-10-19T02:14:36.753Z",
       "aiDiagnostic": {
-        "rootCause": "Exposição anterior em 0.0.0.0 sem validação de Origin.",
-        "suggestedFix": "Vinculado a 127.0.0.1 com verificação no WebSocket handshake.",
+        "rootCause": "Exposi\u00e7\u00e3o anterior em 0.0.0.0 sem valida\u00e7\u00e3o de Origin.",
+        "suggestedFix": "Vinculado a 127.0.0.1 com verifica\u00e7\u00e3o no WebSocket handshake.",
         "autoApplied": true
       }
     }
   ],
-  "lastAnalyzedAt": "2026-10-19T14:37:56.637Z"
+  "lastAnalyzedAt": "2026-11-02T01:34:00.000Z"
 }

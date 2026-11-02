@@ -171,7 +171,7 @@ export function generateSpecAndRoadmap(conversationId) {
       status: 'in_progress',
       progress: 85,
       tasks: [
-        { title: 'Catálogo de 340 skills com traduções em Português BR', completed: true },
+        { title: 'Catálogo de skills locais descobertas com traduções em Português BR', completed: true },
         { title: 'Menu dropdown e modal de inspeção de skills', completed: true },
         { title: 'Geração e renderização de Spec e Roadmap dinâmicos', completed: true }
       ]

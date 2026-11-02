@@ -214,7 +214,7 @@ export default function SkillsDropdownModal({
             {loading ? (
               <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs font-semibold gap-2">
                 <Sparkles className="w-6 h-6 text-purple-400 animate-spin" />
-                <span>Carregando catálogo de 340 skills em Português BR...</span>
+                <span>Carregando catálogo de habilidades em Português BR...</span>
               </div>
             ) : filteredSkills.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs text-center p-4">
@@ -358,7 +358,7 @@ export default function SkillsDropdownModal({
         <div className="h-10 px-5 bg-[#1c2128] border-t border-[#30363d] flex items-center justify-between shrink-0 text-xs text-slate-400">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>The Agency Protocol ativo • 340 especialidades disponíveis</span>
+            <span>{skills.length} especialidades e habilidades locais disponíveis</span>
           </div>
           <div className="hidden sm:block font-mono text-xs">
             Pressione <kbd className="bg-[#21262d] px-1.5 py-0.5 rounded text-white border border-[#30363d]">Esc</kbd> para fechar

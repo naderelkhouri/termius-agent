@@ -15,6 +15,7 @@ import TerminalThemeModal from './components/TerminalThemeModal';
 import CustomWorkModeModal from './components/CustomWorkModeModal';
 import FileManager from './components/FileManager';
 import ErrorBoundary from './components/ErrorBoundary';
+import { fetchSkills } from './services/api';
 import { 
   Plus, 
   X, 
@@ -76,6 +77,7 @@ export default function App() {
   const [sidecarOpen, setSidecarOpen] = useState(false);
   const [smartBarOpen, setSmartBarOpen] = useState(true);
   const [skillsModalOpen, setSkillsModalOpen] = useState(false);
+  const [skillsCount, setSkillsCount] = useState(0);
   const [tabMenuOpen, setTabMenuOpen] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(isNotificationEnabled);
   const [recordingTabId, setRecordingTabId] = useState(null);
@@ -452,6 +454,15 @@ export default function App() {
 
   useEffect(() => {
     requestNotificationPermission();
+    fetchSkills()
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setSkillsCount(data.length);
+        }
+      })
+      .catch((err) => {
+        console.warn('[App] Falha ao carregar contagem de skills:', err);
+      });
   }, []);
 
   // Fecha menu de ferramentas ao clicar fora
@@ -941,6 +952,7 @@ export default function App() {
         showActiveSessions={shouldShowActiveSessions}
         showAiBanners={shouldShowAiBanners}
         onOpenCustomModal={() => setCustomModalOpen(true)}
+        skillsCount={skillsCount}
       />
 
       {/* Main Workspace */}
@@ -1198,7 +1210,11 @@ export default function App() {
               >
                 <BookOpen className="w-3.5 h-3.5 text-purple-400" />
                 <span className="hidden md:inline">Skills</span>
-                <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-purple-500/25 text-purple-300 border border-purple-500/30">340</span>
+                {skillsCount > 0 && (
+                  <span className="text-xs font-mono px-1.5 py-0.2 rounded bg-purple-500/25 text-purple-300 border border-purple-500/30">
+                    {skillsCount}
+                  </span>
+                )}
               </button>
             </div>
 
