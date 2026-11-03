@@ -30,6 +30,7 @@ import {
   createFile,
   deletePath,
   renamePath,
+  saveUploadedFile,
   listRemoteDirectory
 } from './fileService.js';
 
@@ -61,7 +62,8 @@ const wss = new WebSocketServer({
 });
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 const DIST_PATH = path.join(__dirname, '../dist');
 if (fs.existsSync(DIST_PATH)) {
@@ -639,6 +641,37 @@ app.post('/api/fs/rename', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// Upload de arquivos (base64) para diretório de destino
+app.post('/api/fs/upload', async (req, res) => {
+  try {
+    const { targetDir, files } = req.body || {};
+    if (!targetDir || !Array.isArray(files) || files.length === 0) {
+      return res.status(400).json({ error: 'targetDir e array files são obrigatórios' });
+    }
+    const results = [];
+    for (const file of files) {
+      const saved = await saveUploadedFile(targetDir, file.name, file.base64);
+      results.push(saved);
+    }
+    res.json({ success: true, count: results.length, uploaded: results });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Download de arquivo com cabeçalho de anexo
+app.get('/api/fs/download', (req, res) => {
+  const { path: filePath } = req.query;
+  if (!filePath) {
+    return res.status(400).json({ error: 'Parâmetro path obrigatório' });
+  }
+  const cleanPath = path.resolve(filePath);
+  if (!fs.existsSync(cleanPath) || !fs.statSync(cleanPath).isFile()) {
+    return res.status(404).json({ error: 'Arquivo não encontrado' });
+  }
+  res.download(cleanPath, path.basename(cleanPath));
 });
 
 // Listar arquivos em host remoto (SSH) ou local

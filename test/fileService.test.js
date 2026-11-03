@@ -13,7 +13,8 @@ import {
   createDirectory, 
   createFile, 
   deletePath, 
-  renamePath 
+  renamePath,
+  saveUploadedFile 
 } from '../server/fileService.js';
 
 test('formatPermissions should convert octal mode to unix string', () => {
@@ -113,4 +114,22 @@ test('deletePath should prevent deleting protected paths', async () => {
     },
     { message: /Operação bloqueada/ }
   );
+});
+
+test('saveUploadedFile should write base64 buffer properly', async () => {
+  const tmpDir = path.join(os.tmpdir(), `termius-upload-${Date.now()}`);
+  await createDirectory(tmpDir);
+
+  const testContent = 'Binary or Text Uploaded Data';
+  const base64Data = Buffer.from(testContent, 'utf-8').toString('base64');
+
+  const result = await saveUploadedFile(tmpDir, 'uploaded.bin', base64Data);
+  assert.equal(result.name, 'uploaded.bin');
+  assert.equal(result.size, Buffer.byteLength(testContent));
+  assert.ok(fs.existsSync(result.path));
+
+  const readBack = await fs.promises.readFile(result.path, 'utf-8');
+  assert.equal(readBack, testContent);
+
+  await deletePath(tmpDir);
 });

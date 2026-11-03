@@ -365,6 +365,23 @@ export async function renameFsPath(oldPath, newPath) {
   return res.json();
 }
 
+export async function uploadFsFiles(targetDir, files) {
+  const res = await fetch(`${BASE_URL}/fs/upload`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ targetDir, files })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Erro HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+export function getDownloadFsUrl(filePath) {
+  return `${BASE_URL}/fs/download?path=${encodeURIComponent(filePath)}`;
+}
+
 export async function fetchRemoteFsList(hostId, remotePath = '', showHidden = false) {
   const res = await fetch(`${BASE_URL}/fs/remote/list`, {
     method: 'POST',

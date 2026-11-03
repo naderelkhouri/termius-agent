@@ -305,6 +305,32 @@ export async function renamePath(oldPath, newPath) {
   return { success: true, oldPath: cleanOld, newPath: cleanNew };
 }
 
+// Salvar arquivo enviado por upload (base64)
+export async function saveUploadedFile(targetDir, fileName, base64Data) {
+  const cleanDir = path.resolve(targetDir);
+  const cleanName = path.basename(fileName);
+  
+  if (!cleanName || cleanName === '.' || cleanName === '..') {
+    throw new Error('Nome de arquivo inválido');
+  }
+
+  const dirStats = await fs.promises.stat(cleanDir);
+  if (!dirStats.isDirectory()) {
+    throw new Error('Diretório de destino inválido');
+  }
+
+  const fullPath = path.join(cleanDir, cleanName);
+  const buffer = Buffer.from(base64Data, 'base64');
+  await fs.promises.writeFile(fullPath, buffer);
+
+  return {
+    name: cleanName,
+    path: fullPath,
+    size: buffer.length,
+    sizeFormatted: formatBytes(buffer.length)
+  };
+}
+
 // Listar arquivos remotos via SSH
 export async function listRemoteDirectory(host, remotePath = '~', showHidden = false) {
   if (!host || host.type !== 'ssh') {

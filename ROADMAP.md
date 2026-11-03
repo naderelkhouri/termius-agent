@@ -84,6 +84,8 @@ _Links clicáveis com targeting de linha no VS Code, explorador de arquivos loca
 - [x] Suporte a listagem de arquivos remotos via SSH para hosts configurados
 - [x] Componente `FileManager.jsx` com bookmarks rápidos (`~`, `Applications`, `Downloads`, `/`), visualização em tabela e busca em tempo real
 - [x] Modal de Edição de Código Inline com salvamento rápido (<kbd>Ctrl+S</kbd>), contagem de linhas e indicador dirty
+- [x] Upload de arquivos múltiplos com suporte nativo a Drag-and-Drop e dropzone visual iluminada
+- [x] Download direto de arquivos em 1-clique com cabeçalho de anexo
 - [x] Integração na Sidebar com novo ícone `Arquivos & SFTP` e atalho global <kbd>Ctrl+Shift+E</kbd>
 - [x] Suíte de testes unitários automatizados com `node --test` e 100% de sucesso
 

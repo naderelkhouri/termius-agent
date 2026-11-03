@@ -35,7 +35,9 @@ O **Termius Agent Suite** é uma estação de trabalho de terminal profissional 
 - **Navegação Local & Remota:** Exploração de diretórios locais com breadcrumbs clicáveis e servidores SSH configurados.
 - **Metadados Completos:** Nome, tamanho legível (KB/MB/GB), permissões unix (`rwxr-xr-x`), data de modificação e ícones temáticos por extensão de arquivo.
 - **Editor Inline Embutido:** Visualizador e editor de texto com numeração de linhas, detecção de alteração pendente (dirty indicator), atalho de salvamento <kbd>Ctrl+S</kbd> e contagem de caracteres/linhas.
-- **Ações Rápidas:** "Abrir no Terminal", "Abrir no VS Code", "Copiar Caminho", "Novo Arquivo", "Nova Pasta", "Renomear" e "Excluir com Confirmação".
+- **Upload & Drag-and-Drop:** Dropzone com overlay responsivo para arrastar arquivos diretamente do desktop para qualquer pasta e botão seletor de arquivos múltiplos via multipart/base64.
+- **Download 1-Clique:** Download imediato de qualquer arquivo no navegador ou desktop com cabeçalho `Content-Disposition: attachment`.
+- **Ações Rápidas:** "Abrir no Terminal", "Abrir no VS Code", "Copiar Caminho", "Novo Arquivo", "Nova Pasta", "Renomear", "Upload", "Baixar" e "Excluir com Confirmação".
 - **Atalho Global:** <kbd>Ctrl+Shift+E</kbd> para alternar entre Terminais e Arquivos.
 
 ### 3.3. 3 Modos de Trabalho (Work Modes)

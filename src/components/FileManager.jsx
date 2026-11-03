@@ -7,6 +7,8 @@ import {
   createFsFile, 
   deleteFsPath, 
   renameFsPath, 
+  uploadFsFiles,
+  getDownloadFsUrl,
   fetchRemoteFsList,
   fetchHosts 
 } from '../services/api';
@@ -44,7 +46,10 @@ import {
   Lock, 
   AlertCircle,
   Laptop,
-  CheckCircle2
+  CheckCircle2,
+  Upload,
+  Download,
+  CloudUpload
 } from 'lucide-react';
 
 // Função para mapear extensão para ícone e cor específica
@@ -126,6 +131,11 @@ export default function FileManager({ onOpenTerminalAt, onCdActiveTerminal }) {
   const [actionSuccessMessage, setActionSuccessMessage] = useState('');
   const [copiedPath, setCopiedPath] = useState(null);
 
+  // Upload & Drag-and-Drop
+  const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+  const dragCounterRef = useRef(0);
   const searchInputRef = useRef(null);
 
   // Carregar hosts e diretório inicial
@@ -333,6 +343,84 @@ export default function FileManager({ onOpenTerminalAt, onCdActiveTerminal }) {
     }
   };
 
+  // Upload e Download de Arquivos
+  const readFileAsBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        const base64 = typeof result === 'string' ? result.split(',')[1] || '' : '';
+        resolve({ name: file.name, base64, size: file.size });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleUploadFiles = async (fileList) => {
+    if (!fileList || fileList.length === 0) return;
+    setIsUploading(true);
+    showNotification(`Enviando ${fileList.length} arquivo(s)...`);
+    try {
+      const promises = Array.from(fileList).map(readFileAsBase64);
+      const filesData = await Promise.all(promises);
+      await uploadFsFiles(currentPath, filesData);
+      showNotification(`${filesData.length} arquivo(s) enviado(s) com sucesso!`);
+      loadDirectory(currentPath);
+    } catch (err) {
+      showNotification(`Erro no upload: ${err.message}`);
+    } finally {
+      setIsUploading(false);
+      setIsDragging(false);
+    }
+  };
+
+  const handleDownloadFile = (filePath) => {
+    const url = getDownloadFsUrl(filePath);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filePath.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showNotification('Download iniciado...');
+  };
+
+  // Drag-and-Drop Handlers
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current++;
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current--;
+    if (dragCounterRef.current <= 0) {
+      setIsDragging(false);
+      dragCounterRef.current = 0;
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    dragCounterRef.current = 0;
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      await handleUploadFiles(e.dataTransfer.files);
+    }
+  };
+
   // Copiar Caminho
   const handleCopyPath = (path) => {
     copyToClipboard(path);
@@ -485,7 +573,23 @@ export default function FileManager({ onOpenTerminalAt, onCdActiveTerminal }) {
       </div>
 
       {/* Área Principal de Conteúdo */}
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+      <div 
+        onDragEnter={handleDragEnter}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative"
+      >
+        {/* Overlay Glowing Drag & Drop Dropzone */}
+        {isDragging && (
+          <div className="absolute inset-0 z-40 bg-blue-950/80 backdrop-blur-xs border-2 border-dashed border-blue-400 flex flex-col items-center justify-center p-6 text-center animate-fade-in pointer-events-none">
+            <CloudUpload className="w-16 h-16 text-blue-400 animate-pulse mb-3" />
+            <h3 className="text-white text-base font-bold">Solte os arquivos para fazer upload</h3>
+            <p className="text-xs text-blue-200 mt-1 max-w-md truncate font-mono">
+              Destino: {currentPath || '~'}
+            </p>
+          </div>
+        )}
         {/* Barra de Ferramentas Superior & Breadcrumbs */}
         <div className="p-3 bg-[#161b22] border-b border-[#30363d] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 shrink-0">
           {/* Breadcrumb Navegável */}
@@ -568,6 +672,30 @@ export default function FileManager({ onOpenTerminalAt, onCdActiveTerminal }) {
             >
               <FolderPlus className="w-3.5 h-3.5 text-amber-400" />
               <span className="hidden sm:inline">Pasta</span>
+            </button>
+
+            {/* Upload de Arquivos */}
+            <input 
+              ref={fileInputRef}
+              type="file" 
+              multiple 
+              onChange={(e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                  handleUploadFiles(e.target.files);
+                  e.target.value = '';
+                }
+              }} 
+              className="hidden" 
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current && fileInputRef.current.click()}
+              disabled={isUploading}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] hover:border-slate-500 text-slate-200 hover:text-white rounded-lg text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
+              title="Upload de arquivos para a pasta atual"
+            >
+              <Upload className={`w-3.5 h-3.5 text-sky-400 ${isUploading ? 'animate-bounce' : ''}`} />
+              <span className="hidden sm:inline">Upload</span>
             </button>
 
             {/* Abrir no Terminal */}
@@ -680,6 +808,18 @@ export default function FileManager({ onOpenTerminalAt, onCdActiveTerminal }) {
                               title="Visualizar / Editar Inline"
                             >
                               <Eye className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+
+                          {/* Baixar Arquivo (Download) */}
+                          {!item.isDirectory && (
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); handleDownloadFile(item.path); }}
+                              className="p-1 hover:bg-[#30363d] text-slate-400 hover:text-sky-300 rounded transition-colors"
+                              title="Baixar Arquivo"
+                            >
+                              <Download className="w-3.5 h-3.5" />
                             </button>
                           )}
 
