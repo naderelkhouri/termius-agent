@@ -48,6 +48,8 @@ import {
   Palette,
   Terminal,
   Server,
+  LayoutGrid,
+  Columns3,
   Folder,
   Copy,
   Check
@@ -71,8 +73,9 @@ import { updateConversationTitle } from './services/api';
 export default function App() {
   const [currentView, setCurrentView] = useState('terminals');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [splitMode, setSplitMode] = useState('single'); // 'single' | 'vertical' | 'horizontal'
+  const [splitMode, setSplitMode] = useState('single'); // 'single' | 'vertical' | 'horizontal' | 'triple' | 'quad'
   const [secondaryTabId, setSecondaryTabId] = useState(null);
+  const [splitTabIds, setSplitTabIds] = useState([]); // [slot0, slot1, slot2, slot3]
   const [copilotOpen, setCopilotOpen] = useState(false);
   const [sidecarOpen, setSidecarOpen] = useState(false);
   const [skillsModalOpen, setSkillsModalOpen] = useState(false);
@@ -696,15 +699,41 @@ export default function App() {
         e.preventDefault();
         setCopilotOpen((prev) => !prev);
       }
-      // Ctrl+Alt+V -> Split Vertical
+      // Ctrl+Alt+V -> Split Vertical (2 terminais)
       if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'v') {
         e.preventDefault();
-        setSplitMode((prev) => prev === 'vertical' ? 'single' : 'vertical');
+        if (splitMode === 'vertical') {
+          setSplitMode('single');
+        } else {
+          handleEnsureTabsForSplit(2, 'vertical');
+        }
       }
-      // Ctrl+Alt+H -> Split Horizontal
+      // Ctrl+Alt+H -> Split Horizontal (2 terminais)
       if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'h') {
         e.preventDefault();
-        setSplitMode((prev) => prev === 'horizontal' ? 'single' : 'horizontal');
+        if (splitMode === 'horizontal') {
+          setSplitMode('single');
+        } else {
+          handleEnsureTabsForSplit(2, 'horizontal');
+        }
+      }
+      // Ctrl+Alt+3 -> 3 Terminais Simultâneos (Colunas)
+      if (e.ctrlKey && e.altKey && e.key === '3') {
+        e.preventDefault();
+        if (splitMode === 'triple') {
+          setSplitMode('single');
+        } else {
+          handleEnsureTabsForSplit(3, 'triple');
+        }
+      }
+      // Ctrl+Alt+4 ou Ctrl+Alt+G -> 4 Terminais Simultâneos (Grade 2x2)
+      if (e.ctrlKey && e.altKey && (e.key === '4' || e.key.toLowerCase() === 'g')) {
+        e.preventDefault();
+        if (splitMode === 'quad') {
+          setSplitMode('single');
+        } else {
+          handleEnsureTabsForSplit(4, 'quad');
+        }
       }
       // Ctrl+Shift+T -> Nova Aba
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
@@ -913,11 +942,60 @@ export default function App() {
     handleNewTab(host.defaultCwd, host.label, host, host.color);
   };
 
-  // Determine effective secondary tab for split screen
+  // Determine effective secondary tab for split screen (legacy 2-pane fallback)
   const availableSecondaryTabs = openTabs.filter(t => t.id !== activeTabId);
   const effectiveSecondaryTabId = (secondaryTabId && secondaryTabId !== activeTabId && openTabs.some(t => t.id === secondaryTabId))
     ? secondaryTabId
     : (availableSecondaryTabs[0]?.id || null);
+
+  // Calcula os IDs das abas ativas para divisão simultânea (1, 2, 3 ou 4 terminais)
+  const visibleTabIds = useMemo(() => {
+    if (splitMode === 'single') return [activeTabId];
+    
+    const count = splitMode === 'quad' ? 4 : splitMode === 'triple' ? 3 : 2;
+    const selected = [activeTabId];
+
+    // Adiciona abas salvas em splitTabIds ou as próximas abas abertas
+    for (const sid of splitTabIds) {
+      if (selected.length >= count) break;
+      if (sid && sid !== activeTabId && openTabs.some(t => t.id === sid) && !selected.includes(sid)) {
+        selected.push(sid);
+      }
+    }
+
+    // Se ainda precisar de mais abas para preencher o grid, pega as outras disponíveis em openTabs
+    if (selected.length < count) {
+      for (const t of openTabs) {
+        if (selected.length >= count) break;
+        if (!selected.includes(t.id)) {
+          selected.push(t.id);
+        }
+      }
+    }
+
+    return selected;
+  }, [splitMode, activeTabId, splitTabIds, openTabs]);
+
+  const handleSetSlotTab = (slotIndex, tabId) => {
+    setSplitTabIds((prev) => {
+      const next = [...prev];
+      next[slotIndex] = tabId;
+      return next;
+    });
+    if (slotIndex === 1) {
+      setSecondaryTabId(tabId);
+    }
+  };
+
+  const handleEnsureTabsForSplit = (neededCount, mode) => {
+    const missing = neededCount - openTabs.length;
+    if (missing > 0) {
+      for (let i = 0; i < missing; i++) {
+        handleNewTab();
+      }
+    }
+    setSplitMode(mode);
+  };
 
   const activeTab = openTabs.find(t => t.id === activeTabId);
   const activeCwd = activeTab?.cwd || '/home/nader';
@@ -983,7 +1061,7 @@ export default function App() {
 
             {openTabs.map((tab) => {
               const isActive = tab.id === activeTabId && currentView === 'terminals';
-              const isSecondary = splitMode !== 'single' && tab.id === effectiveSecondaryTabId;
+              const isVisibleInSplit = splitMode !== 'single' && visibleTabIds.includes(tab.id);
               const isEditing = editingTabId === tab.id;
 
               return (
@@ -1010,7 +1088,7 @@ export default function App() {
                   className={`group min-h-[34px] flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs cursor-pointer transition-all border shrink-0 ${
                     isActive
                       ? 'bg-[#0d1117] text-white border-blue-500/40 shadow-xs font-bold ring-1 ring-blue-500/30'
-                      : isSecondary
+                      : isVisibleInSplit
                       ? 'bg-[#1c2128] text-blue-300 border-blue-500/30 font-medium'
                       : 'bg-transparent text-slate-300 hover:text-white border-transparent hover:bg-[#21262d] font-medium'
                   }`}
@@ -1568,33 +1646,51 @@ export default function App() {
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (openTabs.length < 2) handleNewTab();
-                setSplitMode('vertical');
-              }}
+              onClick={() => handleEnsureTabsForSplit(2, 'vertical')}
               className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
                 splitMode === 'vertical'
                   ? 'bg-[#21262d] text-blue-400 shadow-xs'
                   : 'text-slate-400 hover:text-white'
               }`}
-              title="Dividir Verticalmente (Ctrl + Alt + V)"
+              title="Dividir Verticalmente (2 Terminais Lado a Lado - Ctrl+Alt+V)"
             >
               <Columns2 className="w-4 h-4" />
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (openTabs.length < 2) handleNewTab();
-                setSplitMode('horizontal');
-              }}
+              onClick={() => handleEnsureTabsForSplit(2, 'horizontal')}
               className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
                 splitMode === 'horizontal'
                   ? 'bg-[#21262d] text-blue-400 shadow-xs'
                   : 'text-slate-400 hover:text-white'
               }`}
-              title="Dividir Horizontalmente (Ctrl + Alt + H)"
+              title="Dividir Horizontalmente (2 Terminais Empilhados - Ctrl+Alt+H)"
             >
               <Rows2 className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleEnsureTabsForSplit(3, 'triple')}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+                splitMode === 'triple'
+                  ? 'bg-[#21262d] text-blue-400 shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Dividir em 3 Colunas (3 Terminais Simultâneos)"
+            >
+              <Columns3 className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleEnsureTabsForSplit(4, 'quad')}
+              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer ${
+                splitMode === 'quad'
+                  ? 'bg-[#21262d] text-blue-400 shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Grade 2x2 (4 Terminais Simultâneos)"
+            >
+              <LayoutGrid className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -1608,17 +1704,21 @@ export default function App() {
             {/* Terminal Main Grid/Pane */}
             <div className="flex-1 h-full min-w-0 relative flex flex-col">
               <div className={`flex-1 min-h-0 w-full ${
-                splitMode === 'vertical' && effectiveSecondaryTabId
+                splitMode === 'vertical'
                   ? 'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
-                  : splitMode === 'horizontal' && effectiveSecondaryTabId
+                  : splitMode === 'horizontal'
                   ? 'grid grid-rows-2 divide-y divide-[#30363d]'
+                  : splitMode === 'triple'
+                  ? 'grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
+                  : splitMode === 'quad'
+                  ? 'grid grid-cols-1 md:grid-cols-2 grid-rows-2 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
                   : 'relative'
               }`}>
                 {openTabs.map((tab) => {
                   const isPrimary = tab.id === activeTabId;
-                  const isSecondary = splitMode !== 'single' && tab.id === effectiveSecondaryTabId;
-                  const isVisible = (isPrimary || isSecondary) && currentView === 'terminals';
+                  const isVisible = visibleTabIds.includes(tab.id) && currentView === 'terminals';
                   const isSplit = splitMode !== 'single';
+                  const slotIndex = visibleTabIds.indexOf(tab.id);
 
                   return (
                     <div
@@ -1680,15 +1780,15 @@ export default function App() {
                             )}
                           </div>
 
-                          {isSecondary && (
+                          {!isPrimary && (
                             <div className="flex items-center gap-1.5 shrink-0">
-                              <span className="text-slate-400 text-xs font-medium">Aba:</span>
+                              <span className="text-slate-400 text-xs font-medium">Slot #{slotIndex + 1}:</span>
                               <select
-                                value={effectiveSecondaryTabId}
-                                onChange={(e) => setSecondaryTabId(e.target.value)}
+                                value={tab.id}
+                                onChange={(e) => handleSetSlotTab(slotIndex, e.target.value)}
                                 className="bg-[#0d1117] text-slate-300 border border-[#30363d] rounded-lg px-2 py-0.5 text-xs focus:outline-none"
                               >
-                                {openTabs.filter(t => t.id !== activeTabId).map(t => (
+                                {openTabs.map(t => (
                                   <option key={t.id} value={t.id}>{t.title}</option>
                                 ))}
                               </select>
