@@ -1183,37 +1183,8 @@ export default function App() {
             {shouldShowTopActions && (
               <>
 
-            {/* AI Suite Toolbar: Copilot, Sidecar, Skills */}
+            {/* AI Suite Toolbar: Skills */}
             <div className="flex items-center p-0.5 rounded-xl bg-[#0d1117] border border-[#30363d] gap-0.5">
-              {/* AI Copilot Button */}
-              <button
-                type="button"
-                onClick={() => setCopilotOpen(true)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-blue-300 hover:text-white hover:bg-[#21262d] transition-all cursor-pointer"
-                title="AI Copilot: Sugestões inteligentes (Ctrl + K)"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-blue-400 animate-pulse" />
-                <span className="hidden sm:inline">Copilot</span>
-                <span className="text-xs font-mono opacity-80 hidden md:inline">Ctrl+K</span>
-              </button>
-
-              {/* AI Sidecar Toggle */}
-              {currentView === 'terminals' && (
-                <button
-                  type="button"
-                  onClick={() => setSidecarOpen((prev) => !prev)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    sidecarOpen
-                      ? 'bg-purple-600/30 text-purple-200 border border-purple-500/40 shadow-xs'
-                      : 'text-slate-300 hover:text-white hover:bg-[#21262d]'
-                  }`}
-                  title="AI Sidecar: Acompanhe passos, comandos e diffs ao vivo (Ctrl + Alt + A)"
-                >
-                  <PanelRight className={`w-3.5 h-3.5 ${sidecarOpen ? 'text-purple-300' : 'text-slate-400'}`} />
-                  <span className="hidden sm:inline">Sidecar</span>
-                </button>
-              )}
-
               {/* Skills IA Catalog Button */}
               <button
                 type="button"
