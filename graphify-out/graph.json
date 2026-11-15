@@ -160,7 +160,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "package_dependencies",
-      "community": 2,
+      "community": 18,
       "norm_label": "dependencies"
     },
     {
@@ -170,7 +170,7 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "package_dependencies_xterm_addon_fit",
-      "community": 2,
+      "community": 18,
       "norm_label": "@xterm/addon-fit"
     },
     {
@@ -180,7 +180,7 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "package_dependencies_xterm_addon_search",
-      "community": 2,
+      "community": 18,
       "norm_label": "@xterm/addon-search"
     },
     {
@@ -190,7 +190,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "package_dependencies_xterm_addon_web_links",
-      "community": 2,
+      "community": 18,
       "norm_label": "@xterm/addon-web-links"
     },
     {
@@ -200,7 +200,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "package_dependencies_xterm_xterm",
-      "community": 2,
+      "community": 18,
       "norm_label": "@xterm/xterm"
     },
     {
@@ -210,7 +210,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "package_dependencies_clsx",
-      "community": 2,
+      "community": 18,
       "norm_label": "clsx"
     },
     {
@@ -220,7 +220,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "package_dependencies_cors",
-      "community": 2,
+      "community": 18,
       "norm_label": "cors"
     },
     {
@@ -230,7 +230,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "package_dependencies_express",
-      "community": 2,
+      "community": 18,
       "norm_label": "express"
     },
     {
@@ -240,7 +240,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "package_dependencies_lucide_react",
-      "community": 2,
+      "community": 18,
       "norm_label": "lucide-react"
     },
     {
@@ -250,7 +250,7 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "package_dependencies_react",
-      "community": 2,
+      "community": 18,
       "norm_label": "react"
     },
     {
@@ -260,7 +260,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "package_dependencies_react_dom",
-      "community": 2,
+      "community": 18,
       "norm_label": "react-dom"
     },
     {
@@ -270,7 +270,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "package_dependencies_tailwind_merge",
-      "community": 2,
+      "community": 18,
       "norm_label": "tailwind-merge"
     },
     {
@@ -280,7 +280,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "package_dependencies_ws",
-      "community": 2,
+      "community": 18,
       "norm_label": "ws"
     },
     {
@@ -480,7 +480,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_copilot",
-      "community": 3,
+      "community": 11,
       "norm_label": "copilot.js"
     },
     {
@@ -490,7 +490,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "server_copilot_knowledge_patterns",
-      "community": 3,
+      "community": 11,
       "norm_label": "knowledge_patterns"
     },
     {
@@ -500,7 +500,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "server_copilot_generatecopilotcommand",
-      "community": 3,
+      "community": 11,
       "norm_label": "generatecopilotcommand()"
     },
     {
@@ -510,7 +510,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_db",
-      "community": 3,
+      "community": 11,
       "norm_label": "db.js"
     },
     {
@@ -520,7 +520,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "server_db_cli_base_path",
-      "community": 3,
+      "community": 11,
       "norm_label": "cli_base_path"
     },
     {
@@ -530,7 +530,7 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "server_db_db_path",
-      "community": 3,
+      "community": 11,
       "norm_label": "db_path"
     },
     {
@@ -540,7 +540,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "server_db_brain_path",
-      "community": 3,
+      "community": 11,
       "norm_label": "brain_path"
     },
     {
@@ -550,7 +550,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "server_db_history_path",
-      "community": 3,
+      "community": 11,
       "norm_label": "history_path"
     },
     {
@@ -560,7 +560,7 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "server_db_getdbconnection",
-      "community": 3,
+      "community": 11,
       "norm_label": "getdbconnection()"
     },
     {
@@ -570,27 +570,37 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "server_db_listconversations",
-      "community": 3,
+      "community": 11,
       "norm_label": "listconversations()"
+    },
+    {
+      "label": "updateConversationTitle()",
+      "file_type": "code",
+      "source_file": "server/db.js",
+      "source_location": "L86",
+      "_origin": "ast",
+      "id": "server_db_updateconversationtitle",
+      "community": 11,
+      "norm_label": "updateconversationtitle()"
     },
     {
       "label": "getConversationTranscript()",
       "file_type": "code",
       "source_file": "server/db.js",
-      "source_location": "L81",
+      "source_location": "L99",
       "_origin": "ast",
       "id": "server_db_getconversationtranscript",
-      "community": 3,
+      "community": 11,
       "norm_label": "getconversationtranscript()"
     },
     {
       "label": "getRecentHistoryPrompts()",
       "file_type": "code",
       "source_file": "server/db.js",
-      "source_location": "L139",
+      "source_location": "L157",
       "_origin": "ast",
       "id": "server_db_getrecenthistoryprompts",
-      "community": 3,
+      "community": 11,
       "norm_label": "getrecenthistoryprompts()"
     },
     {
@@ -724,10 +734,20 @@
       "norm_label": "renamepath()"
     },
     {
-      "label": "listRemoteDirectory()",
+      "label": "saveUploadedFile()",
       "file_type": "code",
       "source_file": "server/fileService.js",
       "source_location": "L309",
+      "_origin": "ast",
+      "id": "server_fileservice_saveuploadedfile",
+      "community": 3,
+      "norm_label": "saveuploadedfile()"
+    },
+    {
+      "label": "listRemoteDirectory()",
+      "file_type": "code",
+      "source_file": "server/fileService.js",
+      "source_location": "L335",
       "_origin": "ast",
       "id": "server_fileservice_listremotedirectory",
       "community": 3,
@@ -747,7 +767,7 @@
       "label": "__filename",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L36",
+      "source_location": "L37",
       "_origin": "ast",
       "id": "server_index_filename",
       "community": 3,
@@ -757,7 +777,7 @@
       "label": "__dirname",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L37",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "server_index_dirname",
       "community": 3,
@@ -767,7 +787,7 @@
       "label": "app",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L39",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "server_index_app",
       "community": 3,
@@ -777,7 +797,7 @@
       "label": "server",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L40",
+      "source_location": "L41",
       "_origin": "ast",
       "id": "server_index_server",
       "community": 3,
@@ -787,7 +807,7 @@
       "label": "ALLOWED_ORIGINS",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L42",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "server_index_allowed_origins",
       "community": 3,
@@ -797,7 +817,7 @@
       "label": "wss",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L49",
+      "source_location": "L50",
       "_origin": "ast",
       "id": "server_index_wss",
       "community": 3,
@@ -807,7 +827,7 @@
       "label": "DIST_PATH",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L66",
+      "source_location": "L68",
       "_origin": "ast",
       "id": "server_index_dist_path",
       "community": 3,
@@ -817,7 +837,7 @@
       "label": "STORAGE_PATH",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L71",
+      "source_location": "L73",
       "_origin": "ast",
       "id": "server_index_storage_path",
       "community": 3,
@@ -827,7 +847,7 @@
       "label": "STORAGE_BACKUP_PATH",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L72",
+      "source_location": "L74",
       "_origin": "ast",
       "id": "server_index_storage_backup_path",
       "community": 3,
@@ -837,7 +857,7 @@
       "label": "loadStorage()",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L74",
+      "source_location": "L76",
       "_origin": "ast",
       "id": "server_index_loadstorage",
       "community": 3,
@@ -847,7 +867,7 @@
       "label": "saveStorage()",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L92",
+      "source_location": "L102",
       "_origin": "ast",
       "id": "server_index_savestorage",
       "community": 3,
@@ -857,7 +877,7 @@
       "label": "activePtyProcesses",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L663",
+      "source_location": "L736",
       "_origin": "ast",
       "id": "server_index_activeptyprocesses",
       "community": 3,
@@ -867,7 +887,7 @@
       "label": "cleanupAllProcesses()",
       "file_type": "code",
       "source_file": "server/index.js",
-      "source_location": "L799",
+      "source_location": "L872",
       "_origin": "ast",
       "id": "server_index_cleanupallprocesses",
       "community": 3,
@@ -910,7 +930,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_skillsservice",
-      "community": 11,
+      "community": 3,
       "norm_label": "skillsservice.js"
     },
     {
@@ -920,7 +940,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "server_skillsservice_skill_root_dirs",
-      "community": 11,
+      "community": 3,
       "norm_label": "skill_root_dirs"
     },
     {
@@ -930,7 +950,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "server_skillsservice_skillpathmap",
-      "community": 11,
+      "community": 3,
       "norm_label": "skillpathmap"
     },
     {
@@ -940,7 +960,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "server_skillsservice_findskilldirectories",
-      "community": 11,
+      "community": 3,
       "norm_label": "findskilldirectories()"
     },
     {
@@ -950,7 +970,7 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "server_skillsservice_parseskilldescription",
-      "community": 11,
+      "community": 3,
       "norm_label": "parseskilldescription()"
     },
     {
@@ -960,7 +980,7 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "server_skillsservice_pt_br_translations",
-      "community": 11,
+      "community": 3,
       "norm_label": "pt_br_translations"
     },
     {
@@ -970,7 +990,7 @@
       "source_location": "L223",
       "_origin": "ast",
       "id": "server_skillsservice_infercategory",
-      "community": 11,
+      "community": 3,
       "norm_label": "infercategory()"
     },
     {
@@ -980,7 +1000,7 @@
       "source_location": "L266",
       "_origin": "ast",
       "id": "server_skillsservice_translatedescription",
-      "community": 11,
+      "community": 3,
       "norm_label": "translatedescription()"
     },
     {
@@ -990,7 +1010,7 @@
       "source_location": "L300",
       "_origin": "ast",
       "id": "server_skillsservice_formatportuguesetitle",
-      "community": 11,
+      "community": 3,
       "norm_label": "formatportuguesetitle()"
     },
     {
@@ -1000,7 +1020,7 @@
       "source_location": "L333",
       "_origin": "ast",
       "id": "server_skillsservice_getallskills",
-      "community": 11,
+      "community": 3,
       "norm_label": "getallskills()"
     },
     {
@@ -1010,7 +1030,7 @@
       "source_location": "L405",
       "_origin": "ast",
       "id": "server_skillsservice_getskilldetail",
-      "community": 11,
+      "community": 3,
       "norm_label": "getskilldetail()"
     },
     {
@@ -1020,7 +1040,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "server_specroadmapservice",
-      "community": 3,
+      "community": 11,
       "norm_label": "specroadmapservice.js"
     },
     {
@@ -1030,7 +1050,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "server_specroadmapservice_storage_file",
-      "community": 3,
+      "community": 11,
       "norm_label": "storage_file"
     },
     {
@@ -1040,7 +1060,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "server_specroadmapservice_loadstorage",
-      "community": 3,
+      "community": 11,
       "norm_label": "loadstorage()"
     },
     {
@@ -1050,7 +1070,7 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "server_specroadmapservice_savestorage",
-      "community": 3,
+      "community": 11,
       "norm_label": "savestorage()"
     },
     {
@@ -1060,7 +1080,7 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "server_specroadmapservice_generatespecandroadmap",
-      "community": 3,
+      "community": 11,
       "norm_label": "generatespecandroadmap()"
     },
     {
@@ -1070,7 +1090,7 @@
       "source_location": "L235",
       "_origin": "ast",
       "id": "server_specroadmapservice_updatespecandroadmap",
-      "community": 3,
+      "community": 11,
       "norm_label": "updatespecandroadmap()"
     },
     {
@@ -1080,7 +1100,7 @@
       "source_location": "L252",
       "_origin": "ast",
       "id": "server_specroadmapservice_exportspecandroadmaptomarkdown",
-      "community": 3,
+      "community": 11,
       "norm_label": "exportspecandroadmaptomarkdown()"
     },
     {
@@ -1237,7 +1257,7 @@
       "label": "App()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L71",
+      "source_location": "L72",
       "_origin": "ast",
       "id": "src_app_app",
       "community": 6,
@@ -1317,7 +1337,7 @@
       "label": "extractCommandLine()",
       "file_type": "code",
       "source_file": "src/components/ConversationHistoryModal.jsx",
-      "source_location": "L34",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "components_conversationhistorymodal_extractcommandline",
       "community": 0,
@@ -1327,7 +1347,7 @@
       "label": "ConversationHistoryModal()",
       "file_type": "code",
       "source_file": "src/components/ConversationHistoryModal.jsx",
-      "source_location": "L63",
+      "source_location": "L67",
       "_origin": "ast",
       "id": "components_conversationhistorymodal_conversationhistorymodal",
       "community": 0,
@@ -1427,7 +1447,7 @@
       "label": "getFileIcon()",
       "file_type": "code",
       "source_file": "src/components/FileManager.jsx",
-      "source_location": "L51",
+      "source_location": "L56",
       "_origin": "ast",
       "id": "components_filemanager_getfileicon",
       "community": 0,
@@ -1437,10 +1457,10 @@
       "label": "FileManager()",
       "file_type": "code",
       "source_file": "src/components/FileManager.jsx",
-      "source_location": "L105",
+      "source_location": "L110",
       "_origin": "ast",
       "id": "components_filemanager_filemanager",
-      "community": 0,
+      "community": 1,
       "norm_label": "filemanager()"
     },
     {
@@ -1510,17 +1530,17 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_sidebar",
-      "community": 1,
+      "community": 0,
       "norm_label": "sidebar.jsx"
     },
     {
       "label": "Sidebar()",
       "file_type": "code",
       "source_file": "src/components/Sidebar.jsx",
-      "source_location": "L23",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "components_sidebar_sidebar",
-      "community": 1,
+      "community": 0,
       "norm_label": "sidebar()"
     },
     {
@@ -1774,10 +1794,20 @@
       "norm_label": "fetchconversations()"
     },
     {
-      "label": "fetchTranscript()",
+      "label": "updateConversationTitle()",
       "file_type": "code",
       "source_file": "src/services/api.js",
       "source_location": "L66",
+      "_origin": "ast",
+      "id": "services_api_updateconversationtitle",
+      "community": 0,
+      "norm_label": "updateconversationtitle()"
+    },
+    {
+      "label": "fetchTranscript()",
+      "file_type": "code",
+      "source_file": "src/services/api.js",
+      "source_location": "L79",
       "_origin": "ast",
       "id": "services_api_fetchtranscript",
       "community": 0,
@@ -1787,7 +1817,7 @@
       "label": "fetchHistory()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L72",
+      "source_location": "L85",
       "_origin": "ast",
       "id": "services_api_fetchhistory",
       "community": 0,
@@ -1797,7 +1827,7 @@
       "label": "fetchHosts()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L78",
+      "source_location": "L91",
       "_origin": "ast",
       "id": "services_api_fetchhosts",
       "community": 0,
@@ -1807,7 +1837,7 @@
       "label": "createHost()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L84",
+      "source_location": "L97",
       "_origin": "ast",
       "id": "services_api_createhost",
       "community": 0,
@@ -1817,7 +1847,7 @@
       "label": "deleteHost()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L94",
+      "source_location": "L107",
       "_origin": "ast",
       "id": "services_api_deletehost",
       "community": 0,
@@ -1827,7 +1857,7 @@
       "label": "fetchSnippets()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L100",
+      "source_location": "L113",
       "_origin": "ast",
       "id": "services_api_fetchsnippets",
       "community": 0,
@@ -1837,7 +1867,7 @@
       "label": "createSnippet()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L106",
+      "source_location": "L119",
       "_origin": "ast",
       "id": "services_api_createsnippet",
       "community": 0,
@@ -1847,7 +1877,7 @@
       "label": "deleteSnippet()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L116",
+      "source_location": "L129",
       "_origin": "ast",
       "id": "services_api_deletesnippet",
       "community": 0,
@@ -1857,7 +1887,7 @@
       "label": "fetchCopilotSuggestion()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L122",
+      "source_location": "L135",
       "_origin": "ast",
       "id": "services_api_fetchcopilotsuggestion",
       "community": 0,
@@ -1867,7 +1897,7 @@
       "label": "fetchTelemetryMetrics()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L132",
+      "source_location": "L145",
       "_origin": "ast",
       "id": "services_api_fetchtelemetrymetrics",
       "community": 0,
@@ -1877,7 +1907,7 @@
       "label": "fetchTelemetryEvents()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L138",
+      "source_location": "L151",
       "_origin": "ast",
       "id": "services_api_fetchtelemetryevents",
       "community": 0,
@@ -1887,7 +1917,7 @@
       "label": "recordTelemetryEvent()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L150",
+      "source_location": "L163",
       "_origin": "ast",
       "id": "services_api_recordtelemetryevent",
       "community": 6,
@@ -1897,7 +1927,7 @@
       "label": "updateTelemetryEvent()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L160",
+      "source_location": "L173",
       "_origin": "ast",
       "id": "services_api_updatetelemetryevent",
       "community": 0,
@@ -1907,7 +1937,7 @@
       "label": "deleteTelemetryEvent()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L170",
+      "source_location": "L183",
       "_origin": "ast",
       "id": "services_api_deletetelemetryevent",
       "community": 0,
@@ -1917,7 +1947,7 @@
       "label": "triggerAutomatedAnalysis()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L178",
+      "source_location": "L191",
       "_origin": "ast",
       "id": "services_api_triggerautomatedanalysis",
       "community": 0,
@@ -1927,7 +1957,7 @@
       "label": "fetchCommandSuggestions()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L186",
+      "source_location": "L199",
       "_origin": "ast",
       "id": "services_api_fetchcommandsuggestions",
       "community": 1,
@@ -1937,7 +1967,7 @@
       "label": "fetchSkills()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L201",
+      "source_location": "L214",
       "_origin": "ast",
       "id": "services_api_fetchskills",
       "community": 1,
@@ -1947,7 +1977,7 @@
       "label": "fetchSkillDetail()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L215",
+      "source_location": "L228",
       "_origin": "ast",
       "id": "services_api_fetchskilldetail",
       "community": 1,
@@ -1957,7 +1987,7 @@
       "label": "fetchSpecAndRoadmap()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L221",
+      "source_location": "L234",
       "_origin": "ast",
       "id": "services_api_fetchspecandroadmap",
       "community": 0,
@@ -1967,7 +1997,7 @@
       "label": "saveSpecAndRoadmap()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L227",
+      "source_location": "L240",
       "_origin": "ast",
       "id": "services_api_savespecandroadmap",
       "community": 0,
@@ -1977,7 +2007,7 @@
       "label": "exportSpecAndRoadmap()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L237",
+      "source_location": "L250",
       "_origin": "ast",
       "id": "services_api_exportspecandroadmap",
       "community": 0,
@@ -1987,7 +2017,7 @@
       "label": "pingHost()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L250",
+      "source_location": "L263",
       "_origin": "ast",
       "id": "services_api_pinghost",
       "community": 0,
@@ -1997,7 +2027,7 @@
       "label": "fetchSystemStatus()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L266",
+      "source_location": "L279",
       "_origin": "ast",
       "id": "services_api_fetchsystemstatus",
       "community": 0,
@@ -2007,7 +2037,7 @@
       "label": "fetchFsList()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L280",
+      "source_location": "L293",
       "_origin": "ast",
       "id": "services_api_fetchfslist",
       "community": 0,
@@ -2017,7 +2047,7 @@
       "label": "fetchFsReadFile()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L293",
+      "source_location": "L306",
       "_origin": "ast",
       "id": "services_api_fetchfsreadfile",
       "community": 0,
@@ -2027,7 +2057,7 @@
       "label": "saveFsFile()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L303",
+      "source_location": "L316",
       "_origin": "ast",
       "id": "services_api_savefsfile",
       "community": 0,
@@ -2037,7 +2067,7 @@
       "label": "createFsDirectory()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L316",
+      "source_location": "L329",
       "_origin": "ast",
       "id": "services_api_createfsdirectory",
       "community": 0,
@@ -2047,7 +2077,7 @@
       "label": "createFsFile()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L329",
+      "source_location": "L342",
       "_origin": "ast",
       "id": "services_api_createfsfile",
       "community": 0,
@@ -2057,7 +2087,7 @@
       "label": "deleteFsPath()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L342",
+      "source_location": "L355",
       "_origin": "ast",
       "id": "services_api_deletefspath",
       "community": 0,
@@ -2067,17 +2097,37 @@
       "label": "renameFsPath()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L355",
+      "source_location": "L368",
       "_origin": "ast",
       "id": "services_api_renamefspath",
       "community": 0,
       "norm_label": "renamefspath()"
     },
     {
+      "label": "uploadFsFiles()",
+      "file_type": "code",
+      "source_file": "src/services/api.js",
+      "source_location": "L381",
+      "_origin": "ast",
+      "id": "services_api_uploadfsfiles",
+      "community": 0,
+      "norm_label": "uploadfsfiles()"
+    },
+    {
+      "label": "getDownloadFsUrl()",
+      "file_type": "code",
+      "source_file": "src/services/api.js",
+      "source_location": "L394",
+      "_origin": "ast",
+      "id": "services_api_getdownloadfsurl",
+      "community": 0,
+      "norm_label": "getdownloadfsurl()"
+    },
+    {
       "label": "fetchRemoteFsList()",
       "file_type": "code",
       "source_file": "src/services/api.js",
-      "source_location": "L368",
+      "source_location": "L398",
       "_origin": "ast",
       "id": "services_api_fetchremotefslist",
       "community": 0,
@@ -2470,6 +2520,16 @@
       "id": "home_nader_documents_projects_termius_agent_termius_agent_app_sh__entry",
       "community": 13,
       "norm_label": "termius-agent-app.sh script"
+    },
+    {
+      "label": "conversationTitle.test.js",
+      "file_type": "code",
+      "source_file": "test/conversationTitle.test.js",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "test_conversationtitle_test",
+      "community": 11,
+      "norm_label": "conversationtitle.test.js"
     },
     {
       "label": "fileService.test.js",
@@ -2925,7 +2985,7 @@
       "label": "\ud83d\ude80 Pr\u00f3ximos Passos Recomendados",
       "file_type": "document",
       "source_file": "ROADMAP.md",
-      "source_location": "L90",
+      "source_location": "L92",
       "_origin": "ast",
       "id": "roadmap_pr\u00f3ximos_passos_recomendados",
       "community": 8,
@@ -3005,7 +3065,7 @@
       "label": "3.3. 3 Modos de Trabalho (Work Modes)",
       "file_type": "document",
       "source_file": "SPEC.md",
-      "source_location": "L41",
+      "source_location": "L43",
       "_origin": "ast",
       "id": "spec_3_3_3_modos_de_trabalho_work_modes",
       "community": 10,
@@ -3015,7 +3075,7 @@
       "label": "3.4. Visual Session Recorder & Replay Suite",
       "file_type": "document",
       "source_file": "SPEC.md",
-      "source_location": "L46",
+      "source_location": "L48",
       "_origin": "ast",
       "id": "spec_3_4_visual_session_recorder_replay_suite",
       "community": 10,
@@ -3025,7 +3085,7 @@
       "label": "3.5. Snippets Param\u00e9tricos & Multi-Host Cluster Broadcast",
       "file_type": "document",
       "source_file": "SPEC.md",
-      "source_location": "L53",
+      "source_location": "L55",
       "_origin": "ast",
       "id": "spec_3_5_snippets_param\u00e9tricos_multi_host_cluster_broadcast",
       "community": 10,
@@ -3035,7 +3095,7 @@
       "label": "3.6. Design System & Usabilidade (Impeccable UI)",
       "file_type": "document",
       "source_file": "SPEC.md",
-      "source_location": "L59",
+      "source_location": "L61",
       "_origin": "ast",
       "id": "spec_3_6_design_system_usabilidade_impeccable_ui",
       "community": 10,
@@ -3045,7 +3105,7 @@
       "label": "4. \ud83c\udfdb\ufe0f Decis\u00f5es de Arquitetura & Engenharia",
       "file_type": "document",
       "source_file": "SPEC.md",
-      "source_location": "L67",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "spec_4_decis\u00f5es_de_arquitetura_engenharia",
       "community": 10,
@@ -3055,7 +3115,7 @@
       "label": "5. \ud83e\uddea Cobertura de Testes Automatizados",
       "file_type": "document",
       "source_file": "SPEC.md",
-      "source_location": "L76",
+      "source_location": "L78",
       "_origin": "ast",
       "id": "spec_5_cobertura_de_testes_automatizados",
       "community": 10,
@@ -3916,6 +3976,16 @@
       "target": "server_db_listconversations"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "server/db.js",
+      "source_location": "L86",
+      "weight": 1.0,
+      "source": "server_db",
+      "target": "server_db_updateconversationtitle",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -3938,6 +4008,17 @@
       "target": "server_db"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/conversationTitle.test.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "test_conversationtitle_test",
+      "target": "server_db",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -3947,6 +4028,17 @@
       "confidence_score": 1.0,
       "source": "server_db_listconversations",
       "target": "server_db_getdbconnection"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "server/db.js",
+      "source_location": "L89",
+      "weight": 1.0,
+      "source": "server_db_updateconversationtitle",
+      "target": "server_db_getdbconnection",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -3980,6 +4072,39 @@
       "weight": 1.0,
       "source": "server_specroadmapservice_exportspecandroadmaptomarkdown",
       "target": "server_db_listconversations"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/conversationTitle.test.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "test_conversationtitle_test",
+      "target": "server_db_listconversations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "server/index.js",
+      "source_location": "L12",
+      "weight": 1.0,
+      "source": "server_index",
+      "target": "server_db_updateconversationtitle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/conversationTitle.test.js",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "test_conversationtitle_test",
+      "target": "server_db_updateconversationtitle",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -4149,6 +4274,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "server/fileService.js",
+      "source_location": "L309",
+      "weight": 1.0,
+      "source": "server_fileservice",
+      "target": "server_fileservice_saveuploadedfile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "server/fileService.js",
       "source_location": "L237",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -4220,6 +4355,17 @@
       "confidence_score": 1.0,
       "source": "server_fileservice_readfilecontent",
       "target": "server_fileservice_formatbytes"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "server/fileService.js",
+      "source_location": "L330",
+      "weight": 1.0,
+      "source": "server_fileservice_saveuploadedfile",
+      "target": "server_fileservice_formatbytes",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -4429,6 +4575,28 @@
       "confidence_score": 1.0,
       "source": "test_fileservice_test",
       "target": "server_fileservice_renamepath"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "server/index.js",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "server_index",
+      "target": "server_fileservice_saveuploadedfile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "test/fileService.test.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "test_fileservice_test",
+      "target": "server_fileservice_saveuploadedfile",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -4762,9 +4930,9 @@
       "source_file": "server/skillsService.js",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_skillsservice",
-      "target": "server_skillsservice_findskilldirectories",
-      "confidence_score": 1.0
+      "target": "server_skillsservice_findskilldirectories"
     },
     {
       "relation": "contains",
@@ -4812,9 +4980,9 @@
       "source_file": "server/skillsService.js",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_skillsservice",
-      "target": "server_skillsservice_parseskilldescription",
-      "confidence_score": 1.0
+      "target": "server_skillsservice_parseskilldescription"
     },
     {
       "relation": "contains",
@@ -4832,9 +5000,9 @@
       "source_file": "server/skillsService.js",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_skillsservice",
-      "target": "server_skillsservice_skill_root_dirs",
-      "confidence_score": 1.0
+      "target": "server_skillsservice_skill_root_dirs"
     },
     {
       "relation": "contains",
@@ -4842,9 +5010,9 @@
       "source_file": "server/skillsService.js",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_skillsservice",
-      "target": "server_skillsservice_skillpathmap",
-      "confidence_score": 1.0
+      "target": "server_skillsservice_skillpathmap"
     },
     {
       "relation": "contains",
@@ -4863,9 +5031,9 @@
       "source_file": "server/skillsService.js",
       "source_location": "L341",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_skillsservice_getallskills",
-      "target": "server_skillsservice_findskilldirectories",
-      "confidence_score": 1.0
+      "target": "server_skillsservice_findskilldirectories"
     },
     {
       "relation": "calls",
@@ -4874,9 +5042,9 @@
       "source_file": "server/skillsService.js",
       "source_location": "L350",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_skillsservice_getallskills",
-      "target": "server_skillsservice_parseskilldescription",
-      "confidence_score": 1.0
+      "target": "server_skillsservice_parseskilldescription"
     },
     {
       "relation": "calls",
@@ -4940,9 +5108,9 @@
       "source_file": "server/skillsService.js",
       "source_location": "L412",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "server_skillsservice_getskilldetail",
-      "target": "server_skillsservice_getallskills",
-      "confidence_score": 1.0
+      "target": "server_skillsservice_getallskills"
     },
     {
       "relation": "contains",
@@ -5669,9 +5837,9 @@
       "source_file": "src/App.jsx",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app",
-      "target": "services_api",
-      "confidence_score": 1.0
+      "target": "services_api"
     },
     {
       "relation": "imports",
@@ -5680,8 +5848,19 @@
       "source_file": "src/App.jsx",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_app",
-      "target": "services_api_fetchskills",
+      "target": "services_api_fetchskills"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "src_app",
+      "target": "services_api_updateconversationtitle",
       "confidence_score": 1.0
     },
     {
@@ -6239,6 +6418,17 @@
       "target": "services_api_removefluidconversation"
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/ConversationHistoryModal.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "components_conversationhistorymodal",
+      "target": "services_api_updateconversationtitle",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/CustomWorkModeModal.jsx",
@@ -6435,6 +6625,17 @@
       "source_file": "src/components/FileManager.jsx",
       "source_location": "L2",
       "weight": 1.0,
+      "source": "components_filemanager",
+      "target": "services_api_getdownloadfsurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FileManager.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
       "confidence_score": 1.0,
       "source": "components_filemanager",
       "target": "services_api_renamefspath"
@@ -6449,6 +6650,17 @@
       "confidence_score": 1.0,
       "source": "components_filemanager",
       "target": "services_api_savefsfile"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FileManager.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "components_filemanager",
+      "target": "services_api_uploadfsfiles",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -6676,6 +6888,50 @@
       "confidence_score": 1.0,
       "source": "components_sidebar",
       "target": "components_sidebar_sidebar"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Sidebar.jsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "components_sidebar",
+      "target": "services_api",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Sidebar.jsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "components_sidebar",
+      "target": "services_api_fetchhosts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Sidebar.jsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "components_sidebar",
+      "target": "services_api_fetchsnippets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/Sidebar.jsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "components_sidebar",
+      "target": "services_api_fetchsystemstatus",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -7512,6 +7768,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/services/api.js",
+      "source_location": "L394",
+      "weight": 1.0,
+      "source": "services_api",
+      "target": "services_api_getdownloadfsurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/api.js",
       "source_location": "L250",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -7592,11 +7858,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/services/api.js",
+      "source_location": "L66",
+      "weight": 1.0,
+      "source": "services_api",
+      "target": "services_api_updateconversationtitle",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/api.js",
       "source_location": "L160",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "services_api",
       "target": "services_api_updatetelemetryevent"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/api.js",
+      "source_location": "L381",
+      "weight": 1.0,
+      "source": "services_api",
+      "target": "services_api_uploadfsfiles",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -8710,5 +8996,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b650df1accb945fff928f9ef07b109f2cfa9e2bc"
+  "built_at_commit": "7379436f1b4f99cc45eb042803446fb629a71606"
 }

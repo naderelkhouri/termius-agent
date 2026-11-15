@@ -438,10 +438,9 @@ export default function FileManager({ onOpenTerminalAt, onCdActiveTerminal }) {
   // Atalhos Rápidos de Diretório
   const quickBookmarks = [
     { label: 'Home (~)', path: '/home/nader', icon: HardDrive },
-    { label: 'Applications', path: '/home/nader/Applications', icon: FolderTree },
-    { label: 'Invest-X', path: '/home/nader/invest-x', icon: Folder },
-    { label: 'Mercado App', path: '/home/nader/Applications/mercado-app', icon: Folder },
-    { label: 'Termius Agent', path: '/home/nader/Applications/termius-agent', icon: Folder },
+    { label: 'Documents', path: '/home/nader/Documents', icon: FolderTree },
+    { label: 'Projects', path: '/home/nader/Documents/Projects', icon: FolderTree },
+    { label: 'Termius Agent', path: '/home/nader/Documents/Projects/termius-agent', icon: Folder },
     { label: 'Downloads', path: '/home/nader/Downloads', icon: Folder },
     { label: 'Raiz (/)', path: '/', icon: Server },
   ];
