@@ -76,6 +76,16 @@ export default function App() {
   const [splitMode, setSplitMode] = useState('single'); // 'single' | 'vertical' | 'horizontal' | 'triple' | 'quad'
   const [secondaryTabId, setSecondaryTabId] = useState(null);
   const [splitTabIds, setSplitTabIds] = useState([]); // [slot0, slot1, slot2, slot3]
+  const [splitRatio, setSplitRatio] = useState(() => {
+    try {
+      const saved = localStorage.getItem('termius_split_ratio');
+      return saved ? JSON.parse(saved) : { vertical: 50, horizontal: 50, triple: [33.33, 33.33, 33.34], quad: { x: 50, y: 50 } };
+    } catch {
+      return { vertical: 50, horizontal: 50, triple: [33.33, 33.33, 33.34], quad: { x: 50, y: 50 } };
+    }
+  });
+  const [isDraggingSplitter, setIsDraggingSplitter] = useState(null); // 'vertical' | 'horizontal' | 'quad-x' | 'quad-y'
+  const splitContainerRef = useRef(null);
   const [copilotOpen, setCopilotOpen] = useState(false);
   const [sidecarOpen, setSidecarOpen] = useState(false);
   const [skillsModalOpen, setSkillsModalOpen] = useState(false);
@@ -997,6 +1007,79 @@ export default function App() {
     setSplitMode(mode);
   };
 
+  // Drag resizer para as divisórias de múltiplos terminais
+  const handleSplitterMouseDown = (type, e) => {
+    e.preventDefault();
+    setIsDraggingSplitter(type);
+
+    const container = splitContainerRef.current;
+    if (!container) return;
+
+    const rect = container.getBoundingClientRect();
+
+    const handleMouseMove = (moveEvent) => {
+      if (type === 'vertical') {
+        const pct = Math.min(80, Math.max(20, ((moveEvent.clientX - rect.left) / rect.width) * 100));
+        setSplitRatio((prev) => {
+          const next = { ...prev, vertical: pct };
+          try { localStorage.setItem('termius_split_ratio', JSON.stringify(next)); } catch {}
+          return next;
+        });
+      } else if (type === 'horizontal') {
+        const pct = Math.min(80, Math.max(20, ((moveEvent.clientY - rect.top) / rect.height) * 100));
+        setSplitRatio((prev) => {
+          const next = { ...prev, horizontal: pct };
+          try { localStorage.setItem('termius_split_ratio', JSON.stringify(next)); } catch {}
+          return next;
+        });
+      } else if (type === 'triple-1') {
+        const pct1 = Math.min(60, Math.max(15, ((moveEvent.clientX - rect.left) / rect.width) * 100));
+        setSplitRatio((prev) => {
+          const currentTriple = prev.triple || [33.33, 33.33, 33.34];
+          const remaining = 100 - pct1;
+          const nextTriple = [pct1, remaining / 2, remaining / 2];
+          const next = { ...prev, triple: nextTriple };
+          try { localStorage.setItem('termius_split_ratio', JSON.stringify(next)); } catch {}
+          return next;
+        });
+      } else if (type === 'quad-x') {
+        const pctX = Math.min(80, Math.max(20, ((moveEvent.clientX - rect.left) / rect.width) * 100));
+        setSplitRatio((prev) => {
+          const next = { ...prev, quad: { ...(prev.quad || { x: 50, y: 50 }), x: pctX } };
+          try { localStorage.setItem('termius_split_ratio', JSON.stringify(next)); } catch {}
+          return next;
+        });
+      } else if (type === 'quad-y') {
+        const pctY = Math.min(80, Math.max(20, ((moveEvent.clientY - rect.top) / rect.height) * 100));
+        setSplitRatio((prev) => {
+          const next = { ...prev, quad: { ...(prev.quad || { x: 50, y: 50 }), y: pctY } };
+          try { localStorage.setItem('termius_split_ratio', JSON.stringify(next)); } catch {}
+          return next;
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsDraggingSplitter(null);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      // Dispara resize nos terminais xterm
+      window.dispatchEvent(new Event('resize'));
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleResetSplitRatio = () => {
+    const defaultRatios = { vertical: 50, horizontal: 50, triple: [33.33, 33.33, 33.34], quad: { x: 50, y: 50 } };
+    setSplitRatio(defaultRatios);
+    try {
+      localStorage.setItem('termius_split_ratio', JSON.stringify(defaultRatios));
+    } catch {}
+    window.dispatchEvent(new Event('resize'));
+  };
+
   const activeTab = openTabs.find(t => t.id === activeTabId);
   const activeCwd = activeTab?.cwd || '/home/nader';
 
@@ -1703,17 +1786,34 @@ export default function App() {
           <div className={`h-full w-full ${currentView === 'terminals' ? 'flex overflow-hidden' : 'hidden'}`}>
             {/* Terminal Main Grid/Pane */}
             <div className="flex-1 h-full min-w-0 relative flex flex-col">
-              <div className={`flex-1 min-h-0 w-full ${
-                splitMode === 'vertical'
-                  ? 'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
-                  : splitMode === 'horizontal'
-                  ? 'grid grid-rows-2 divide-y divide-[#30363d]'
-                  : splitMode === 'triple'
-                  ? 'grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
-                  : splitMode === 'quad'
-                  ? 'grid grid-cols-1 md:grid-cols-2 grid-rows-2 divide-y md:divide-y-0 md:divide-x divide-[#30363d]'
-                  : 'relative'
-              }`}>
+              <div 
+                ref={splitContainerRef}
+                style={{
+                  gridTemplateColumns: splitMode === 'vertical'
+                    ? `${splitRatio.vertical || 50}% calc(100% - ${splitRatio.vertical || 50}%)`
+                    : splitMode === 'triple'
+                    ? `${(splitRatio.triple && splitRatio.triple[0]) || 33.33}% ${(splitRatio.triple && splitRatio.triple[1]) || 33.33}% ${(splitRatio.triple && splitRatio.triple[2]) || 33.34}%`
+                    : splitMode === 'quad'
+                    ? `${(splitRatio.quad && splitRatio.quad.x) || 50}% calc(100% - ${(splitRatio.quad && splitRatio.quad.x) || 50}%)`
+                    : undefined,
+                  gridTemplateRows: splitMode === 'horizontal'
+                    ? `${splitRatio.horizontal || 50}% calc(100% - ${splitRatio.horizontal || 50}%)`
+                    : splitMode === 'quad'
+                    ? `${(splitRatio.quad && splitRatio.quad.y) || 50}% calc(100% - ${(splitRatio.quad && splitRatio.quad.y) || 50}%)`
+                    : undefined,
+                }}
+                className={`flex-1 min-h-0 w-full relative ${
+                  splitMode === 'vertical'
+                    ? 'grid divide-y md:divide-y-0 divide-[#30363d]'
+                    : splitMode === 'horizontal'
+                    ? 'grid divide-y divide-[#30363d]'
+                    : splitMode === 'triple'
+                    ? 'grid divide-y md:divide-y-0 divide-[#30363d]'
+                    : splitMode === 'quad'
+                    ? 'grid divide-y md:divide-y-0 divide-[#30363d]'
+                    : 'relative'
+                } ${isDraggingSplitter ? 'select-none pointer-events-auto' : ''}`}
+              >
                 {openTabs.map((tab) => {
                   const isPrimary = tab.id === activeTabId;
                   const isVisible = visibleTabIds.includes(tab.id) && currentView === 'terminals';
@@ -1816,6 +1916,68 @@ export default function App() {
                     </div>
                   );
                 })}
+                {/* Handles de Redimensionamento Flutuantes (Splitters) */}
+                {splitMode === 'vertical' && (
+                  <div
+                    onMouseDown={(e) => handleSplitterMouseDown('vertical', e)}
+                    onDoubleClick={handleResetSplitRatio}
+                    style={{ left: `${splitRatio.vertical || 50}%` }}
+                    className="absolute top-0 bottom-0 w-2.5 -ml-1.25 cursor-col-resize z-30 group hover:bg-blue-500/40 transition-colors flex items-center justify-center"
+                    title="Arraste para redimensionar colunas (Duplo clique para 50/50)"
+                  >
+                    <div className="w-0.5 h-10 bg-slate-500/60 group-hover:bg-blue-400 group-hover:h-16 rounded-full transition-all" />
+                  </div>
+                )}
+
+                {splitMode === 'horizontal' && (
+                  <div
+                    onMouseDown={(e) => handleSplitterMouseDown('horizontal', e)}
+                    onDoubleClick={handleResetSplitRatio}
+                    style={{ top: `${splitRatio.horizontal || 50}%` }}
+                    className="absolute left-0 right-0 h-2.5 -mt-1.25 cursor-row-resize z-30 group hover:bg-blue-500/40 transition-colors flex items-center justify-center"
+                    title="Arraste para redimensionar linhas (Duplo clique para 50/50)"
+                  >
+                    <div className="h-0.5 w-10 bg-slate-500/60 group-hover:bg-blue-400 group-hover:w-16 rounded-full transition-all" />
+                  </div>
+                )}
+
+                {splitMode === 'triple' && (
+                  <div
+                    onMouseDown={(e) => handleSplitterMouseDown('triple-1', e)}
+                    onDoubleClick={handleResetSplitRatio}
+                    style={{ left: `${(splitRatio.triple && splitRatio.triple[0]) || 33.33}%` }}
+                    className="absolute top-0 bottom-0 w-2.5 -ml-1.25 cursor-col-resize z-30 group hover:bg-blue-500/40 transition-colors flex items-center justify-center"
+                    title="Arraste para ajustar colunas (Duplo clique para resetar)"
+                  >
+                    <div className="w-0.5 h-10 bg-slate-500/60 group-hover:bg-blue-400 group-hover:h-16 rounded-full transition-all" />
+                  </div>
+                )}
+
+                {splitMode === 'quad' && (
+                  <>
+                    {/* Divisória Vertical do Quad */}
+                    <div
+                      onMouseDown={(e) => handleSplitterMouseDown('quad-x', e)}
+                      onDoubleClick={handleResetSplitRatio}
+                      style={{ left: `${(splitRatio.quad && splitRatio.quad.x) || 50}%` }}
+                      className="absolute top-0 bottom-0 w-2.5 -ml-1.25 cursor-col-resize z-30 group hover:bg-blue-500/40 transition-colors flex items-center justify-center"
+                      title="Arraste para ajustar colunas da grade (Duplo clique para resetar)"
+                    >
+                      <div className="w-0.5 h-10 bg-slate-500/60 group-hover:bg-blue-400 group-hover:h-16 rounded-full transition-all" />
+                    </div>
+
+                    {/* Divisória Horizontal do Quad */}
+                    <div
+                      onMouseDown={(e) => handleSplitterMouseDown('quad-y', e)}
+                      onDoubleClick={handleResetSplitRatio}
+                      style={{ top: `${(splitRatio.quad && splitRatio.quad.y) || 50}%` }}
+                      className="absolute left-0 right-0 h-2.5 -mt-1.25 cursor-row-resize z-30 group hover:bg-blue-500/40 transition-colors flex items-center justify-center"
+                      title="Arraste para ajustar linhas da grade (Duplo clique para resetar)"
+                    >
+                      <div className="h-0.5 w-10 bg-slate-500/60 group-hover:bg-blue-400 group-hover:w-16 rounded-full transition-all" />
+                    </div>
+                  </>
+                )}
               </div>
 
             </div>
