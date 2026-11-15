@@ -6,7 +6,6 @@ import SnippetsManager from './components/SnippetsManager';
 import ConversationHistoryModal from './components/ConversationHistoryModal';
 import AICopilotModal from './components/AICopilotModal';
 import AISidecar from './components/AISidecar';
-import SmartCommandBar from './components/SmartCommandBar';
 import SkillsDropdownModal from './components/SkillsDropdownModal';
 import TelemetryManager from './components/TelemetryManager';
 import SessionReplayModal from './components/SessionReplayModal';
@@ -76,7 +75,6 @@ export default function App() {
   const [secondaryTabId, setSecondaryTabId] = useState(null);
   const [copilotOpen, setCopilotOpen] = useState(false);
   const [sidecarOpen, setSidecarOpen] = useState(false);
-  const [smartBarOpen, setSmartBarOpen] = useState(true);
   const [skillsModalOpen, setSkillsModalOpen] = useState(false);
   const [skillsCount, setSkillsCount] = useState(0);
   const [tabMenuOpen, setTabMenuOpen] = useState(false);
@@ -127,7 +125,6 @@ export default function App() {
     sidebarCompact: false,
     showActiveSessions: true,
     showAiBanners: true,
-    showSmartBar: true,
     showSidecar: false,
     showStatusBar: true,
     showTopActions: true,
@@ -199,12 +196,6 @@ export default function App() {
     ? true
     : Boolean(customConfig.showAiBanners);
 
-  const shouldShowSmartBar = isFoco
-    ? false
-    : isExpansivo
-    ? smartBarOpen
-    : (Boolean(customConfig.showSmartBar) && smartBarOpen);
-
   const shouldShowStatusBar = isFoco
     ? false
     : isExpansivo
@@ -252,7 +243,6 @@ export default function App() {
       sidebarCompact: false,
       showActiveSessions: true,
       showAiBanners: true,
-      showSmartBar: true,
       showSidecar: true,
       showStatusBar: true,
       showTopActions: true,
@@ -270,7 +260,6 @@ export default function App() {
       sidebarCompact: true,
       showActiveSessions: false,
       showAiBanners: false,
-      showSmartBar: false,
       showSidecar: false,
       showStatusBar: false,
       showTopActions: false,
@@ -726,11 +715,6 @@ export default function App() {
       if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'a') {
         e.preventDefault();
         setSidecarOpen((prev) => !prev);
-      }
-      // Ctrl+Space or Ctrl+Shift+P -> Toggle Smart Command Bar
-      if ((e.ctrlKey && (e.code === 'Space' || e.key === ' ')) || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'p')) {
-        e.preventDefault();
-        setSmartBarOpen((prev) => !prev);
       }
       // Ctrl+Shift+S -> Toggle Skills Modal
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
@@ -1448,30 +1432,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Smart Command Bar Toggle */}
-                      <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors">
-                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${smartBarOpen ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40' : 'bg-[#21262d] text-slate-400'}`}>
-                            <Sparkles className="w-4 h-4 text-purple-400" />
-                          </div>
-                          <div className="min-w-0">
-                            <span className="font-bold text-xs text-white block leading-tight truncate">Smart Command Bar</span>
-                            <span className="text-xs text-slate-400 block truncate">Autocomplete preditivo (Ctrl+Espaço)</span>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setSmartBarOpen((prev) => !prev)}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all border shrink-0 cursor-pointer ${
-                            smartBarOpen
-                              ? 'bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-xs'
-                              : 'bg-[#21262d] text-slate-400 border-[#30363d] hover:text-white'
-                          }`}
-                        >
-                          {smartBarOpen ? 'ATIVO' : 'DESL'}
-                        </button>
-                      </div>
-
                       {/* Notificações Desktop & Chime */}
                       <div className="flex items-center justify-between p-2 rounded-xl bg-[#0d1117]/80 border border-[#30363d]/70 hover:border-[#30363d] transition-colors">
                         <div className="flex items-center gap-2.5 min-w-0 pr-2">
@@ -1758,18 +1718,6 @@ export default function App() {
                 })}
               </div>
 
-              {/* Smart Command Bar (Autocomplete Preditivo Contextual) */}
-              {shouldShowSmartBar && (
-                <ErrorBoundary>
-                  <SmartCommandBar
-                    cwd={activeCwd}
-                    onExecuteCommand={(cmd) => handleExecuteCommandInActiveTerminal(cmd, true)}
-                    onInjectCommand={(cmd) => handleExecuteCommandInActiveTerminal(cmd, false)}
-                    isOpen={smartBarOpen}
-                    onToggle={() => setSmartBarOpen((prev) => !prev)}
-                  />
-                </ErrorBoundary>
-              )}
             </div>
 
             {/* Live Docked AI Sidecar Panel */}

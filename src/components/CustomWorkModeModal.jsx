@@ -76,14 +76,6 @@ export default function CustomWorkModeModal({
       disabled: !config.showSidebar || config.sidebarCompact
     },
     {
-      key: 'showSmartBar',
-      icon: Terminal,
-      color: 'text-amber-400',
-      bgColor: 'bg-amber-500/10',
-      title: 'Smart Command Bar (Autocomplete Preditivo)',
-      description: 'Barra de sugestões contextuais e histórico de comandos no rodapé do terminal'
-    },
-    {
       key: 'showSidecar',
       icon: BotMessageSquare,
       color: 'text-purple-400',

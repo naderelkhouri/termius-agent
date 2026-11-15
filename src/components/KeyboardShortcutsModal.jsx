@@ -101,7 +101,6 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
       borderColor: 'border-cyan-500/30',
       shortcuts: [
         { keys: ['Ctrl', 'Shift', 'B'], description: 'Alternar Cluster Broadcast (espelhamento multi-host)' },
-        { keys: ['Ctrl', 'Espaço'], description: 'Abrir Smart Command Bar (autocomplete contextual)' },
         { keys: ['F1', 'ou', '?'], description: 'Abrir esta Central de Atalhos de Teclado' },
         { keys: ['Esc'], description: 'Fechar modais, popovers e barra de pesquisa' }
       ]
