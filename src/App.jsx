@@ -964,6 +964,8 @@ export default function App() {
         showAiBanners={shouldShowAiBanners}
         onOpenCustomModal={() => setCustomModalOpen(true)}
         skillsCount={skillsCount}
+        onConnectHost={handleConnectHost}
+        onExecuteSnippet={handleExecuteCommandInActiveTerminal}
       />
 
       {/* Main Workspace */}
