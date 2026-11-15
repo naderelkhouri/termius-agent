@@ -67,6 +67,8 @@ export default function Sidebar({
   const [quickHosts, setQuickHosts] = useState([]);
   const [quickSnippets, setQuickSnippets] = useState([]);
   const [copiedSnippetId, setCopiedSnippetId] = useState(null);
+  const [selectedHostGroup, setSelectedHostGroup] = useState('Todos');
+  const [selectedSnippetCategory, setSelectedSnippetCategory] = useState('Todas');
 
   useEffect(() => {
     // Carregar status do sistema e atualizar a cada 10s
@@ -550,87 +552,161 @@ export default function Sidebar({
                 )}
 
                 {/* 2. ACESSO RÁPIDO A HOSTS */}
-                {sidebarTab === 'hosts' && (
-                  <div className="space-y-1">
-                    {quickHosts.length === 0 ? (
-                      <div className="p-3 text-center text-slate-500 text-xs">
-                        Nenhum host cadastrado
-                      </div>
-                    ) : (
-                      quickHosts.slice(0, 6).map((h) => {
-                        const isSsh = h.type === 'ssh';
-                        return (
-                          <div
-                            key={h.id}
-                            className="p-2 rounded-xl bg-[#0d1117]/80 hover:bg-[#21262d] border border-[#30363d]/60 flex items-center justify-between gap-2 transition-colors group"
-                          >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span
-                                className="w-2.5 h-2.5 rounded-full shrink-0"
-                                style={{ backgroundColor: h.color || (isSsh ? '#f85149' : '#58a6ff') }}
-                              />
-                              <div className="min-w-0">
-                                <span className="font-bold text-xs text-slate-200 block truncate group-hover:text-blue-300">
-                                  {h.label}
-                                </span>
-                                <span className="text-xs text-slate-400 font-mono block truncate">
-                                  {h.address}:{h.port || 22}
-                                </span>
-                              </div>
-                            </div>
+                {sidebarTab === 'hosts' && (() => {
+                  const hostGroups = ['Todos', ...Array.from(new Set(quickHosts.map(h => h.group || 'Geral').filter(Boolean)))];
+                  const filteredHosts = selectedHostGroup === 'Todos'
+                    ? quickHosts
+                    : quickHosts.filter(h => (h.group || 'Geral') === selectedHostGroup);
 
-                            <button
-                              type="button"
-                              onClick={() => onConnectHost && onConnectHost(h)}
-                              className="px-2 py-1 rounded-lg bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white text-xs font-bold transition-all shrink-0 cursor-pointer"
-                              title={`Conectar terminal em ${h.label}`}
+                  return (
+                    <div className="space-y-1.5">
+                      {/* Pill Filters para Grupos de Hosts */}
+                      {hostGroups.length > 2 && (
+                        <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
+                          {hostGroups.map((grp) => {
+                            const isGrpActive = selectedHostGroup === grp;
+                            return (
+                              <button
+                                key={grp}
+                                type="button"
+                                onClick={() => setSelectedHostGroup(grp)}
+                                className={`px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                                  isGrpActive
+                                    ? 'bg-blue-600 text-white shadow-xs'
+                                    : 'bg-[#21262d] text-slate-400 hover:text-slate-200 hover:bg-[#30363d]'
+                                }`}
+                              >
+                                {grp}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {filteredHosts.length === 0 ? (
+                        <div className="p-3 text-center text-slate-500 text-xs">
+                          Nenhum host neste grupo
+                        </div>
+                      ) : (
+                        filteredHosts.slice(0, 8).map((h) => {
+                          const isSsh = h.type === 'ssh';
+                          return (
+                            <div
+                              key={h.id}
+                              className="p-2 rounded-xl bg-[#0d1117]/80 hover:bg-[#21262d] border border-[#30363d]/60 flex items-center justify-between gap-2 transition-colors group"
                             >
-                              Conectar
-                            </button>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                )}
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span
+                                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                                  style={{ backgroundColor: h.color || (isSsh ? '#f85149' : '#58a6ff') }}
+                                />
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-1.5 min-w-0">
+                                    <span className="font-bold text-xs text-slate-200 block truncate group-hover:text-blue-300">
+                                      {h.label}
+                                    </span>
+                                    {h.group && (
+                                      <span className="text-[10px] uppercase font-mono px-1 rounded bg-[#21262d] text-slate-400 shrink-0">
+                                        {h.group}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className="text-xs text-slate-400 font-mono block truncate">
+                                    {h.address}:{h.port || 22}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => onConnectHost && onConnectHost(h)}
+                                className="px-2 py-1 rounded-lg bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white text-xs font-bold transition-all shrink-0 cursor-pointer"
+                                title={`Conectar terminal em ${h.label}`}
+                              >
+                                Conectar
+                              </button>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* 3. EXECUÇÃO RÁPIDA DE SNIPPETS */}
-                {sidebarTab === 'snippets' && (
-                  <div className="space-y-1">
-                    {quickSnippets.length === 0 ? (
-                      <div className="p-3 text-center text-slate-500 text-xs">
-                        Nenhum snippet cadastrado
-                      </div>
-                    ) : (
-                      quickSnippets.slice(0, 6).map((snip) => {
-                        return (
-                          <div
-                            key={snip.id}
-                            className="p-2 rounded-xl bg-[#0d1117]/80 hover:bg-[#21262d] border border-[#30363d]/60 flex items-center justify-between gap-2 transition-colors group"
-                          >
-                            <div className="min-w-0 flex-1">
-                              <span className="font-bold text-xs text-slate-200 block truncate group-hover:text-amber-300">
-                                {snip.title}
-                              </span>
-                              <span className="text-xs text-slate-400 font-mono block truncate" title={snip.command}>
-                                {snip.command}
-                              </span>
-                            </div>
+                {sidebarTab === 'snippets' && (() => {
+                  const snippetCategories = ['Todas', ...Array.from(new Set(quickSnippets.map(s => s.category || 'Geral').filter(Boolean)))];
+                  const filteredSnippets = selectedSnippetCategory === 'Todas'
+                    ? quickSnippets
+                    : quickSnippets.filter(s => (s.category || 'Geral') === selectedSnippetCategory);
 
-                            <button
-                              type="button"
-                              onClick={() => onExecuteSnippet && onExecuteSnippet(snip.command)}
-                              className="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black transition-all shrink-0 cursor-pointer"
-                              title={`Executar "${snip.title}" no terminal ativo`}
+                  return (
+                    <div className="space-y-1.5">
+                      {/* Pill Filters para Categorias de Snippets */}
+                      {snippetCategories.length > 2 && (
+                        <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-none">
+                          {snippetCategories.map((cat) => {
+                            const isCatActive = selectedSnippetCategory === cat;
+                            return (
+                              <button
+                                key={cat}
+                                type="button"
+                                onClick={() => setSelectedSnippetCategory(cat)}
+                                className={`px-2 py-0.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                                  isCatActive
+                                    ? 'bg-amber-600 text-white shadow-xs'
+                                    : 'bg-[#21262d] text-slate-400 hover:text-slate-200 hover:bg-[#30363d]'
+                                }`}
+                              >
+                                {cat}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {filteredSnippets.length === 0 ? (
+                        <div className="p-3 text-center text-slate-500 text-xs">
+                          Nenhum snippet nesta categoria
+                        </div>
+                      ) : (
+                        filteredSnippets.slice(0, 8).map((snip) => {
+                          return (
+                            <div
+                              key={snip.id}
+                              className="p-2 rounded-xl bg-[#0d1117]/80 hover:bg-[#21262d] border border-[#30363d]/60 flex items-center justify-between gap-2 transition-colors group"
                             >
-                              <Play className="w-3 h-3 fill-current" />
-                            </button>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                )}
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <span className="font-bold text-xs text-slate-200 block truncate group-hover:text-amber-300">
+                                    {snip.title}
+                                  </span>
+                                  {snip.category && (
+                                    <span className="text-[10px] uppercase font-mono px-1 rounded bg-[#21262d] text-amber-400/80 shrink-0">
+                                      {snip.category}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-xs text-slate-400 font-mono block truncate" title={snip.command}>
+                                  {snip.command}
+                                </span>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => onExecuteSnippet && onExecuteSnippet(snip.command)}
+                                className="p-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black transition-all shrink-0 cursor-pointer"
+                                title={`Executar "${snip.title}" no terminal ativo`}
+                              >
+                                <Play className="w-3 h-3 fill-current" />
+                              </button>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           )}
