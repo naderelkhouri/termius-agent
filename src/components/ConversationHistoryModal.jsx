@@ -7,7 +7,8 @@ import {
   removeFavorite,
   fetchFluidConversations,
   addFluidConversation,
-  removeFluidConversation
+  removeFluidConversation,
+  updateConversationTitle
 } from '../services/api';
 import { 
   BotMessageSquare, 
@@ -27,7 +28,10 @@ import {
   ArrowUp,
   ArrowDown,
   FileText,
-  Milestone
+  Milestone,
+  Pencil,
+  X,
+  Save
 } from 'lucide-react';
 import SpecRoadmapModal from './SpecRoadmapModal';
 
@@ -63,7 +67,8 @@ function extractCommandLine(tc) {
 export default function ConversationHistoryModal({ 
   onExecuteCommand, 
   onOpenProjectTerminal, 
-  onResumeConversation 
+  onResumeConversation,
+  onUpdateConversationTitle 
 }) {
   const [conversations, setConversations] = useState([]);
   const [total, setTotal] = useState(0);
@@ -74,6 +79,56 @@ export default function ConversationHistoryModal({
   const [transcriptLoading, setTranscriptLoading] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [specModalConv, setSpecModalConv] = useState(null);
+
+  // Renomear conversa
+  const [renameModal, setRenameModal] = useState({ open: false, conversation: null, title: '' });
+  const [savingTitle, setSavingTitle] = useState(false);
+  const [renameSuccessMsg, setRenameSuccessMsg] = useState('');
+
+  const handleOpenRename = (conv, e) => {
+    if (e) e.stopPropagation();
+    setRenameModal({
+      open: true,
+      conversation: conv,
+      title: conv.title || conv.preview || ''
+    });
+  };
+
+  const handleSaveRename = async () => {
+    if (!renameModal.conversation) return;
+    const convId = renameModal.conversation.conversation_id;
+    const newTitle = renameModal.title.trim();
+    if (!newTitle) return;
+
+    setSavingTitle(true);
+    try {
+      await updateConversationTitle(convId, newTitle);
+
+      // Atualização otimista na lista de conversas
+      setConversations((prev) =>
+        prev.map((c) => (c.conversation_id === convId ? { ...c, title: newTitle } : c))
+      );
+
+      // Se for a conversa aberta atualmente, atualiza o detalhe
+      if (selectedConversation && selectedConversation.conversation_id === convId) {
+        setSelectedConversation((prev) => ({ ...prev, title: newTitle }));
+      }
+
+      // Notifica o componente pai para atualizar abas conectadas
+      if (onUpdateConversationTitle) {
+        onUpdateConversationTitle(convId, newTitle);
+      }
+
+      setRenameModal({ open: false, conversation: null, title: '' });
+      setRenameSuccessMsg(`Título salvo: "${newTitle}"`);
+      setTimeout(() => setRenameSuccessMsg(''), 3000);
+    } catch (err) {
+      console.error('[ConversationHistoryModal] Erro ao renomear conversa:', err);
+      alert(`Erro ao salvar título: ${err.message}`);
+    } finally {
+      setSavingTitle(false);
+    }
+  };
 
   // Favoritos
   const [favorites, setFavorites] = useState(() => {
@@ -332,7 +387,15 @@ export default function ConversationHistoryModal({
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0d1117] text-slate-100">
+    <div className="h-full flex flex-col bg-[#0d1117] text-slate-100 relative">
+      {/* Toast de Notificação de Renomeação */}
+      {renameSuccessMsg && (
+        <div className="absolute top-4 right-4 z-50 bg-[#161b22] border border-purple-500/50 text-purple-200 px-3.5 py-2 rounded-xl text-xs font-semibold shadow-2xl flex items-center gap-2 animate-fade-in pointer-events-none">
+          <Check className="w-4 h-4 text-purple-400 shrink-0" />
+          <span>{renameSuccessMsg}</span>
+        </div>
+      )}
+
       {/* Top Header */}
       <div className="h-16 px-4 sm:px-6 border-b border-[#30363d] flex items-center justify-between shrink-0 bg-[#161b22]/80 gap-3">
         <div className="flex items-center gap-3 min-w-0">
@@ -352,12 +415,24 @@ export default function ConversationHistoryModal({
             <BotMessageSquare className="w-5 h-5 text-purple-400" />
           </div>
           <div className="min-w-0">
-            <h1 
-              className="text-sm sm:text-base font-bold text-white leading-tight truncate"
-              style={{ textWrap: 'balance' }}
-            >
-              {selectedConversation ? selectedConversation.title || 'Conversa Antigravity' : 'Histórico de Conversas da IA'}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 
+                className="text-sm sm:text-base font-bold text-white leading-tight truncate"
+                style={{ textWrap: 'balance' }}
+              >
+                {selectedConversation ? selectedConversation.title || 'Conversa Antigravity' : 'Histórico de Conversas da IA'}
+              </h1>
+              {selectedConversation && (
+                <button
+                  type="button"
+                  onClick={(e) => handleOpenRename(selectedConversation, e)}
+                  className="p-1 text-slate-400 hover:text-purple-300 hover:bg-[#21262d] rounded-lg transition-colors cursor-pointer shrink-0"
+                  title="Renomear esta conversa"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
             <p className="text-xs text-slate-300 font-medium truncate">
               {selectedConversation 
                 ? `ID: ${selectedConversation.conversation_id.slice(0, 8)} • ${transcript?.length || selectedConversation.step_count} interações` 
@@ -652,7 +727,15 @@ export default function ConversationHistoryModal({
                                 <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
                               </span>
                             )}
-                            <span>{c.title || c.preview || 'Sem título'}</span>
+                            <span className="truncate">{c.title || c.preview || 'Sem título'}</span>
+                            <button
+                              type="button"
+                              onClick={(e) => handleOpenRename(c, e)}
+                              className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-purple-300 hover:bg-[#30363d] rounded transition-all cursor-pointer ml-1 shrink-0"
+                              title="Renomear conversa"
+                            >
+                              <Pencil className="w-3 h-3" />
+                            </button>
                           </div>
                           <div className="text-slate-400 text-xs line-clamp-1 font-normal mt-0.5">
                             {c.preview || 'Sem preview disponível.'}
@@ -681,6 +764,14 @@ export default function ConversationHistoryModal({
                         </td>
                         <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={(e) => handleOpenRename(c, e)}
+                              className="p-1.5 rounded-lg bg-[#21262d] hover:bg-purple-500/20 text-slate-300 hover:text-purple-300 border border-[#30363d] transition-colors cursor-pointer"
+                              title="Renomear esta conversa"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
                             <button
                               type="button"
                               onClick={() => setSpecModalConv(c)}
@@ -790,17 +881,27 @@ export default function ConversationHistoryModal({
                     >
                       <div>
                         <div className="flex items-start justify-between gap-2.5 mb-2">
-                          <h2 
-                            className="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-purple-300 transition-colors line-clamp-1 flex-1 pr-1 flex items-center gap-1.5"
-                            style={{ textWrap: 'balance' }}
-                          >
-                            {isFluid && (
-                              <span title="Modo Fluido ativo nesta conversa">
-                                <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
-                              </span>
-                            )}
-                            <span>{c.title || c.preview || 'Sem título'}</span>
-                          </h2>
+                          <div className="flex items-center gap-1.5 min-w-0 flex-1 pr-1">
+                            <h2 
+                              className="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-purple-300 transition-colors line-clamp-1 flex items-center gap-1.5"
+                              style={{ textWrap: 'balance' }}
+                            >
+                              {isFluid && (
+                                <span title="Modo Fluido ativo nesta conversa">
+                                  <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400 shrink-0" />
+                                </span>
+                              )}
+                              <span>{c.title || c.preview || 'Sem título'}</span>
+                            </h2>
+                            <button
+                              type="button"
+                              onClick={(e) => handleOpenRename(c, e)}
+                              className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-purple-300 hover:bg-[#21262d] rounded transition-all cursor-pointer shrink-0"
+                              title="Renomear esta conversa"
+                            >
+                              <Pencil className="w-3 h-3" />
+                            </button>
+                          </div>
                           <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
@@ -851,6 +952,16 @@ export default function ConversationHistoryModal({
                         </div>
 
                         <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={(e) => handleOpenRename(c, e)}
+                            className="min-h-[28px] px-2 py-1 rounded-lg bg-[#21262d] hover:bg-purple-500/20 text-slate-300 hover:text-purple-200 border border-[#30363d] text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                            title="Renomear esta conversa"
+                          >
+                            <Pencil className="w-3.5 h-3.5 text-purple-400" />
+                            <span className="hidden sm:inline">Renomear</span>
+                          </button>
+
                           <button
                             type="button"
                             onClick={(e) => {
@@ -1028,6 +1139,66 @@ export default function ConversationHistoryModal({
         onClose={() => setSpecModalConv(null)}
         onResumeConversation={onResumeConversation}
       />
+
+      {/* MODAL: Renomear Conversa IA */}
+      {renameModal.open && renameModal.conversation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in select-none">
+          <div className="bg-[#161b22] border border-[#30363d] rounded-2xl w-full max-w-md p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#30363d]">
+              <div className="flex items-center gap-2 text-white text-sm font-bold">
+                <Pencil className="w-4 h-4 text-purple-400" />
+                <span>Renomear Conversa IA</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRenameModal({ open: false, conversation: null, title: '' })}
+                className="p-1 text-slate-400 hover:text-white hover:bg-[#21262d] rounded-lg transition-colors cursor-pointer"
+                title="Fechar (Esc)"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs text-slate-300 font-semibold">Novo Título da Conversa</label>
+              <input
+                type="text"
+                autoFocus
+                placeholder="Ex: Refatoração PDV, Setup Docker, etc."
+                value={renameModal.title}
+                onChange={(e) => setRenameModal((prev) => ({ ...prev, title: e.target.value }))}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveRename();
+                  if (e.key === 'Escape') setRenameModal({ open: false, conversation: null, title: '' });
+                }}
+                className="w-full px-3 py-2 bg-[#0d1117] border border-[#30363d] focus:border-purple-500 rounded-xl text-xs text-white focus:outline-hidden transition-colors"
+              />
+              <p className="text-xs font-mono text-slate-500 truncate">
+                ID: {renameModal.conversation.conversation_id}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#30363d]">
+              <button
+                type="button"
+                onClick={() => setRenameModal({ open: false, conversation: null, title: '' })}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-[#21262d] transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveRename}
+                disabled={savingTitle || !renameModal.title.trim()}
+                className="px-4 py-1.5 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white flex items-center gap-1.5 transition-all shadow-md cursor-pointer"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>{savingTitle ? 'Salvando...' : 'Salvar Título'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

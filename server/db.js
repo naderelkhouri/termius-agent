@@ -16,11 +16,11 @@ export function getDbConnection() {
   if (!fs.existsSync(DB_PATH)) {
     throw new Error(`Database file not found at ${DB_PATH}`);
   }
-  cachedDb = new DatabaseSync(DB_PATH, { open: true, readOnly: true });
+  cachedDb = new DatabaseSync(DB_PATH, { open: true });
   return cachedDb;
 }
 
-export function listConversations({ search = '', limit = 50, offset = 0 } = {}) {
+export function listConversations({ search = '', limit = 50, offset = 0, customTitles = {} } = {}) {
   const db = getDbConnection();
   let query = `
     SELECT 
@@ -59,8 +59,13 @@ export function listConversations({ search = '', limit = 50, offset = 0 } = {}) 
         }
       } catch {}
     }
+    const finalTitle = customTitles[r.conversation_id] !== undefined && customTitles[r.conversation_id] !== ''
+      ? customTitles[r.conversation_id]
+      : r.title;
+
     return {
       ...r,
+      title: finalTitle,
       workspace
     };
   });
@@ -76,6 +81,19 @@ export function listConversations({ search = '', limit = 50, offset = 0 } = {}) 
   const total = countStmt.get(...countParams).total;
 
   return { conversations: formattedRows, total };
+}
+
+export function updateConversationTitle(conversationId, title) {
+  if (!conversationId || typeof conversationId !== 'string') return false;
+  try {
+    const db = getDbConnection();
+    const stmt = db.prepare('UPDATE conversation_summaries SET title = ? WHERE conversation_id = ?');
+    stmt.run(title, conversationId);
+    return true;
+  } catch (err) {
+    console.warn(`[DB] Erro ao atualizar título da conversa ${conversationId}:`, err.message);
+    return false;
+  }
 }
 
 export function getConversationTranscript(conversationId, maxSteps = 500) {

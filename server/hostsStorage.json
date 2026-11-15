@@ -59,6 +59,17 @@
       "color": "#f85149",
       "defaultCwd": "/root",
       "icon": "server"
+    },
+    {
+      "id": "host-1793920032817",
+      "label": "core-db",
+      "address": "core-db.admx.tech",
+      "user": "nader",
+      "port": 22,
+      "type": "ssh",
+      "group": "Servidores",
+      "color": "#58a6ff",
+      "defaultCwd": "/"
     }
   ],
   "snippets": [
@@ -106,14 +117,15 @@
     "e162d63b-9c4d-40f1-9686-44528cfae025",
     "7781d897-03bf-4f33-9dde-3fc3176126ee",
     "7f0cb3be-5509-4ce9-aae1-66dc7d6bb5cc",
-    "b41672b7-6be5-4e83-9909-7a4eeecc90ad",
     "e83d07a8-1a1d-4412-a966-bd2ce27ee0d6",
     "ff9b0b67-e87f-4995-b8a7-72b9b4af2589",
     "e115a822-e251-43b2-9433-e24edcc69260",
     "692bd69c-1fb6-4812-bf2e-b24bbbab5214",
     "afa9d8cf-fafd-4119-8d90-6e7f4a091c65",
     "53285c7f-e565-41af-ac4c-15deb1edaf7c",
-    "5309077d-c335-4d1f-b55f-550ba189be23"
+    "5309077d-c335-4d1f-b55f-550ba189be23",
+    "cc722955-d64a-48a1-b350-182e372ae274",
+    "84fb4bc9-c8dd-43b7-a027-6b94200b1fad"
   ],
   "fluidConversations": [
     "7e8e0164-73c8-4947-b64b-e88ae8d53b52",
@@ -123,5 +135,21 @@
     "cb52796d-b276-43d9-a4b4-570eecb86f03",
     "947903b5-bacc-44df-9a80-c3630d379a5c",
     "53285c7f-e565-41af-ac4c-15deb1edaf7c"
-  ]
+  ],
+  "customTitles": {
+    "5309077d-c335-4d1f-b55f-550ba189be23": "Atualizando Tablet Upgrade",
+    "5c364a1f-c1e8-4ff9-9c85-0dceafea1d97": "Propostas - Comercial X",
+    "947903b5-bacc-44df-9a80-c3630d379a5c": "WCloudApi",
+    "cce0b2e0-db9f-4bc2-96f1-ffc17ac69d68": "LP + Admin _ Day",
+    "84fb4bc9-c8dd-43b7-a027-6b94200b1fad": "Fome_App",
+    "cb52796d-b276-43d9-a4b4-570eecb86f03": "Comercial X",
+    "aba7d158-5960-4763-9a85-d333b546b549": "Skill de Propostas",
+    "7781d897-03bf-4f33-9dde-3fc3176126ee": "Fundador Sem Código",
+    "7e8e0164-73c8-4947-b64b-e88ae8d53b52": "Mulheres Menopausadas",
+    "12688d01-fe9d-4edf-b5bc-b58453bd8c75": "Admx.tech",
+    "65043af6-1059-412c-b034-271fe53dd3bc": "Videos",
+    "692bd69c-1fb6-4812-bf2e-b24bbbab5214": "Mercatto Pro",
+    "4d012593-590a-4728-acab-6b270248b29f": "VoeBee - Offline",
+    "6cab4043-b615-47e5-b756-72f90d49a458": "Apocalypse Tablet (Downloading)"
+  }
 }

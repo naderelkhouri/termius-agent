@@ -63,6 +63,19 @@ export async function fetchConversations({ search = '', limit = 50, offset = 0 }
   return res.json();
 }
 
+export async function updateConversationTitle(conversationId, title) {
+  const res = await fetch(`${BASE_URL}/conversations/${encodeURIComponent(conversationId)}/title`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `Falha ao renomear conversa (HTTP ${res.status})`);
+  }
+  return res.json();
+}
+
 export async function fetchTranscript(conversationId) {
   const res = await fetch(`${BASE_URL}/conversations/${conversationId}/transcript`);
   if (!res.ok) throw new Error('Falha ao carregar transcript');

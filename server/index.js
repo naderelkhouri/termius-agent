@@ -9,7 +9,7 @@ import os from 'node:os';
 import net from 'node:net';
 import { StringDecoder } from 'node:string_decoder';
 import { fileURLToPath } from 'node:url';
-import { listConversations, getConversationTranscript, getRecentHistoryPrompts } from './db.js';
+import { listConversations, getConversationTranscript, getRecentHistoryPrompts, updateConversationTitle } from './db.js';
 import { generateCopilotCommand } from './copilot.js';
 import { getCommandSuggestions } from './commandSuggestions.js';
 import { getAllSkills, getSkillDetail } from './skillsService.js';
@@ -76,19 +76,27 @@ const STORAGE_BACKUP_PATH = path.join(__dirname, 'hostsStorage.json.bak');
 function loadStorage() {
   try {
     if (fs.existsSync(STORAGE_PATH)) {
-      return JSON.parse(fs.readFileSync(STORAGE_PATH, 'utf-8'));
+      const data = JSON.parse(fs.readFileSync(STORAGE_PATH, 'utf-8'));
+      if (!data.customTitles || typeof data.customTitles !== 'object') {
+        data.customTitles = {};
+      }
+      return data;
     }
   } catch (e) {
     console.error('[Storage] Erro ao ler storage principal, tentando backup...', e);
     try {
       if (fs.existsSync(STORAGE_BACKUP_PATH)) {
-        return JSON.parse(fs.readFileSync(STORAGE_BACKUP_PATH, 'utf-8'));
+        const data = JSON.parse(fs.readFileSync(STORAGE_BACKUP_PATH, 'utf-8'));
+        if (!data.customTitles || typeof data.customTitles !== 'object') {
+          data.customTitles = {};
+        }
+        return data;
       }
     } catch (bakErr) {
       console.error('[Storage] Erro ao ler backup de storage:', bakErr);
     }
   }
-  return { hosts: [], snippets: [], favoriteConversations: [], fluidConversations: [] };
+  return { hosts: [], snippets: [], favoriteConversations: [], fluidConversations: [], customTitles: {} };
 }
 
 function saveStorage(data) {
@@ -101,6 +109,9 @@ function saveStorage(data) {
   }
   if (!Array.isArray(data.fluidConversations)) {
     data.fluidConversations = [];
+  }
+  if (!data.customTitles || typeof data.customTitles !== 'object') {
+    data.customTitles = {};
   }
   try {
     if (fs.existsSync(STORAGE_PATH)) {
@@ -180,8 +191,37 @@ app.get('/api/conversations', (req, res) => {
     const search = req.query.search || '';
     const limit = parseInt(req.query.limit) || 50;
     const offset = parseInt(req.query.offset) || 0;
-    const result = listConversations({ search, limit, offset });
+    const storage = loadStorage();
+    const result = listConversations({ search, limit, offset, customTitles: storage.customTitles || {} });
     res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/conversations/:id/title', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body || {};
+    if (!id || typeof id !== 'string') {
+      return res.status(400).json({ error: 'id da conversa obrigatório' });
+    }
+    const cleanTitle = String(title || '').trim();
+
+    // 1. Atualizar em hostsStorage.json (backup permanente e resiliente a reinstalações)
+    const storage = loadStorage();
+    if (!storage.customTitles) storage.customTitles = {};
+    if (cleanTitle) {
+      storage.customTitles[id] = cleanTitle;
+    } else {
+      delete storage.customTitles[id];
+    }
+    saveStorage(storage);
+
+    // 2. Atualizar no SQLite conversation_summaries.db
+    updateConversationTitle(id, cleanTitle);
+
+    res.json({ success: true, conversationId: id, title: cleanTitle });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

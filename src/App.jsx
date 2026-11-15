@@ -67,6 +67,7 @@ import {
   DEFAULT_TERMINAL_SETTINGS, 
   TERMINAL_THEMES 
 } from './services/terminalThemes';
+import { updateConversationTitle } from './services/api';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('terminals');
@@ -797,6 +798,16 @@ export default function App() {
   const handleSaveEditTab = (tabId) => {
     if (editingTabId !== tabId) return;
     const clean = editingTitle.trim();
+
+    // Sincronizar com o histórico de conversas da IA se esta aba estiver vinculada
+    const targetTab = openTabs.find((t) => t.id === tabId);
+    if (targetTab && targetTab.conversationId && clean) {
+      const cleanConvTitle = clean.replace(/^IA:\s*/i, '');
+      updateConversationTitle(targetTab.conversationId, cleanConvTitle).catch((err) => {
+        console.error('[App] Erro ao sincronizar título com histórico IA:', err);
+      });
+    }
+
     setOpenTabs((prev) =>
       prev.map((tab) => {
         if (tab.id !== tabId) return tab;
@@ -1831,6 +1842,16 @@ export default function App() {
               onExecuteCommand={handleExecuteCommandInActiveTerminal}
               onOpenProjectTerminal={(path, name) => handleNewTab(path, name)}
               onResumeConversation={handleResumeConversation}
+              onUpdateConversationTitle={(convId, newTitle) => {
+                setOpenTabs((prev) =>
+                  prev.map((tab) => {
+                    if (tab.conversationId === convId) {
+                      return { ...tab, title: `IA: ${newTitle}` };
+                    }
+                    return tab;
+                  })
+                );
+              }}
             />
           )}
 
