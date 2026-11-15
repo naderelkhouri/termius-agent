@@ -40,17 +40,17 @@ test('formatBytes should format size correctly', () => {
 });
 
 test('getBreadcrumbs should decompose paths correctly', () => {
-  const breadcrumbs = getBreadcrumbs('/home/nader/Documents/Projects/termius-agent');
+  const breadcrumbs = getBreadcrumbs('/home/nader/Applications/termius-agent');
   assert.equal(breadcrumbs[0].label, 'Raiz (/)');
   assert.equal(breadcrumbs[0].path, '/');
   assert.equal(breadcrumbs[1].label, 'home');
   assert.equal(breadcrumbs[1].path, '/home');
   assert.equal(breadcrumbs[breadcrumbs.length - 1].label, 'termius-agent');
-  assert.equal(breadcrumbs[breadcrumbs.length - 1].path, '/home/nader/Documents/Projects/termius-agent');
+  assert.equal(breadcrumbs[breadcrumbs.length - 1].path, '/home/nader/Applications/termius-agent');
 });
 
 test('listDirectory should list items in a real directory with metadata', async () => {
-  const result = await listDirectory('/home/nader/Documents/Projects/termius-agent');
+  const result = await listDirectory(process.cwd());
   assert.ok(!result.error, 'Should not return an error');
   assert.equal(typeof result.totalItems, 'number');
   assert.ok(result.totalItems > 0);
