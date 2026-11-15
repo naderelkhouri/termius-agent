@@ -69,6 +69,13 @@ export default function Sidebar({
   const [copiedSnippetId, setCopiedSnippetId] = useState(null);
   const [selectedHostGroup, setSelectedHostGroup] = useState('Todos');
   const [selectedSnippetCategory, setSelectedSnippetCategory] = useState('Todas');
+  const [isDockCollapsed, setIsDockCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('termius_sidebar_dock_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     // Carregar status do sistema e atualizar a cada 10s
@@ -389,14 +396,14 @@ export default function Sidebar({
 
           {/* Active Terminal Tabs Quick List */}
           {showActiveSessions && !isCompact && openTabs.length > 0 && (
-            <div className="pt-2.5 border-t border-[#30363d] px-3 shrink-0">
+            <div className={`pt-2.5 border-t border-[#30363d] px-3 shrink-0 ${isDockCollapsed ? 'flex-1 min-h-0 flex flex-col' : ''}`}>
               <div className="flex items-center justify-between px-3 py-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   Sessões ({openTabs.length})
                 </span>
                 <Layers className="w-3.5 h-3.5 text-slate-400" />
               </div>
-              <div className="space-y-1 max-h-36 overflow-y-auto pr-1 scrollbar-none">
+              <div className={`space-y-1 overflow-y-auto pr-1 scrollbar-none ${isDockCollapsed ? 'flex-1 min-h-0' : 'max-h-36'}`}>
                 {openTabs.map((tab) => {
                   const isSelected = activeTabId === tab.id && currentView === 'terminals';
                   return (
@@ -427,54 +434,80 @@ export default function Sidebar({
 
           {/* Painel Modular de Produtividade: Espaço entre Sessões e Rodapé */}
           {!isCompact && (
-            <div className="flex-1 flex flex-col min-h-0 border-t border-[#30363d]/80 pt-2 px-3 overflow-hidden">
-              {/* Seletor de Abas do Espaço Lateral */}
-              <div className="flex items-center bg-[#0d1117] p-0.5 rounded-xl border border-[#30363d]/70 shrink-0 mb-2">
+            <div className={`flex flex-col border-t border-[#30363d]/80 transition-all duration-200 overflow-hidden ${
+              isDockCollapsed ? 'shrink-0 pt-1 pb-1 px-3' : 'flex-1 min-h-0 pt-2 px-3'
+            }`}>
+              {/* Barra de Título / Cabeçalho Accordion do Dock */}
+              <div className="flex items-center justify-between mb-1.5 px-1 shrink-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Activity className="w-3 h-3 text-cyan-400" />
+                  <span>Produtividade</span>
+                </span>
                 <button
                   type="button"
-                  onClick={() => handleSelectSidebarTab('metrics')}
-                  className={`flex-1 py-1 px-1 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                    sidebarTab === 'metrics'
-                      ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-xs'
-                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
-                  }`}
-                  title="Monitor de CPU, Memória e Recursos do Host"
+                  onClick={() => {
+                    const next = !isDockCollapsed;
+                    setIsDockCollapsed(next);
+                    try {
+                      localStorage.setItem('termius_sidebar_dock_collapsed', String(next));
+                    } catch {}
+                  }}
+                  className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-[#21262d] transition-colors cursor-pointer"
+                  title={isDockCollapsed ? "Expandir painel de produtividade" : "Recolher painel (foco total nas sessões)"}
                 >
-                  <Activity className="w-3 h-3 text-emerald-400" />
-                  <span className="truncate">Sistema</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectSidebarTab('hosts')}
-                  className={`flex-1 py-1 px-1 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                    sidebarTab === 'hosts'
-                      ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-xs'
-                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
-                  }`}
-                  title="Acesso rápido a servidores SSH e ambientes"
-                >
-                  <Server className="w-3 h-3 text-sky-400" />
-                  <span className="truncate">Hosts</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectSidebarTab('snippets')}
-                  className={`flex-1 py-1 px-1 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                    sidebarTab === 'snippets'
-                      ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-xs'
-                      : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
-                  }`}
-                  title="Execução rápida de snippets salvos"
-                >
-                  <Code2 className="w-3 h-3 text-amber-400" />
-                  <span className="truncate">Snippets</span>
+                  {isDockCollapsed ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
                 </button>
               </div>
 
-              {/* Conteúdo Dinâmico com Scroll Próprio */}
-              <div className="flex-1 overflow-y-auto min-h-0 pr-0.5 space-y-2 select-text">
+              {/* Seletor de Abas e Conteúdo (exibido apenas se expandido) */}
+              {!isDockCollapsed && (
+                <>
+                  <div className="flex items-center bg-[#0d1117] p-0.5 rounded-xl border border-[#30363d]/70 shrink-0 mb-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectSidebarTab('metrics')}
+                      className={`flex-1 py-1 px-1 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                        sidebarTab === 'metrics'
+                          ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-xs'
+                          : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                      }`}
+                      title="Monitor de CPU, Memória e Recursos do Host"
+                    >
+                      <Activity className="w-3 h-3 text-emerald-400" />
+                      <span className="truncate">Sistema</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSelectSidebarTab('hosts')}
+                      className={`flex-1 py-1 px-1 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                        sidebarTab === 'hosts'
+                          ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-xs'
+                          : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                      }`}
+                      title="Acesso rápido a servidores SSH e ambientes"
+                    >
+                      <Server className="w-3 h-3 text-sky-400" />
+                      <span className="truncate">Hosts</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSelectSidebarTab('snippets')}
+                      className={`flex-1 py-1 px-1 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                        sidebarTab === 'snippets'
+                          ? 'bg-blue-600/30 text-blue-300 border border-blue-500/40 shadow-xs'
+                          : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+                      }`}
+                      title="Execução rápida de snippets salvos"
+                    >
+                      <Code2 className="w-3 h-3 text-amber-400" />
+                      <span className="truncate">Snippets</span>
+                    </button>
+                  </div>
+
+                  {/* Conteúdo Dinâmico com Scroll Próprio */}
+                  <div className="flex-1 overflow-y-auto min-h-0 pr-0.5 space-y-2 select-text">
                 {/* 1. MONITOR DE RECURSOS DO SISTEMA */}
                 {sidebarTab === 'metrics' && (
                   <div className="space-y-2 text-xs">
@@ -708,6 +741,8 @@ export default function Sidebar({
                   );
                 })()}
               </div>
+                </>
+              )}
             </div>
           )}
         </div>
