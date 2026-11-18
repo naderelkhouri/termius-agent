@@ -360,7 +360,7 @@ app.get('/api/skills/:name', async (req, res) => {
 // Spec & Roadmap Endpoints
 app.get('/api/conversations/:id/spec-roadmap', (req, res) => {
   try {
-    const data = generateSpecAndRoadmap(req.params.id);
+    const data = generateSpecAndRoadmap(req.params.id, req.query.workspace);
     res.json(data);
   } catch (err) {
     console.error(`[Server] Erro ao obter spec/roadmap de ${req.params.id}:`, err);

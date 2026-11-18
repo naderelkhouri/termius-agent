@@ -1,0 +1,333 @@
+{
+  "692bd69c-1fb6-4812-bf2e-b24bbbab5214": {
+    "conversationId": "692bd69c-1fb6-4812-bf2e-b24bbbab5214",
+    "title": "configure",
+    "generatedAt": "2026-11-16T16:06:47.574Z",
+    "overallProgress": 84,
+    "spec": {
+      "scopeTitle": "configure",
+      "objective": "configure",
+      "techStack": [
+        "Electron"
+      ],
+      "functionalRequirements": [
+        {
+          "id": "req-1",
+          "title": "configure",
+          "fullText": "configure",
+          "status": "completed"
+        },
+        {
+          "id": "req-2",
+          "title": "e não para o ip",
+          "fullText": "e não para o ip\ne sim para o core-manager.admx.tech",
+          "status": "completed"
+        },
+        {
+          "id": "req-3",
+          "title": "]siga",
+          "fullText": "]siga",
+          "status": "completed"
+        },
+        {
+          "id": "req-4",
+          "title": "e a landing page?",
+          "fullText": "e a landing page?",
+          "status": "completed"
+        },
+        {
+          "id": "req-5",
+          "title": "1 e 2",
+          "fullText": "1 e 2",
+          "status": "completed"
+        },
+        {
+          "id": "req-6",
+          "title": "no modo desktop, retire os atalhos da barra superior. no modo mobile, coloque num menu h...",
+          "fullText": "no modo desktop, retire os atalhos da barra superior. no modo mobile, coloque num menu hamburguer",
+          "status": "completed"
+        },
+        {
+          "id": "req-7",
+          "title": "reveja informações técnicas desnecessárias... Um exemplo: \"Fila FIFO de Separação\" O don...",
+          "fullText": "reveja informações técnicas desnecessárias... Um exemplo: \"Fila FIFO de Separação\" O dono de mercado, padaria, hortifuit tem que bater o olho e entender através da simplicidade.",
+          "status": "completed"
+        },
+        {
+          "id": "req-8",
+          "title": "estou pensando em utilizar um gateway de pagamento para começar a cobrar um spread",
+          "fullText": "estou pensando em utilizar um gateway de pagamento para começar a cobrar um spread",
+          "status": "completed"
+        },
+        {
+          "id": "req-9",
+          "title": "precisamos encarar que não estamos apenas disputando com ifood e similares, ams tambem c...",
+          "fullText": "precisamos encarar que não estamos apenas disputando com ifood e similares, ams tambem com maquininhas usadas em caixa",
+          "status": "completed"
+        },
+        {
+          "id": "req-10",
+          "title": "acho ótimo, mas quero um comparativo entre começarmos isso agora e começarmos após valid...",
+          "fullText": "acho ótimo, mas quero um comparativo entre começarmos isso agora e começarmos após validação da operação inicial",
+          "status": "completed"
+        },
+        {
+          "id": "req-11",
+          "title": "certo",
+          "fullText": "certo",
+          "status": "completed"
+        },
+        {
+          "id": "req-12",
+          "title": "setup único é R$ 2.900 com mensalidade R$ 390 . veja esse https://menudino.com . O num d...",
+          "fullText": "setup único é R$ 2.900 com mensalidade R$ 390 . veja esse https://menudino.com . O num do WhatsApp é +55 11 91490-9281 , mas quero um cadastro de interesse com uma pré-qualificação simples. use essa skill agency-landing-page-admin",
+          "status": "in_progress"
+        }
+      ],
+      "architecturalDecisions": [
+        "Resiliência Primeiro: Isolamento de PTY, traps de sinal e backups atômicos.",
+        "Zero-Unmount & Zero-Reload: Sessões de terminal preservadas em qualquer troca de visão ou abertura de painéis.",
+        "Auto-Adaptação Geométrica: Redimensionamento automático do Xterm via ResizeObserver nativo.",
+        "Segurança Estrita: Backend vinculado a 127.0.0.1 com verificação estrita de origin contra CSWSH."
+      ],
+      "affectedFiles": [
+        {
+          "path": "\"/home/nader/Applications/mercado-app/public/manifest.json\"",
+          "name": "manifest.json\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/index.html\"",
+          "name": "index.html\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/package.json\"",
+          "name": "package.json\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/src/App.jsx\"",
+          "name": "App.jsx\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/server/index.js\"",
+          "name": "index.js\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/src/components/landing/B2BLandingPage.jsx\"",
+          "name": "B2BLandingPage.jsx\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/public/logo-mercatto-pro.svg\"",
+          "name": "logo-mercatto-pro.svg\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/public/favicon.svg\"",
+          "name": "favicon.svg\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/src/components/brand/MercattoLogo.jsx\"",
+          "name": "MercattoLogo.jsx\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/server/routes/apiRoutes.js\"",
+          "name": "apiRoutes.js\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/src/components/superadmin/SuperAdminDashboard.jsx\"",
+          "name": "SuperAdminDashboard.jsx\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/src/components/admin/PickingPanel.jsx\"",
+          "name": "PickingPanel.jsx\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/src/api/base44Client.js\"",
+          "name": "base44Client.js\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/electron/main.cjs\"",
+          "name": "main.cjs\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/scripts/instalar-pdv-linux.sh\"",
+          "name": "instalar-pdv-linux.sh\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/scripts/instalar-pdv-windows.bat\"",
+          "name": "instalar-pdv-windows.bat\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/docs/comercial/PLAYBOOK_VENDAS_MERCATTO_PRO.md\"",
+          "name": "PLAYBOOK_VENDAS_MERCATTO_PRO.md\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/docs/comercial/KIT_MATERIAIS_MIGRACAO_CLIENTES.md\"",
+          "name": "KIT_MATERIAIS_MIGRACAO_CLIENTES.md\""
+        },
+        {
+          "path": "\"/home/nader/.agents/skills/agency-landing-page-admin/SKILL.md\"",
+          "name": "SKILL.md\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/server/db/schema.sql\"",
+          "name": "schema.sql\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/server/db/database.js\"",
+          "name": "database.js\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/server/routes/leadRoutes.js\"",
+          "name": "leadRoutes.js\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/src/components/landing/PreQualifyModal.jsx\"",
+          "name": "PreQualifyModal.jsx\""
+        },
+        {
+          "path": "\"/home/nader/Applications/mercado-app/src/components/superadmin/LeadsPipelineTab.jsx\"",
+          "name": "LeadsPipelineTab.jsx\""
+        }
+      ]
+    },
+    "roadmap": {
+      "overallProgress": 84,
+      "milestones": [
+        {
+          "id": "m1",
+          "title": "Diagnóstico Inicial & Resiliência de Processos",
+          "description": "Prevenção de falhas no Electron, encerramento limpo de PTYs Python e isolamento de runtime.",
+          "status": "completed",
+          "progress": 100,
+          "tasks": [
+            {
+              "title": "Single Instance Lock no Electron",
+              "completed": true
+            },
+            {
+              "title": "Signal Traps no Python PTY (killpg)",
+              "completed": true
+            },
+            {
+              "title": "Armazenamento seguro com fallback .bak",
+              "completed": true
+            },
+            {
+              "title": "React ErrorBoundary contra tela preta",
+              "completed": true
+            }
+          ]
+        },
+        {
+          "id": "m2",
+          "title": "Gestão Avançada de Conversas & Modo Fluido",
+          "description": "Favoritos (⭐), alternância entre visão em blocos e tabela com ordenação, e auto-aprovação de comandos.",
+          "status": "completed",
+          "progress": 100,
+          "tasks": [
+            {
+              "title": "Sistema de Favoritos com persistência no backend",
+              "completed": true
+            },
+            {
+              "title": "Visualização em Tabela com ordenação asc/desc",
+              "completed": true
+            },
+            {
+              "title": "Modo Fluido com watcher de prompt no PTY",
+              "completed": true
+            }
+          ]
+        },
+        {
+          "id": "m3",
+          "title": "AI Sidecar ao Vivo (Docking Lateral)",
+          "description": "Painel acoplado lateralmente sem unmount de terminal, streaming de passos, comandos e diffs.",
+          "status": "completed",
+          "progress": 100,
+          "tasks": [
+            {
+              "title": "Layout flexível com auto-resize via ResizeObserver",
+              "completed": true
+            },
+            {
+              "title": "Streaming de passos da IA e raciocínio interno",
+              "completed": true
+            },
+            {
+              "title": "Abas de Comandos com injeção 1-clique e Diffs de arquivos",
+              "completed": true
+            }
+          ]
+        },
+        {
+          "id": "m4",
+          "title": "Smart Command Bar Preditiva",
+          "description": "Barra de comandos preditiva com histórico do agente, scripts npm e atalhos de sistema.",
+          "status": "completed",
+          "progress": 100,
+          "tasks": [
+            {
+              "title": "Coletor de comandos reais do Antigravity",
+              "completed": true
+            },
+            {
+              "title": "Classificador de risco (Seguro / Atenção / Destrutivo)",
+              "completed": true
+            },
+            {
+              "title": "Navegação por setas, Tab para inserir e Enter para rodar",
+              "completed": true
+            }
+          ]
+        },
+        {
+          "id": "m5",
+          "title": "Hub de Skills em Português BR & Spec/Roadmap",
+          "description": "Menu dropdown de skills com descrições em PT-BR e gerador de Spec e Roadmap por conversa.",
+          "status": "completed",
+          "progress": 100,
+          "tasks": [
+            {
+              "title": "Catálogo de skills locais descobertas com traduções em Português BR",
+              "completed": true
+            },
+            {
+              "title": "Menu dropdown e modal de inspeção de skills",
+              "completed": true
+            },
+            {
+              "title": "Geração e renderização de Spec e Roadmap dinâmicos",
+              "completed": true
+            }
+          ]
+        },
+        {
+          "id": "m6",
+          "title": "Próximas Evoluções & Gravação de Sessões",
+          "description": "Asciicast/asciinema session recorder, broadcast multi-host e notificações desktop nativas.",
+          "status": "planned",
+          "progress": 0,
+          "tasks": [
+            {
+              "title": "Visual Session Recorder & Replay",
+              "completed": false
+            },
+            {
+              "title": "Cluster Execution em múltiplos servidores",
+              "completed": false
+            },
+            {
+              "title": "Notificações Desktop Nativas no Linux/Gnome",
+              "completed": false
+            }
+          ]
+        }
+      ],
+      "nextActions": [
+        "Explorar o menu dropdown de Skills IA em Português BR para orquestrar especialistas.",
+        "Acompanhar os requisitos da Spec e checklist do Roadmap diretamente no Sidecar da sessão."
+      ]
+    },
+    "updatedAt": "2026-11-16T16:07:13.035Z"
+  }
+}

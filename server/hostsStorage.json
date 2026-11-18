@@ -125,7 +125,9 @@
     "53285c7f-e565-41af-ac4c-15deb1edaf7c",
     "5309077d-c335-4d1f-b55f-550ba189be23",
     "cc722955-d64a-48a1-b350-182e372ae274",
-    "84fb4bc9-c8dd-43b7-a027-6b94200b1fad"
+    "84fb4bc9-c8dd-43b7-a027-6b94200b1fad",
+    "ea4ab729-1b11-46e6-bd9f-4606119cd85d",
+    "8c656c92-fd2f-4a71-a208-23bf3e51d2e1"
   ],
   "fluidConversations": [
     "7e8e0164-73c8-4947-b64b-e88ae8d53b52",
@@ -134,7 +136,8 @@
     "692bd69c-1fb6-4812-bf2e-b24bbbab5214",
     "cb52796d-b276-43d9-a4b4-570eecb86f03",
     "947903b5-bacc-44df-9a80-c3630d379a5c",
-    "53285c7f-e565-41af-ac4c-15deb1edaf7c"
+    "53285c7f-e565-41af-ac4c-15deb1edaf7c",
+    "ea4ab729-1b11-46e6-bd9f-4606119cd85d"
   ],
   "customTitles": {
     "5309077d-c335-4d1f-b55f-550ba189be23": "Atualizando Tablet Upgrade",
@@ -151,6 +154,9 @@
     "692bd69c-1fb6-4812-bf2e-b24bbbab5214": "Mercatto Pro",
     "4d012593-590a-4728-acab-6b270248b29f": "VoeBee - Offline",
     "6cab4043-b615-47e5-b756-72f90d49a458": "Apocalypse Tablet (Downloading)",
-    "9843fea2-1fc1-4cae-bf7f-387a99ed6500": "Termius"
+    "9843fea2-1fc1-4cae-bf7f-387a99ed6500": "Termius",
+    "27595f08-78e4-4866-8d9d-e91942cbc645": "rustDesk",
+    "ea4ab729-1b11-46e6-bd9f-4606119cd85d": "Plane",
+    "8c656c92-fd2f-4a71-a208-23bf3e51d2e1": "Audita PDV"
   }
 }

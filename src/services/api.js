@@ -231,8 +231,10 @@ export async function fetchSkillDetail(name) {
   return res.json();
 }
 
-export async function fetchSpecAndRoadmap(conversationId) {
-  const res = await fetch(`${BASE_URL}/conversations/${encodeURIComponent(conversationId)}/spec-roadmap`);
+export async function fetchSpecAndRoadmap(conversationId, workspace = null) {
+  const url = new URL(`${BASE_URL}/conversations/${encodeURIComponent(conversationId)}/spec-roadmap`);
+  if (workspace) url.searchParams.set('workspace', workspace);
+  const res = await fetch(url.toString());
   if (!res.ok) throw new Error('Falha ao carregar spec e roadmap da conversa');
   return res.json();
 }

@@ -1135,6 +1135,7 @@ export default function ConversationHistoryModal({
       <SpecRoadmapModal
         conversationId={specModalConv?.conversation_id}
         conversationTitle={specModalConv?.title}
+        workspace={specModalConv?.workspace}
         isOpen={Boolean(specModalConv)}
         onClose={() => setSpecModalConv(null)}
         onResumeConversation={onResumeConversation}

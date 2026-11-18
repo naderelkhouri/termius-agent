@@ -5,45 +5,54 @@ import {
   FileText, 
   Milestone, 
   CheckCircle2, 
-  Clock, 
-  ListTodo, 
-  Target, 
-  FileCode2, 
   X, 
   RotateCcw, 
   Sparkles,
-  ArrowRight,
-  Terminal,
-  Zap,
+  Save,
+  Edit3,
+  Eye,
   Folder,
   Download,
-  Check
+  Check,
+  ExternalLink,
+  Code2,
+  FileCode2,
+  FilePlus2,
+  AlertCircle
 } from 'lucide-react';
 
 export default function SpecRoadmapModal({
   conversationId,
   conversationTitle,
+  workspace,
   isOpen,
   onClose,
   onResumeConversation
 }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [exporting, setExporting] = useState(false);
-  const [exportResult, setExportResult] = useState(null);
-  const [activeTab, setActiveTab] = useState('spec'); // 'spec' | 'roadmap'
+  const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('spec'); // 'spec' | 'roadmap' | 'files'
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSpec, setEditedSpec] = useState('');
+  const [editedRoadmap, setEditedRoadmap] = useState('');
+  const [savedToast, setSavedToast] = useState(false);
 
   useEffect(() => {
     if (isOpen && conversationId) {
-      loadData(conversationId);
+      loadData(conversationId, workspace);
+    } else {
+      setIsEditing(false);
     }
-  }, [isOpen, conversationId]);
+  }, [isOpen, conversationId, workspace]);
 
-  const loadData = async (convId) => {
+  const loadData = async (convId, ws) => {
     setLoading(true);
     try {
-      const res = await fetchSpecAndRoadmap(convId);
+      const res = await fetchSpecAndRoadmap(convId, ws);
       setData(res);
+      setEditedSpec(res.rawSpecContent || '');
+      setEditedRoadmap(res.rawRoadmapContent || '');
     } catch (err) {
       console.error('[SpecRoadmapModal] Erro ao carregar:', err);
     } finally {
@@ -51,440 +60,369 @@ export default function SpecRoadmapModal({
     }
   };
 
-  const handleToggleTask = async (milestoneId, taskIndex) => {
+  const handleSave = async () => {
     if (!data || !conversationId) return;
-    const nextMilestones = data.roadmap.milestones.map((m) => {
-      if (m.id !== milestoneId) return m;
-      const nextTasks = m.tasks.map((t, idx) => {
-        if (idx !== taskIndex) return t;
-        return { ...t, completed: !t.completed };
+    setSaving(true);
+    try {
+      const updated = await saveSpecAndRoadmap(conversationId, {
+        workspace: data.workspace,
+        specContent: editedSpec,
+        roadmapContent: editedRoadmap
       });
-      const completedCount = nextTasks.filter((t) => t.completed).length;
-      const prog = nextTasks.length > 0 ? Math.round((completedCount / nextTasks.length) * 100) : 0;
-      return {
-        ...m,
-        tasks: nextTasks,
-        progress: prog,
-        status: prog === 100 ? 'completed' : prog > 0 ? 'in_progress' : 'planned'
-      };
-    });
-
-    const totalTasks = nextMilestones.reduce((acc, m) => acc + m.tasks.length, 0);
-    const completedTasks = nextMilestones.reduce((acc, m) => acc + m.tasks.filter((t) => t.completed).length, 0);
-    const overallProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-
-    const updated = {
-      ...data,
-      overallProgress,
-      roadmap: {
-        ...data.roadmap,
-        overallProgress,
-        milestones: nextMilestones
-      }
-    };
-
-    setData(updated);
-    try {
-      await saveSpecAndRoadmap(conversationId, updated);
-    } catch (err) {
-      console.warn('[SpecRoadmapModal] Erro ao salvar:', err);
-    }
-  };
-
-  const handleExport = async () => {
-    if (!conversationId) return;
-    setExporting(true);
-    setExportResult(null);
-    try {
-      const res = await exportSpecAndRoadmap(conversationId);
-      setExportResult(res);
+      setData(updated);
+      setIsEditing(false);
+      setSavedToast(true);
       sendNotification({
-        title: 'Spec & Roadmap Exportados',
-        body: 'Arquivos SPEC.md e ROADMAP.md gerados com sucesso na raiz do projeto!'
+        title: 'Documentação Salva',
+        body: `Arquivo ${activeTab === 'spec' ? 'SPEC.md' : 'ROADMAP.md'} atualizado com sucesso no projeto!`
       });
-      setTimeout(() => setExportResult(null), 8000);
+      setTimeout(() => setSavedToast(false), 4000);
     } catch (err) {
-      alert(`Falha ao exportar Markdown: ${err.message}`);
+      alert(`Falha ao salvar: ${err.message}`);
     } finally {
-      setExporting(false);
+      setSaving(false);
     }
   };
 
   if (!isOpen) return null;
 
+  // Renderizador simplificado de Markdown limpo e seguro
+  const renderSimpleMarkdown = (text) => {
+    if (!text) return null;
+    const lines = text.split('\n');
+
+    return lines.map((line, idx) => {
+      // Headers
+      if (line.startsWith('# ')) {
+        return (
+          <h1 key={idx} className="text-xl sm:text-2xl font-extrabold text-white pb-2 mb-4 border-b border-[#30363d] flex items-center gap-2">
+            <span className="w-2.5 h-6 rounded-full bg-purple-500 inline-block shrink-0" />
+            <span>{line.replace('# ', '')}</span>
+          </h1>
+        );
+      }
+      if (line.startsWith('## ')) {
+        return (
+          <h2 key={idx} className="text-base sm:text-lg font-bold text-amber-200 mt-6 mb-3 pb-1 border-b border-[#21262d] flex items-center gap-2">
+            <span className="w-1.5 h-4 rounded-full bg-amber-400 inline-block shrink-0" />
+            <span>{line.replace('## ', '')}</span>
+          </h2>
+        );
+      }
+      if (line.startsWith('### ')) {
+        return (
+          <h3 key={idx} className="text-sm font-bold text-blue-300 mt-4 mb-2 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block shrink-0" />
+            <span>{line.replace('### ', '')}</span>
+          </h3>
+        );
+      }
+
+      // Blockquotes / Metadata
+      if (line.startsWith('> ')) {
+        return (
+          <div key={idx} className="px-3 py-1.5 rounded-lg bg-[#161b22] border-l-4 border-purple-500 text-xs text-slate-300 my-1.5 font-mono">
+            {line.replace('> ', '')}
+          </div>
+        );
+      }
+
+      // Checklist items
+      if (line.trim().startsWith('- [x]') || line.trim().startsWith('- [X]')) {
+        return (
+          <div key={idx} className="flex items-start gap-2 text-xs text-emerald-300 my-1 ml-2 font-medium">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <span>{line.replace(/- \[[xX]\]/, '').trim()}</span>
+          </div>
+        );
+      }
+      if (line.trim().startsWith('- [ ]')) {
+        return (
+          <div key={idx} className="flex items-start gap-2 text-xs text-slate-400 my-1 ml-2 font-medium">
+            <div className="w-3.5 h-3.5 rounded border border-slate-500 shrink-0 mt-0.5" />
+            <span>{line.replace(/- \[ \]/, '').trim()}</span>
+          </div>
+        );
+      }
+
+      // List bullets
+      if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+        return (
+          <li key={idx} className="text-xs text-slate-300 my-1 ml-4 list-disc leading-relaxed">
+            {line.trim().replace(/^[-*]\s+/, '')}
+          </li>
+        );
+      }
+
+      // Divisor
+      if (line.trim() === '---') {
+        return <hr key={idx} className="border-[#30363d] my-4" />;
+      }
+
+      // Linha vazia
+      if (!line.trim()) {
+        return <div key={idx} className="h-2" />;
+      }
+
+      // Parágrafo padrão
+      return (
+        <p key={idx} className="text-xs text-slate-300 leading-relaxed font-sans mb-1.5">
+          {line}
+        </p>
+      );
+    });
+  };
+
+  const currentContent = activeTab === 'spec' ? editedSpec : editedRoadmap;
+  const currentFileName = activeTab === 'spec' ? 'SPEC.md' : 'ROADMAP.md';
+  const hasCurrentReal = activeTab === 'spec' ? data?.hasRealSpec : data?.hasRealRoadmap;
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 select-none font-sans animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 select-none font-sans animate-fade-in">
       <div 
-        className="w-full max-w-4xl h-[88vh] bg-[#161b22] border border-[#30363d] rounded-2xl shadow-2xl flex flex-col overflow-hidden relative"
+        className="w-full max-w-5xl h-[90vh] bg-[#161b22] border border-[#30363d] rounded-2xl shadow-2xl flex flex-col overflow-hidden relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Header */}
-        <div className="h-16 px-5 bg-[#1c2128] border-b border-[#30363d] flex items-center justify-between shrink-0 gap-3">
+        {/* Header Superior */}
+        <div className="px-5 py-3.5 bg-[#0d1117] border-b border-[#30363d] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center shrink-0">
-              <FileText className="w-5 h-5 text-amber-400" />
+            <div className="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/40 flex items-center justify-center text-purple-300 shrink-0">
+              <FileText className="w-5 h-5 text-purple-400" />
             </div>
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-white flex items-center gap-2 truncate">
-                Spec & Roadmap da Sessão
-                {data && (
-                  <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                    {data.overallProgress}% Concluído
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm sm:text-base font-bold text-white truncate">
+                  {data?.title || conversationTitle || 'Especificação do Projeto'}
+                </h3>
+                {hasCurrentReal ? (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold whitespace-nowrap">
+                    Arquivo Real no Disco
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold whitespace-nowrap">
+                    Template / Novo
                   </span>
                 )}
-              </h3>
-              <p className="text-xs text-slate-400 truncate">
-                {conversationTitle || data?.title || 'Sessão Antigravity'}
-              </p>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-slate-400 font-mono truncate">
+                <Folder className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                <span className="truncate">{data?.workspace?.replace('/home/nader', '~') || '~'}</span>
+                <span>•</span>
+                <span className="text-slate-300 font-semibold">{currentFileName}</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
-            {onResumeConversation && (
-              <button
-                type="button"
-                onClick={() => {
-                  onResumeConversation(conversationId, conversationTitle || 'Sessão IA');
-                  onClose();
-                }}
-                className="px-3 py-1.5 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 border border-purple-500/40 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 shadow-xs"
-              >
-                <Terminal className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Abrir no Terminal</span>
-              </button>
-            )}
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-8 h-8 rounded-xl bg-[#21262d] hover:bg-[#30363d] text-slate-400 hover:text-white flex items-center justify-center transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-white hover:bg-[#21262d] rounded-xl transition-colors cursor-pointer"
+            title="Fechar (Esc)"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        {/* Tab Switcher: Spec vs Roadmap */}
-        <div className="px-5 pt-3 pb-2 border-b border-[#30363d] bg-[#0d1117] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2">
+        {/* Barra de Ações & Abas */}
+        <div className="px-5 py-2.5 bg-[#161b22] border-b border-[#30363d] flex items-center justify-between gap-3 shrink-0 flex-wrap">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
-              onClick={() => setActiveTab('spec')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => { setActiveTab('spec'); setIsEditing(false); }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'spec'
                   ? 'bg-amber-500/20 text-amber-200 border border-amber-500/40 shadow-xs'
                   : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
               }`}
             >
               <FileText className="w-4 h-4 text-amber-400" />
-              <span>Especificação Técnica (Spec)</span>
+              <span>SPEC.md</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('roadmap')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => { setActiveTab('roadmap'); setIsEditing(false); }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === 'roadmap'
                   ? 'bg-blue-500/20 text-blue-200 border border-blue-500/40 shadow-xs'
                   : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
               }`}
             >
               <Milestone className="w-4 h-4 text-blue-400" />
-              <span>Plano de Evolução (Roadmap)</span>
-              {data && (
-                <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-blue-500/30 text-blue-200 font-semibold whitespace-nowrap">
-                  {data.overallProgress}%
-                </span>
-              )}
+              <span>ROADMAP.md</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => { setActiveTab('files'); setIsEditing(false); }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeTab === 'files'
+                  ? 'bg-purple-500/20 text-purple-200 border border-purple-500/40 shadow-xs'
+                  : 'text-slate-400 hover:text-white hover:bg-[#21262d]'
+              }`}
+            >
+              <FileCode2 className="w-4 h-4 text-purple-400" />
+              <span>Arquivos ({data?.affectedFilesCount || 0})</span>
             </button>
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleExport}
-              disabled={exporting || !data}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 text-purple-200 border border-purple-500/40 text-xs font-bold transition-all active:scale-95 shadow-xs whitespace-nowrap disabled:opacity-50"
-              title="Gerar SPEC.md e ROADMAP.md na raiz do projeto com 1 clique"
-            >
-              {exportResult ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-300">Exportado!</span>
-                </>
-              ) : (
-                <>
-                  <Download className={`w-3.5 h-3.5 text-purple-400 ${exporting ? 'animate-bounce' : ''}`} />
-                  <span>{exporting ? 'Exportando...' : 'Exportar Markdown'}</span>
-                </>
-              )}
-            </button>
+            {activeTab !== 'files' && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(!isEditing)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    isEditing
+                      ? 'bg-purple-600 text-white border-purple-500 shadow-xs'
+                      : 'bg-[#21262d] text-slate-300 hover:text-white border-[#30363d]'
+                  }`}
+                  title={isEditing ? "Alternar para Modo Leitura" : "Editar conteúdo Markdown diretamente"}
+                >
+                  {isEditing ? <Eye className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5 text-purple-400" />}
+                  <span>{isEditing ? 'Visualizar' : 'Editar Markdown'}</span>
+                </button>
+
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer disabled:opacity-50"
+                    title="Gravar alterações diretamente no arquivo no disco"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    <span>{saving ? 'Gravando...' : 'Salvar no Disco'}</span>
+                  </button>
+                )}
+              </>
+            )}
 
             <button
               type="button"
-              onClick={() => conversationId && loadData(conversationId)}
-              className="flex items-center gap-1 text-xs text-slate-400 hover:text-white"
-              title="Recalcular"
+              onClick={() => loadData(conversationId, workspace)}
+              className="p-1.5 rounded-xl bg-[#21262d] text-slate-400 hover:text-white border border-[#30363d] transition-colors cursor-pointer"
+              title="Recarregar arquivo do disco"
             >
-              <RotateCcw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-purple-400' : ''}`} />
-              <span className="hidden sm:inline">Recalcular</span>
+              <RotateCcw className={`w-4 h-4 ${loading ? 'animate-spin text-purple-400' : ''}`} />
             </button>
           </div>
         </div>
 
-        {/* Body Content */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4 select-text bg-[#0d1117]">
-          {/* Export Success Notification Banner */}
-          {exportResult && (
-            <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs flex items-center justify-between gap-3 font-mono shadow-xs">
-              <div className="flex items-center gap-2 truncate">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span className="truncate">
-                  Markdown exportado com sucesso: <strong>{exportResult.targetDir}</strong> (<code>SPEC.md</code> &amp; <code>ROADMAP.md</code>)
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setExportResult(null)}
-                className="text-emerald-400 hover:text-white shrink-0 p-1 rounded hover:bg-emerald-900/50"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+        {/* Notificação de Sucesso */}
+        {savedToast && (
+          <div className="bg-emerald-950/80 border-b border-emerald-500/50 px-5 py-2 text-xs text-emerald-200 flex items-center justify-between animate-fade-in font-mono">
+            <div className="flex items-center gap-2">
+              <Check className="w-4 h-4 text-emerald-400" />
+              <span>Documento gravado com sucesso no workspace: <strong>{data?.workspace}</strong></span>
             </div>
-          )}
+            <button onClick={() => setSavedToast(false)} className="text-emerald-400 hover:text-white">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+
+        {/* Conteúdo Principal */}
+        <div className="flex-1 overflow-y-auto p-5 select-text bg-[#0d1117] font-sans">
           {loading ? (
             <div className="flex flex-col items-center justify-center h-64 text-slate-400 text-xs font-semibold gap-2">
               <RotateCcw className="w-6 h-6 animate-spin text-purple-400" />
-              <span>Sintetizando Spec e Roadmap dinâmicos do cérebro da IA...</span>
+              <span>Lendo documentação real do projeto no disco...</span>
             </div>
-          ) : !data ? (
-            <div className="text-center py-16 text-slate-500 text-xs font-semibold">
-              Não foi possível gerar a especificação desta conversa.
-            </div>
-          ) : activeTab === 'spec' ? (
-            /* Spec View */
+          ) : activeTab === 'files' ? (
+            /* Visualizador de Arquivos Tocados na Sessão */
             <div className="space-y-4">
-              {/* Card 1: Objetivo Central & Escopo */}
-              <div className="p-4 rounded-2xl bg-[#161b22] border border-[#30363d] shadow-xs">
-                <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[#21262d]">
-                  <FileText className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    Objetivo Central & Escopo da Sessão
-                  </span>
-                </div>
-                <h4 className="text-sm font-bold text-amber-200 mb-2 leading-snug">
-                  {data.title}
-                </h4>
-                <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  {data.spec.objective}
-                </p>
-
-                {/* Stack */}
-                <div className="mt-3 pt-3 border-t border-[#21262d]">
-                  <span className="text-xs uppercase font-bold text-slate-400 block mb-2">
-                    Stack & Tecnologias Detectadas
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {data.spec.techStack?.map((tech, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs font-mono px-2.5 py-0.5 rounded-lg bg-purple-500/10 text-purple-300 border border-purple-500/25"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+              <div className="flex items-center justify-between pb-2 border-b border-[#30363d]">
+                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                  Arquivos Tocados e Modificados nesta Sessão ({data?.affectedFiles?.length || 0})
+                </span>
+                <span className="text-xs text-slate-400 font-mono">
+                  Workspace: {data?.workspace}
+                </span>
               </div>
 
-              {/* Card 2: Requisitos Funcionais */}
-              <div className="p-4 rounded-2xl bg-[#161b22] border border-[#30363d] shadow-xs">
-                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#21262d]">
-                  <ListTodo className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    Requisitos Identificados ({data.spec.functionalRequirements?.length || 0})
-                  </span>
+              {data?.affectedFiles?.length === 0 ? (
+                <div className="p-8 text-center text-slate-500 text-xs font-semibold">
+                  Nenhum arquivo modificado detectado no histórico desta conversa.
                 </div>
-
-                <div className="space-y-2">
-                  {data.spec.functionalRequirements?.map((req) => (
-                    <div
-                      key={req.id}
-                      className="p-3 rounded-xl bg-[#0d1117] border border-[#30363d] text-xs flex items-start gap-3"
-                    >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <div className="min-w-0 flex-1">
-                        <span className="font-bold text-slate-100 block leading-snug">
-                          {req.title}
-                        </span>
-                        {req.fullText && req.fullText !== req.title && (
-                          <span className="text-xs text-slate-400 block mt-1 line-clamp-2 select-text font-mono">
-                            {req.fullText}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Card 3: Decisões de Arquitetura */}
-              <div className="p-4 rounded-2xl bg-[#161b22] border border-[#30363d] shadow-xs">
-                <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[#21262d]">
-                  <Target className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    Decisões de Engenharia & Arquitetura
-                  </span>
-                </div>
-                <ul className="space-y-2 text-xs text-slate-300 mt-2">
-                  {data.spec.architecturalDecisions?.map((dec, idx) => (
-                    <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
-                      <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0 mt-1.5" />
-                      <span>{dec}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Card 4: Arquivos Afetados */}
-              <div className="p-4 rounded-2xl bg-[#161b22] border border-[#30363d] shadow-xs">
-                <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[#21262d]">
-                  <FileCode2 className="w-4 h-4 text-purple-400 shrink-0" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    Arquivos Afetados ({data.spec.affectedFiles?.length || 0})
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                  {data.spec.affectedFiles?.map((f, idx) => (
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {data?.affectedFiles?.map((f, idx) => (
                     <div
                       key={idx}
-                      className="px-3 py-1.5 rounded-xl bg-[#0d1117] text-xs font-mono text-slate-300 truncate flex items-center justify-between border border-[#30363d]/60"
+                      className="p-2.5 rounded-xl bg-[#161b22] border border-[#30363d] flex items-center justify-between text-xs font-mono text-slate-300 hover:border-purple-500/40 transition-colors group"
                     >
-                      <span className="truncate">{f.path.replace('/home/nader', '~')}</span>
-                      <span className="text-xs text-purple-300 font-semibold shrink-0 ml-2 whitespace-nowrap">modificado</span>
+                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                        <FileCode2 className="w-4 h-4 text-purple-400 shrink-0" />
+                        <span className="truncate">{f.path.replace('/home/nader', '~')}</span>
+                      </div>
+                      <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 shrink-0">
+                        tocou
+                      </span>
                     </div>
                   ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Roadmap View */
-            <div className="space-y-4">
-              {/* Overall Progress Banner */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/40 via-purple-950/30 to-[#161b22] border border-blue-500/30 shadow-xs">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Milestone className="w-5 h-5 text-blue-400" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">
-                      Status de Conclusão do Projeto
-                    </span>
-                  </div>
-                  <span className="text-base font-extrabold font-mono text-blue-300">
-                    {data.overallProgress}% Concluído
-                  </span>
-                </div>
-
-                <div className="w-full h-2.5 rounded-full bg-[#21262d] overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 transition-all duration-500"
-                    style={{ width: `${data.overallProgress}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Milestones */}
-              <div className="space-y-3">
-                {data.roadmap.milestones?.map((m) => {
-                  const isDone = m.status === 'completed' || m.progress === 100;
-                  const inProgress = m.status === 'in_progress';
-
-                  return (
-                    <div
-                      key={m.id}
-                      className="p-4 rounded-2xl bg-[#161b22] border border-[#30363d] shadow-xs"
-                    >
-                      <div className="flex items-start justify-between gap-3 mb-3 pb-2.5 border-b border-[#21262d]">
-                        <div>
-                          <h5 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                            {isDone ? (
-                              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                            ) : inProgress ? (
-                              <Clock className="w-4 h-4 text-amber-400 shrink-0 animate-pulse" />
-                            ) : (
-                              <Milestone className="w-4 h-4 text-slate-500 shrink-0" />
-                            )}
-                            <span>{m.title}</span>
-                          </h5>
-                          <p className="text-xs text-slate-400 mt-1 leading-relaxed font-sans">
-                            {m.description}
-                          </p>
-                        </div>
-
-                        <span
-                          className={`text-xs font-bold px-2.5 py-1 rounded-lg uppercase font-mono shrink-0 ${
-                            isDone
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                              : inProgress
-                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : 'bg-slate-800 text-slate-400 border border-slate-700'
-                          }`}
-                        >
-                          {isDone ? '100% OK' : inProgress ? `${m.progress}% Ativo` : 'Planejado'}
-                        </span>
-                      </div>
-
-                      {/* Checklist */}
-                      <div className="space-y-2">
-                        {m.tasks.map((task, taskIdx) => (
-                          <div
-                            key={taskIdx}
-                            onClick={() => handleToggleTask(m.id, taskIdx)}
-                            className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#0d1117] cursor-pointer transition-colors text-xs select-none"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={Boolean(task.completed)}
-                              onChange={() => {}}
-                              className="rounded border-[#30363d] text-purple-600 focus:ring-0 focus:ring-offset-0 bg-[#161b22] cursor-pointer w-4 h-4"
-                            />
-                            <span
-                              className={`truncate leading-snug ${
-                                task.completed
-                                  ? 'line-through text-slate-500'
-                                  : 'text-slate-200 font-medium'
-                              }`}
-                            >
-                              {task.title}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Next Steps */}
-              {data.roadmap.nextActions?.length > 0 && (
-                <div className="p-4 rounded-2xl bg-[#161b22] border border-[#30363d] shadow-xs">
-                  <div className="flex items-center gap-2 mb-2 pb-2 border-b border-[#21262d]">
-                    <Target className="w-4 h-4 text-cyan-400 shrink-0" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">
-                      Próximos Passos Recomendados
-                    </span>
-                  </div>
-                  <ul className="space-y-2 text-xs text-slate-300 mt-2">
-                    {data.roadmap.nextActions.map((action, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
-                        <ArrowRight className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
-                        <span>{action}</span>
-                      </li>
-                    ))}
-                  </ul>
                 </div>
               )}
             </div>
+          ) : isEditing ? (
+            /* Modo Editor Markdown */
+            <div className="h-full flex flex-col">
+              <textarea
+                value={activeTab === 'spec' ? editedSpec : editedRoadmap}
+                onChange={(e) => {
+                  if (activeTab === 'spec') setEditedSpec(e.target.value);
+                  else setEditedRoadmap(e.target.value);
+                }}
+                className="w-full flex-1 bg-[#161b22] text-slate-200 border border-[#30363d] focus:border-purple-500/60 rounded-xl p-4 font-mono text-xs leading-relaxed outline-none resize-none selection:bg-purple-600/30"
+                placeholder={`Conteúdo Markdown do ${currentFileName}...`}
+                spellCheck={false}
+              />
+            </div>
+          ) : (
+            /* Modo Leitura / Visualizador Formatado */
+            <div className="max-w-4xl mx-auto bg-[#161b22] border border-[#30363d] rounded-2xl p-6 sm:p-8 shadow-md">
+              {!hasCurrentReal && (
+                <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span>Este projeto ainda não possui um arquivo <code>{currentFileName}</code> no disco. Você pode editá-lo e clicar em <strong>"Salvar no Disco"</strong> para criá-lo agora!</span>
+                  </div>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500 text-amber-200 hover:text-black font-bold text-xs transition-colors whitespace-nowrap cursor-pointer"
+                  >
+                    Personalizar
+                  </button>
+                </div>
+              )}
+              {renderSimpleMarkdown(currentContent)}
+            </div>
           )}
+        </div>
+
+        {/* Rodapé Informativo */}
+        <div className="px-5 py-2.5 bg-[#0d1117] border-t border-[#30363d] flex items-center justify-between text-xs text-slate-400 font-mono shrink-0">
+          <div className="flex items-center gap-2 truncate">
+            <span>Caminho:</span>
+            <code className="text-purple-300 truncate">
+              {activeTab === 'spec' ? data?.specPath : activeTab === 'roadmap' ? data?.roadmapPath : data?.workspace}
+            </code>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            {onResumeConversation && (
+              <button
+                type="button"
+                onClick={() => {
+                  onResumeConversation(conversationId, conversationTitle || 'Conversa IA', data?.workspace || '/home/nader', true);
+                  onClose();
+                }}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-black font-bold text-xs transition-all cursor-pointer"
+                title="Abrir terminal e retomar sessão neste workspace"
+              >
+                <span>⚡ Abrir no Terminal</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

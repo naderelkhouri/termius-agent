@@ -1,0 +1,179 @@
+const { DatabaseSync } = require('node:sqlite');
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+
+const HOME_DIR = process.env.HOME || os.homedir();
+const CLI_BASE_PATH = path.join(HOME_DIR, '.gemini/antigravity-cli');
+const DB_PATH = path.join(CLI_BASE_PATH, 'conversation_summaries.db');
+const BRAIN_PATH = path.join(CLI_BASE_PATH, 'brain');
+const HISTORY_PATH = path.join(CLI_BASE_PATH, 'history.jsonl');
+
+let cachedDb = null;
+
+function getDbConnection() {
+  if (cachedDb) return cachedDb;
+  if (!fs.existsSync(DB_PATH)) {
+    throw new Error(`Database file not found at ${DB_PATH}`);
+  }
+  cachedDb = new DatabaseSync(DB_PATH, { open: true });
+  return cachedDb;
+}
+
+function listConversations({ search = '', limit = 50, offset = 0, customTitles = {} } = {}) {
+  const db = getDbConnection();
+  let query = `
+    SELECT 
+      conversation_id, 
+      title, 
+      preview, 
+      step_count, 
+      last_modified_time, 
+      last_user_input_time,
+      status,
+      workspace_uris
+    FROM conversation_summaries
+    WHERE (nesting_depth = 0 OR nesting_depth IS NULL)
+  `;
+  const params = [];
+
+  if (search && search.trim()) {
+    query += ` AND (title LIKE ? OR preview LIKE ?)`;
+    params.push(`%${search.trim()}%`, `%${search.trim()}%`);
+  }
+
+  query += ` ORDER BY last_modified_time DESC LIMIT ? OFFSET ?`;
+  params.push(limit, offset);
+
+  const stmt = db.prepare(query);
+  const rows = stmt.all(...params);
+
+  const formattedRows = rows.map((r) => {
+    let workspace = '/home/nader';
+    if (r.workspace_uris) {
+      try {
+        const uris = JSON.parse(r.workspace_uris);
+        if (Array.isArray(uris) && uris[0]) {
+          const clean = uris[0].replace(/^file:\/\//, '');
+          if (clean.startsWith('/')) workspace = clean;
+        }
+      } catch {}
+    }
+    const finalTitle = customTitles[r.conversation_id] !== undefined && customTitles[r.conversation_id] !== ''
+      ? customTitles[r.conversation_id]
+      : r.title;
+
+    return {
+      ...r,
+      title: finalTitle,
+      workspace
+    };
+  });
+
+  let countQuery = `SELECT count(*) as total FROM conversation_summaries WHERE (nesting_depth = 0 OR nesting_depth IS NULL)`;
+  const countParams = [];
+  if (search && search.trim()) {
+    countQuery += ` AND (title LIKE ? OR preview LIKE ?)`;
+    countParams.push(`%${search.trim()}%`, `%${search.trim()}%`);
+  }
+  const countStmt = db.prepare(countQuery);
+  const total = countStmt.get(...countParams).total;
+
+  return { conversations: formattedRows, total };
+}
+
+function updateConversationTitle(conversationId, title) {
+  if (!conversationId || typeof conversationId !== 'string') return false;
+  try {
+    const db = getDbConnection();
+    const stmt = db.prepare('UPDATE conversation_summaries SET title = ? WHERE conversation_id = ?');
+    stmt.run(title, conversationId);
+    return true;
+  } catch (err) {
+    console.warn(`[DB] Erro ao atualizar título da conversa ${conversationId}:`, err.message);
+    return false;
+  }
+}
+
+function getConversationTranscript(conversationId, maxSteps = 500) {
+  if (!conversationId || typeof conversationId !== 'string' || !/^[a-zA-Z0-9_-]+$/.test(conversationId)) {
+    return { error: 'Identificador de conversa inválido', steps: [] };
+  }
+
+  const transcriptPath = path.join(BRAIN_PATH, conversationId, '.system_generated/logs/transcript.jsonl');
+  if (!fs.existsSync(transcriptPath)) {
+    return { error: 'Transcript file not found for this conversation', steps: [] };
+  }
+
+  try {
+    const stats = fs.statSync(transcriptPath);
+    let content = '';
+
+    if (stats.size > 8 * 1024 * 1024) {
+      const buffer = Buffer.alloc(8 * 1024 * 1024);
+      const fd = fs.openSync(transcriptPath, 'r');
+      fs.readSync(fd, buffer, 0, buffer.length, stats.size - buffer.length);
+      fs.closeSync(fd);
+      content = buffer.toString('utf-8');
+      const firstNewline = content.indexOf('\n');
+      if (firstNewline !== -1) content = content.slice(firstNewline + 1);
+    } else {
+      content = fs.readFileSync(transcriptPath, 'utf-8');
+    }
+
+    const lines = content.trim().split('\n');
+    const steps = [];
+
+    const startIdx = Math.max(0, lines.length - maxSteps);
+    for (let i = startIdx; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.trim()) continue;
+      try {
+        const parsed = JSON.parse(line);
+        steps.push({
+          stepIndex: parsed.step_index,
+          source: parsed.source,
+          type: parsed.type,
+          status: parsed.status,
+          createdAt: parsed.created_at,
+          content: parsed.content || '',
+          toolCalls: parsed.tool_calls || [],
+          thinking: parsed.thinking || null,
+        });
+      } catch (err) {}
+    }
+
+    return { conversationId, steps, totalLines: lines.length };
+  } catch (err) {
+    console.error(`[DB] Erro ao carregar transcript de ${conversationId}:`, err);
+    return { error: err.message, steps: [] };
+  }
+}
+
+function getRecentHistoryPrompts(limit = 30) {
+  if (!fs.existsSync(HISTORY_PATH)) {
+    return [];
+  }
+  const content = fs.readFileSync(HISTORY_PATH, 'utf-8');
+  const lines = content.trim().split('\n');
+  const prompts = [];
+
+  for (let i = lines.length - 1; i >= 0 && prompts.length < limit; i--) {
+    const line = lines[i];
+    if (!line.trim()) continue;
+    try {
+      const parsed = JSON.parse(line);
+      prompts.push(parsed);
+    } catch {}
+  }
+
+  return prompts;
+}
+
+module.exports = {
+  getDbConnection,
+  listConversations,
+  updateConversationTitle,
+  getConversationTranscript,
+  getRecentHistoryPrompts
+};

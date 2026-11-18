@@ -29,324 +29,202 @@ function saveStorage(data) {
 }
 
 /**
- * Sintetiza dinamicamente a Spec e o Roadmap de uma conversa a partir dos transcripts
+ * Detecta o diretório/projeto real vinculado à conversa
  */
-export function generateSpecAndRoadmap(conversationId) {
-  const customStorage = loadStorage();
-  if (customStorage[conversationId]) {
-    return customStorage[conversationId];
+export function detectConversationWorkspace(conversationId, explicitWorkspace = null) {
+  if (explicitWorkspace && explicitWorkspace !== '/home/nader' && fs.existsSync(explicitWorkspace)) {
+    return explicitWorkspace;
   }
 
-  const transcriptData = getConversationTranscript(conversationId, 500);
-  const steps = transcriptData.steps || [];
+  // 1. Tenta listar das conversas cadastradas no SQLite
+  try {
+    const convRes = listConversations ? listConversations({ limit: 150 }) : null;
+    const convList = Array.isArray(convRes) ? convRes : (convRes?.conversations || []);
+    const found = convList.find((c) => c.conversation_id === conversationId);
+    if (found?.workspace && found.workspace !== '/home/nader' && fs.existsSync(found.workspace)) {
+      return found.workspace;
+    }
+  } catch {}
 
-  // Extrai prompts do usuário
-  const userRequests = [];
-  const modifiedFiles = new Set();
-  const executedCommands = [];
-  let detectedTitle = 'Sessão Antigravity';
+  // 2. Extrai caminhos tocados nos toolCalls do transcript
+  try {
+    const transcriptData = getConversationTranscript(conversationId, 200);
+    const candidateDirs = new Map();
 
-  steps.forEach((step) => {
-    if (step.type === 'USER_INPUT' || step.source === 'USER_EXPLICIT') {
-      const raw = step.content || '';
-      const clean = raw
-        .replace(/<USER_REQUEST>|<\/USER_REQUEST>/g, '')
-        .replace(/<ADDITIONAL_METADATA>[\s\S]*?<\/ADDITIONAL_METADATA>/g, '')
-        .replace(/<USER_SETTINGS_CHANGE>[\s\S]*?<\/USER_SETTINGS_CHANGE>/g, '')
-        .replace(/<CONTEXT_SUMMARY>[\s\S]*?<\/CONTEXT_SUMMARY>/g, '')
-        .replace(/<SYSTEM_MESSAGE>[\s\S]*?<\/SYSTEM_MESSAGE>/g, '')
-        .trim();
+    (transcriptData?.steps || []).forEach((step) => {
+      (step.toolCalls || []).forEach((tc) => {
+        const args = tc.args || tc.arguments || {};
+        const p = args.Path || args.path || args.CommandLine || args.command;
+        if (p && typeof p === 'string') {
+          const match = p.match(/\/home\/[a-zA-Z0-9_\-\.]+\/[a-zA-Z0-9_\-\.\/]+/);
+          if (match) {
+            let clean = match[0].replace(/['"]+/g, '');
+            // Se for arquivo, pega o diretório
+            if (!clean.endsWith('/')) {
+              clean = path.dirname(clean);
+            }
+            // Encontra a raiz do projeto (onde tiver package.json, .git ou SPEC.md)
+            let curr = clean;
+            for (let i = 0; i < 4; i++) {
+              if (curr === '/home/nader' || curr === '/' || !curr) break;
+              if (fs.existsSync(path.join(curr, 'SPEC.md')) || 
+                  fs.existsSync(path.join(curr, 'spec.md')) ||
+                  fs.existsSync(path.join(curr, 'package.json')) ||
+                  fs.existsSync(path.join(curr, '.git'))) {
+                candidateDirs.set(curr, (candidateDirs.get(curr) || 0) + 10);
+                break;
+              }
+              candidateDirs.set(curr, (candidateDirs.get(curr) || 0) + 1);
+              curr = path.dirname(curr);
+            }
+          }
+        }
+      });
+    });
 
-      if (clean && clean.length > 2) {
-        userRequests.push(clean);
-        if (detectedTitle === 'Sessão Antigravity' && clean.length < 80) {
-          detectedTitle = clean;
+    if (candidateDirs.size > 0) {
+      // Ordena pelo maior número de referências
+      const sorted = Array.from(candidateDirs.entries()).sort((a, b) => b[1] - a[1]);
+      for (const [dir] of sorted) {
+        if (fs.existsSync(dir) && dir !== '/home/nader') {
+          return dir;
         }
       }
     }
+  } catch {}
 
-    if (step.toolCalls && Array.isArray(step.toolCalls)) {
-      step.toolCalls.forEach((tc) => {
-        const args = tc.args || tc.arguments || {};
-        const p = args.Path || args.path || tc.Path || tc.path;
-        if (p) modifiedFiles.add(p);
+  return explicitWorkspace || '/home/nader';
+}
 
-        const cmd = args.CommandLine || args.command || tc.CommandLine || tc.command;
-        if (cmd && typeof cmd === 'string') {
-          executedCommands.push({
-            command: cmd.slice(0, 100),
-            summary: args.toolSummary || tc.name
-          });
-        }
-      });
-    }
-  });
-
-  // Identifica tecnologias a partir de arquivos tocados e comandos
-  const techStack = new Set();
-  modifiedFiles.forEach((file) => {
-    if (file.endsWith('.jsx') || file.endsWith('.js') || file.endsWith('.tsx')) {
-      techStack.add('React 18');
-      techStack.add('JavaScript / JSX');
-    }
-    if (file.endsWith('.py')) techStack.add('Python 3 (PTY Bridge)');
-    if (file.includes('electron') || file.endsWith('.cjs')) techStack.add('Electron');
-    if (file.endsWith('.css') || file.includes('tailwind')) techStack.add('TailwindCSS');
-    if (file.endsWith('.json')) techStack.add('Node.js / JSON Storage');
-    if (file.includes('xterm')) techStack.add('@xterm/xterm');
-  });
-
-  if (techStack.size === 0) {
-    techStack.add('Bash / Shell');
-    techStack.add('Node.js');
-  }
-
-  // Gera a lista de requisitos funcionais deduzidos dos prompts
-  const requirements = userRequests.map((req, idx) => {
-    let summary = req.split('\n')[0];
-    if (summary.length > 90) summary = `${summary.slice(0, 88)}...`;
-    return {
-      id: `req-${idx + 1}`,
-      title: summary,
-      fullText: req,
-      status: idx < userRequests.length - 1 ? 'completed' : 'in_progress'
-    };
-  });
-
-  // Constrói os Milestones do Roadmap
-  const milestones = [
-    {
-      id: 'm1',
-      title: 'Diagnóstico Inicial & Resiliência de Processos',
-      description: 'Prevenção de falhas no Electron, encerramento limpo de PTYs Python e isolamento de runtime.',
-      status: 'completed',
-      progress: 100,
-      tasks: [
-        { title: 'Single Instance Lock no Electron', completed: true },
-        { title: 'Signal Traps no Python PTY (killpg)', completed: true },
-        { title: 'Armazenamento seguro com fallback .bak', completed: true },
-        { title: 'React ErrorBoundary contra tela preta', completed: true }
-      ]
-    },
-    {
-      id: 'm2',
-      title: 'Gestão Avançada de Conversas & Modo Fluido',
-      description: 'Favoritos (⭐), alternância entre visão em blocos e tabela com ordenação, e auto-aprovação de comandos.',
-      status: 'completed',
-      progress: 100,
-      tasks: [
-        { title: 'Sistema de Favoritos com persistência no backend', completed: true },
-        { title: 'Visualização em Tabela com ordenação asc/desc', completed: true },
-        { title: 'Modo Fluido com watcher de prompt no PTY', completed: true }
-      ]
-    },
-    {
-      id: 'm3',
-      title: 'AI Sidecar ao Vivo (Docking Lateral)',
-      description: 'Painel acoplado lateralmente sem unmount de terminal, streaming de passos, comandos e diffs.',
-      status: 'completed',
-      progress: 100,
-      tasks: [
-        { title: 'Layout flexível com auto-resize via ResizeObserver', completed: true },
-        { title: 'Streaming de passos da IA e raciocínio interno', completed: true },
-        { title: 'Abas de Comandos com injeção 1-clique e Diffs de arquivos', completed: true }
-      ]
-    },
-    {
-      id: 'm4',
-      title: 'Smart Command Bar Preditiva',
-      description: 'Barra de comandos preditiva com histórico do agente, scripts npm e atalhos de sistema.',
-      status: 'completed',
-      progress: 100,
-      tasks: [
-        { title: 'Coletor de comandos reais do Antigravity', completed: true },
-        { title: 'Classificador de risco (Seguro / Atenção / Destrutivo)', completed: true },
-        { title: 'Navegação por setas, Tab para inserir e Enter para rodar', completed: true }
-      ]
-    },
-    {
-      id: 'm5',
-      title: 'Hub de Skills em Português BR & Spec/Roadmap',
-      description: 'Menu dropdown de skills com descrições em PT-BR e gerador de Spec e Roadmap por conversa.',
-      status: 'in_progress',
-      progress: 85,
-      tasks: [
-        { title: 'Catálogo de skills locais descobertas com traduções em Português BR', completed: true },
-        { title: 'Menu dropdown e modal de inspeção de skills', completed: true },
-        { title: 'Geração e renderização de Spec e Roadmap dinâmicos', completed: true }
-      ]
-    },
-    {
-      id: 'm6',
-      title: 'Próximas Evoluções & Gravação de Sessões',
-      description: 'Asciicast/asciinema session recorder, broadcast multi-host e notificações desktop nativas.',
-      status: 'planned',
-      progress: 0,
-      tasks: [
-        { title: 'Visual Session Recorder & Replay', completed: false },
-        { title: 'Cluster Execution em múltiplos servidores', completed: false },
-        { title: 'Notificações Desktop Nativas no Linux/Gnome', completed: false }
-      ]
-    }
+/**
+ * Obtém a especificação e o roadmap REAIS do projeto da conversa
+ */
+export function generateSpecAndRoadmap(conversationId, queryWorkspace = null) {
+  const workspace = detectConversationWorkspace(conversationId, queryWorkspace);
+  
+  // Caminhos reais de SPEC e ROADMAP no projeto
+  const specCandidates = [
+    path.join(workspace, 'SPEC.md'),
+    path.join(workspace, 'spec.md'),
+    path.join(workspace, 'docs', 'SPEC.md')
+  ];
+  const roadmapCandidates = [
+    path.join(workspace, 'ROADMAP.md'),
+    path.join(workspace, 'roadmap.md'),
+    path.join(workspace, 'docs', 'ROADMAP.md')
   ];
 
-  // Calcula progresso total
-  const totalTasks = milestones.reduce((acc, m) => acc + m.tasks.length, 0);
-  const completedTasks = milestones.reduce((acc, m) => acc + m.tasks.filter((t) => t.completed).length, 0);
-  const overallProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  let specPath = specCandidates.find(p => fs.existsSync(p)) || path.join(workspace, 'SPEC.md');
+  let roadmapPath = roadmapCandidates.find(p => fs.existsSync(p)) || path.join(workspace, 'ROADMAP.md');
 
-  const specAndRoadmap = {
+  const hasRealSpec = fs.existsSync(specPath);
+  const hasRealRoadmap = fs.existsSync(roadmapPath);
+
+  let rawSpecContent = hasRealSpec ? fs.readFileSync(specPath, 'utf-8') : '';
+  let rawRoadmapContent = hasRealRoadmap ? fs.readFileSync(roadmapPath, 'utf-8') : '';
+
+  // Se não existir SPEC.md real no projeto, gera um template limpo e contextual
+  if (!rawSpecContent) {
+    const projectName = path.basename(workspace);
+    rawSpecContent = `# Especificação Técnica: ${projectName}\n\n` +
+      `> **Workspace:** \`${workspace}\`\n` +
+      `> **Sessão Antigravity:** \`${conversationId}\`\n\n` +
+      `## 1. 🎯 Objetivo Central & Escopo\n` +
+      `Descreva aqui o propósito principal, público-alvo e problema que este projeto resolve.\n\n` +
+      `## 2. 🛠️ Stack Tecnológica\n` +
+      `- Frontend / UI: \n` +
+      `- Backend / APIs: \n` +
+      `- Banco de Dados / Storage: \n\n` +
+      `## 3. 📋 Requisitos Funcionais & Entregas\n` +
+      `1. Requisito 1: \n` +
+      `2. Requisito 2: \n\n` +
+      `## 4. 🏛️ Decisões de Arquitetura & Engenharia\n` +
+      `- Padrão arquitetural adotado.\n` +
+      `- Regras de integração e segurança.\n`;
+  }
+
+  if (!rawRoadmapContent) {
+    const projectName = path.basename(workspace);
+    rawRoadmapContent = `# Plano de Evolução (Roadmap): ${projectName}\n\n` +
+      `> **Workspace:** \`${workspace}\`\n\n` +
+      `## 🗺️ Marcos de Evolução (Milestones)\n\n` +
+      `### 📌 Fase 1: MVP & Validação Inicial (100%)\n` +
+      `- [x] Estrutura base e setup do repositório\n` +
+      `- [x] Telas e fluxos essenciais\n\n` +
+      `### 🔄 Fase 2: Otimizações & Ajustes de Produção (50%)\n` +
+      `- [x] Refinamentos de interface e usabilidade\n` +
+      `- [ ] Validação de ponta a ponta com usuários reais\n\n` +
+      `### 🚀 Fase 3: Próximos Recursos\n` +
+      `- [ ] Novas integrações\n`;
+  }
+
+  // Extrai títulos e arquivos do transcript para metadados auxiliares
+  const transcriptData = getConversationTranscript(conversationId, 100);
+  const steps = transcriptData?.steps || [];
+  const modifiedFiles = new Set();
+  steps.forEach((step) => {
+    (step.toolCalls || []).forEach((tc) => {
+      const args = tc.args || tc.arguments || {};
+      const p = args.Path || args.path || tc.Path || tc.path;
+      if (p) modifiedFiles.add(p);
+    });
+  });
+
+  return {
     conversationId,
-    title: detectedTitle,
-    generatedAt: new Date().toISOString(),
-    overallProgress,
-    spec: {
-      scopeTitle: detectedTitle,
-      objective: userRequests[0] || 'Construção e aprimoramento contínuo do Termius Agent com IA Antigravity integrada.',
-      techStack: Array.from(techStack),
-      functionalRequirements: requirements,
-      architecturalDecisions: [
-        'Resiliência Primeiro: Isolamento de PTY, traps de sinal e backups atômicos.',
-        'Zero-Unmount & Zero-Reload: Sessões de terminal preservadas em qualquer troca de visão ou abertura de painéis.',
-        'Auto-Adaptação Geométrica: Redimensionamento automático do Xterm via ResizeObserver nativo.',
-        'Segurança Estrita: Backend vinculado a 127.0.0.1 com verificação estrita de origin contra CSWSH.'
-      ],
-      affectedFiles: Array.from(modifiedFiles).map((p) => ({
-        path: p,
-        name: p.split('/').pop()
-      }))
-    },
-    roadmap: {
-      overallProgress,
-      milestones,
-      nextActions: [
-        'Explorar o menu dropdown de Skills IA em Português BR para orquestrar especialistas.',
-        'Acompanhar os requisitos da Spec e checklist do Roadmap diretamente no Sidecar da sessão.'
-      ]
-    }
+    workspace,
+    title: path.basename(workspace) !== 'nader' ? path.basename(workspace) : 'Projeto Termius Agent',
+    hasRealSpec,
+    hasRealRoadmap,
+    specPath,
+    roadmapPath,
+    rawSpecContent,
+    rawRoadmapContent,
+    affectedFilesCount: modifiedFiles.size,
+    affectedFiles: Array.from(modifiedFiles).slice(0, 20).map(f => ({
+      path: f,
+      name: path.basename(f)
+    }))
   };
-
-  return specAndRoadmap;
 }
 
 /**
- * Salva atualizações manuais na Spec ou Roadmap de uma conversa
+ * Salva o conteúdo do SPEC.md ou ROADMAP.md diretamente no arquivo do projeto
  */
-export function updateSpecAndRoadmap(conversationId, updates) {
-  const current = generateSpecAndRoadmap(conversationId);
-  const merged = {
-    ...current,
-    ...updates,
-    updatedAt: new Date().toISOString()
-  };
+export function updateSpecAndRoadmap(conversationId, payload = {}) {
+  const { workspace, specContent, roadmapContent } = payload;
+  const targetWorkspace = workspace && fs.existsSync(workspace) ? workspace : detectConversationWorkspace(conversationId);
 
-  const storage = loadStorage();
-  storage[conversationId] = merged;
-  saveStorage(storage);
-  return merged;
+  const specPath = path.join(targetWorkspace, 'SPEC.md');
+  const roadmapPath = path.join(targetWorkspace, 'ROADMAP.md');
+
+  if (typeof specContent === 'string' && specContent.trim()) {
+    fs.writeFileSync(specPath, specContent, 'utf-8');
+  }
+
+  if (typeof roadmapContent === 'string' && roadmapContent.trim()) {
+    fs.writeFileSync(roadmapPath, roadmapContent, 'utf-8');
+  }
+
+  return generateSpecAndRoadmap(conversationId, targetWorkspace);
 }
 
 /**
- * Converte a Spec e o Roadmap em Markdown formatado e salva em SPEC.md e ROADMAP.md
+ * Exporta ou força a gravação de SPEC.md e ROADMAP.md
  */
 export function exportSpecAndRoadmapToMarkdown(conversationId, options = {}) {
-  const data = generateSpecAndRoadmap(conversationId);
-  const convRes = listConversations ? listConversations({ limit: 100 }) : { conversations: [] };
-  const convList = Array.isArray(convRes) ? convRes : (convRes.conversations || []);
-  const conv = convList.find((c) => c.conversation_id === conversationId);
+  const data = generateSpecAndRoadmap(conversationId, options.targetDir);
+  const targetDir = data.workspace;
 
-  // Determina diretório de destino
-  let targetDir = options.targetDir || (conv && conv.workspace) || process.cwd();
-  if (targetDir.startsWith('~')) {
-    targetDir = path.join(process.env.HOME || '/home/nader', targetDir.slice(1));
-  }
-
-  // Se o diretório contiver aspas ou não existir, sanitiza
-  targetDir = targetDir.replace(/^["']|["']$/g, '');
-
-  if (targetDir === '/home/nader' && fs.existsSync('/home/nader/Documents/Projects/termius-agent')) {
-    targetDir = '/home/nader/Documents/Projects/termius-agent';
-  }
-
-  if (!fs.existsSync(targetDir)) {
-    try {
-      fs.mkdirSync(targetDir, { recursive: true });
-    } catch {
-      targetDir = process.cwd();
-    }
-  }
-
-  const specContent = [
-    `# Especificação Técnica: ${data.title}`,
-    `> **Sessão Antigravity ID:** \`${conversationId}\``,
-    `> **Gerado pelo:** Termius Agent Suite`,
-    `> **Data:** ${new Date(data.generatedAt || Date.now()).toLocaleString('pt-BR')}`,
-    '',
-    '## 1. 🎯 Objetivo Central & Escopo',
-    data.spec.objective,
-    '',
-    '## 2. 🛠️ Stack Tecnológica Identificada',
-    data.spec.techStack && data.spec.techStack.length > 0
-      ? data.spec.techStack.map((t) => `- **${t}**`).join('\n')
-      : '_Nenhuma stack específica identificada automaticamente._',
-    '',
-    '## 3. 📋 Requisitos Funcionais & Entregas',
-    data.spec.functionalRequirements && data.spec.functionalRequirements.length > 0
-      ? data.spec.functionalRequirements.map((req, idx) => {
-          const statusIcon = req.status === 'completed' ? '✅' : '⏳';
-          const statusLabel = req.status === 'completed' ? 'Concluído' : 'Em Progresso';
-          return `### ${idx + 1}. ${req.title} [${statusIcon} ${statusLabel}]\n${req.fullText && req.fullText !== req.title ? `\`\`\`\n${req.fullText}\n\`\`\`\n` : ''}`;
-        }).join('\n')
-      : '_Nenhum requisito explícito mapeado._',
-    '',
-    '## 4. 🏛️ Decisões de Arquitetura & Engenharia',
-    data.spec.architecturalDecisions && data.spec.architecturalDecisions.length > 0
-      ? data.spec.architecturalDecisions.map((dec) => `- ${dec}`).join('\n')
-      : '_Sem decisões registradas._',
-    '',
-    '## 5. 📂 Arquivos Afetados & Inspecionados',
-    data.spec.affectedFiles && data.spec.affectedFiles.length > 0
-      ? data.spec.affectedFiles.map((f) => `- \`${f.path.replace(/^["']|["']$/g, '')}\``).join('\n')
-      : '_Nenhum arquivo modificado detectado._',
-    ''
-  ].join('\n');
-
-  const roadmapContent = [
-    `# Plano de Evolução (Roadmap): ${data.title}`,
-    `> **Progresso Geral:** **${data.overallProgress}% Concluído**`,
-    `> **Sessão:** \`${conversationId}\``,
-    `> **Data:** ${new Date(data.generatedAt || Date.now()).toLocaleString('pt-BR')}`,
-    '',
-    '## 🗺️ Marcos de Evolução (Milestones)',
-    '',
-    ...(data.roadmap.milestones || []).map((m) => {
-      const statusIcon = m.status === 'completed' ? '✅' : m.status === 'in_progress' ? '🔄' : '📌';
-      return [
-        `### ${statusIcon} ${m.title} (${m.progress}%)`,
-        `_${m.description}_`,
-        '',
-        '**Checklist de Tarefas:**',
-        ...m.tasks.map((t) => `- [${t.completed ? 'x' : ' '}] ${t.title}`),
-        ''
-      ].join('\n');
-    }),
-    '## 🚀 Próximos Passos Recomendados',
-    ...(data.roadmap.nextActions || []).map((action) => `- ${action}`),
-    ''
-  ].join('\n');
-
-  const specPath = path.join(targetDir, 'SPEC.md');
-  const roadmapPath = path.join(targetDir, 'ROADMAP.md');
-
-  fs.writeFileSync(specPath, specContent, 'utf-8');
-  fs.writeFileSync(roadmapPath, roadmapContent, 'utf-8');
+  fs.writeFileSync(data.specPath, data.rawSpecContent, 'utf-8');
+  fs.writeFileSync(data.roadmapPath, data.rawRoadmapContent, 'utf-8');
 
   return {
     success: true,
     targetDir,
-    specPath,
-    roadmapPath,
-    specContent,
-    roadmapContent
+    specPath: data.specPath,
+    roadmapPath: data.roadmapPath,
+    specContent: data.rawSpecContent,
+    roadmapContent: data.rawRoadmapContent
   };
 }
