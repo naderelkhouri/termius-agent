@@ -79,6 +79,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }) {
         { keys: ['Ctrl', 'Alt', 'H'], description: 'Dividir tela horizontalmente (2 terminais empilhados)' },
         { keys: ['Ctrl', 'Alt', '3'], description: 'Dividir em 3 colunas (3 terminais simultâneos)' },
         { keys: ['Ctrl', 'Alt', '4', 'ou', 'G'], description: 'Dividir em grade 2x2 (4 terminais simultâneos)' },
+        { keys: ['Ctrl', 'Shift', 'M'], description: 'Alternar Maximizar / Restaurar painel de terminal ativo (Zoom)' },
         { keys: ['Clique no Terminal'], description: 'Alternar foco entre os painéis divididos' }
       ]
     },

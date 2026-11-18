@@ -50,6 +50,8 @@ import {
   Server,
   LayoutGrid,
   Columns3,
+  Maximize2,
+  Minimize2,
   Folder,
   Copy,
   Check
@@ -74,6 +76,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('terminals');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [splitMode, setSplitMode] = useState('single'); // 'single' | 'vertical' | 'horizontal' | 'triple' | 'quad'
+  const [maximizedSplitMode, setMaximizedSplitMode] = useState(null); // guarda o layout anterior quando maximiza
   const [secondaryTabId, setSecondaryTabId] = useState(null);
   const [splitTabIds, setSplitTabIds] = useState([]); // [slot0, slot1, slot2, slot3]
   const [splitRatio, setSplitRatio] = useState(() => {
@@ -745,6 +748,11 @@ export default function App() {
           handleEnsureTabsForSplit(4, 'quad');
         }
       }
+      // Ctrl+Shift+M -> Toggle Maximizar / Restaurar Painel Ativo
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'm') {
+        e.preventDefault();
+        handleToggleMaximizePane();
+      }
       // Ctrl+Shift+T -> Nova Aba
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 't') {
         e.preventDefault();
@@ -1005,6 +1013,20 @@ export default function App() {
       }
     }
     setSplitMode(mode);
+    setMaximizedSplitMode(null);
+  };
+
+  const handleToggleMaximizePane = () => {
+    if (splitMode === 'single') {
+      if (maximizedSplitMode) {
+        setSplitMode(maximizedSplitMode);
+        setMaximizedSplitMode(null);
+      }
+    } else {
+      setMaximizedSplitMode(splitMode);
+      setSplitMode('single');
+    }
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
   };
 
   // Drag resizer para as divisórias de múltiplos terminais
@@ -1775,6 +1797,26 @@ export default function App() {
             >
               <LayoutGrid className="w-4 h-4" />
             </button>
+
+            {/* Botão de Maximizar / Restaurar Painel Ativo (Zoom) */}
+            {(splitMode !== 'single' || maximizedSplitMode) && (
+              <button
+                type="button"
+                onClick={handleToggleMaximizePane}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors active:scale-95 cursor-pointer border-l border-[#30363d] pl-1 ml-0.5 ${
+                  splitMode === 'single' && maximizedSplitMode
+                    ? 'bg-amber-500/20 text-amber-300 shadow-xs'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title={splitMode === 'single' && maximizedSplitMode ? "Restaurar layout dividido (Ctrl+Shift+M)" : "Maximizar terminal ativo (Ctrl+Shift+M)"}
+              >
+                {splitMode === 'single' && maximizedSplitMode ? (
+                  <Minimize2 className="w-4 h-4 text-amber-300" />
+                ) : (
+                  <Maximize2 className="w-4 h-4" />
+                )}
+              </button>
+            )}
           </div>
         )}
           </div>
