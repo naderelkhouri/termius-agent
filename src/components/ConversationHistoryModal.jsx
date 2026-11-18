@@ -945,21 +945,21 @@ export default function ConversationHistoryModal({
                         </p>
                       </div>
 
-                      <div className="pt-3 border-t border-[#30363d]/60 flex items-center justify-between text-xs text-slate-400 gap-2">
-                        <div className="flex items-center gap-1.5 whitespace-nowrap">
-                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="font-medium">{formatDate(c.last_modified_time)}</span>
+                      <div className="pt-3 border-t border-[#30363d]/60 flex items-center justify-between text-xs text-slate-400 gap-1.5 flex-wrap">
+                        <div className="flex items-center gap-1.5 whitespace-nowrap min-w-0">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          <span className="font-medium text-xs truncate">{formatDate(c.last_modified_time)}</span>
                         </div>
 
-                        <div className="flex items-center gap-1.5 shrink-0">
+                        <div className="flex items-center gap-1 shrink-0 ml-auto">
                           <button
                             type="button"
                             onClick={(e) => handleOpenRename(c, e)}
                             className="min-h-[28px] px-2 py-1 rounded-lg bg-[#21262d] hover:bg-purple-500/20 text-slate-300 hover:text-purple-200 border border-[#30363d] text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
                             title="Renomear esta conversa"
                           >
-                            <Pencil className="w-3.5 h-3.5 text-purple-400" />
-                            <span className="hidden sm:inline">Renomear</span>
+                            <Pencil className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                            <span className="hidden xl:inline">Renomear</span>
                           </button>
 
                           <button
@@ -971,8 +971,8 @@ export default function ConversationHistoryModal({
                             className="min-h-[28px] px-2 py-1 rounded-lg bg-[#21262d] hover:bg-amber-500/20 text-slate-300 hover:text-amber-200 border border-[#30363d] text-xs font-semibold flex items-center gap-1 transition-all"
                             title="Ver Spec & Roadmap da Sessão"
                           >
-                            <FileText className="w-3.5 h-3.5 text-amber-400" />
-                            <span className="hidden sm:inline">Spec</span>
+                            <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                            <span className="hidden xl:inline">Spec</span>
                           </button>
 
                           <button
@@ -983,7 +983,7 @@ export default function ConversationHistoryModal({
                                 onResumeConversation(c.conversation_id, c.title || 'Conversa IA', c.workspace || '/home/nader', isFluid);
                               }
                             }}
-                            className={`min-h-[28px] flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-xs border ${
+                            className={`min-h-[28px] flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-xs border whitespace-nowrap ${
                               isFluid
                                 ? 'bg-amber-600/30 hover:bg-amber-600/50 text-amber-200 hover:text-white border-amber-500/40 shadow-amber-500/10'
                                 : 'bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white border-purple-500/40'
@@ -994,8 +994,8 @@ export default function ConversationHistoryModal({
                                 : "Continuar esta conversa com 1 clique (agy --conversation)"
                             }
                           >
-                            <Zap className={`w-3 h-3 ${isFluid ? 'text-amber-300 fill-amber-300 animate-pulse' : 'text-yellow-400 fill-yellow-400'}`} />
-                            <span>{isFluid ? '⚡ Continuar (Fluido)' : 'Continuar'}</span>
+                            <Zap className={`w-3 h-3 shrink-0 ${isFluid ? 'text-amber-300 fill-amber-300 animate-pulse' : 'text-yellow-400 fill-yellow-400'}`} />
+                            <span>{isFluid ? 'Fluido' : 'Continuar'}</span>
                           </button>
                         </div>
                       </div>
