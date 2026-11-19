@@ -55,7 +55,7 @@
       "address": "vps.admx.tech",
       "port": 22,
       "user": "root",
-      "group": "Produção",
+      "group": "Produ\u00e7\u00e3o",
       "color": "#f85149",
       "defaultCwd": "/root",
       "icon": "server"
@@ -87,13 +87,13 @@
     },
     {
       "id": "snip-ports",
-      "title": "Portas Abertas e Serviços",
+      "title": "Portas Abertas e Servi\u00e7os",
       "command": "ss -tulpn | grep LISTEN",
       "category": "Rede"
     },
     {
       "id": "snip-mem",
-      "title": "Uso de Memória e Swap",
+      "title": "Uso de Mem\u00f3ria e Swap",
       "command": "free -h",
       "category": "Sistema"
     },
@@ -147,7 +147,7 @@
     "84fb4bc9-c8dd-43b7-a027-6b94200b1fad": "Fome_App",
     "cb52796d-b276-43d9-a4b4-570eecb86f03": "Comercial X",
     "aba7d158-5960-4763-9a85-d333b546b549": "Skill de Propostas",
-    "7781d897-03bf-4f33-9dde-3fc3176126ee": "Fundador Sem Código",
+    "7781d897-03bf-4f33-9dde-3fc3176126ee": "Fundador Sem C\u00f3digo",
     "7e8e0164-73c8-4947-b64b-e88ae8d53b52": "Mulheres Menopausadas",
     "12688d01-fe9d-4edf-b5bc-b58453bd8c75": "Admx.tech",
     "65043af6-1059-412c-b034-271fe53dd3bc": "Videos",
@@ -157,6 +157,7 @@
     "9843fea2-1fc1-4cae-bf7f-387a99ed6500": "Termius",
     "27595f08-78e4-4866-8d9d-e91942cbc645": "rustDesk",
     "ea4ab729-1b11-46e6-bd9f-4606119cd85d": "Plane",
-    "8c656c92-fd2f-4a71-a208-23bf3e51d2e1": "Audita PDV"
+    "8c656c92-fd2f-4a71-a208-23bf3e51d2e1": "Audita PDV",
+    "b0488d3a-fd0d-45f5-919e-52ce72dc4a02": "Extens\u00e3o . Comercial X"
   }
 }
